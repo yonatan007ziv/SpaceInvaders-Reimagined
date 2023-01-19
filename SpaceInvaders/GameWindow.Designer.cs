@@ -44,6 +44,7 @@ namespace SpaceInvaders
             this.Name = "GameWindow";
             this.Text = "Space Invaders - Reimagined";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 

@@ -11,10 +11,12 @@ namespace SpaceInvaders
     public partial class GameWindow : Form
     {
         public static GameWindow? Instance { get; private set; }
+        public LoginRegist? loginRegist;
         public GameWindow()
         {
             InitializeComponent();
             Instance = this;
+            loginRegist = new LoginRegist();
         }
 
         private void GameInitializer()
