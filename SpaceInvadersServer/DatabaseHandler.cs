@@ -10,10 +10,8 @@ namespace SpaceInvadersServer
         public DatabaseHandler()
         {
             conn = new SqlConnection("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"D:\\Code\\VS Community\\SpaceInvaders-Reimagined\\SpaceInvadersServer\\Database.mdf\";Integrated Security=True");
-            Register("Niggermand", "Slave");
-            Console.WriteLine(CorrectLogin("Niggerman", "Slave"));
         }
-        public bool CorrectLogin(string username, string password)
+        public bool ValidLogin(string username, string password)
         {
             if (!UsernameExists(username))
                 return false;
@@ -23,7 +21,6 @@ namespace SpaceInvadersServer
             string result = (string)cmd.ExecuteScalar();
             conn.Close();
             return result == password;
-
         }
         public bool UsernameExists(string username)
         {
@@ -33,12 +30,6 @@ namespace SpaceInvadersServer
             int result = (int)cmd.ExecuteScalar();
             conn.Close();
             return result > 0;
-        }
-        public void Register(string username, string password)
-        {
-            if (UsernameExists(username))
-                return;
-            InsertUser(username, password);
         }
         public void InsertUser(string username, string password)
         {
