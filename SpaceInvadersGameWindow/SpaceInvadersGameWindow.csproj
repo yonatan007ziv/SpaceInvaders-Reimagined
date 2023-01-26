@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\RawFiles\Images\Bullet.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\Crab1.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\Crab2.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\InvaderDeath.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\Octopus1.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\Octopus2.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\Squid1.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\Squid2.png" />
+    <None Remove="Resources\RawFiles\Images\Enemies\UFO.png" />
+    <None Remove="Resources\RawFiles\Images\MissingSprite.png" />
+    <None Remove="Resources\RawFiles\Images\Player.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\RawFiles\Images\Bullet.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\Crab1.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\Crab2.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\InvaderDeath.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\Octopus1.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\Octopus2.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\Squid1.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\Squid2.png" />
+    <Resource Include="Resources\RawFiles\Images\Enemies\UFO.png" />
+    <Resource Include="Resources\RawFiles\Images\MissingSprite.png" />
+    <Resource Include="Resources\RawFiles\Images\Player.png" />
+  </ItemGroup>
+
+</Project>
