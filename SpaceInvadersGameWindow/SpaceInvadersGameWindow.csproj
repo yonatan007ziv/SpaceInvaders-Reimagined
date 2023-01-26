@@ -19,6 +19,8 @@
     <None Remove="Resources\RawFiles\Images\Enemies\UFO.png" />
     <None Remove="Resources\RawFiles\Images\MissingSprite.png" />
     <None Remove="Resources\RawFiles\Images\Player.png" />
+    <None Remove="Resources\RawFiles\Images\Player\PlayerDeath1.png" />
+    <None Remove="Resources\RawFiles\Images\Player\PlayerDeath2.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,7 +34,9 @@
     <Resource Include="Resources\RawFiles\Images\Enemies\Squid2.png" />
     <Resource Include="Resources\RawFiles\Images\Enemies\UFO.png" />
     <Resource Include="Resources\RawFiles\Images\MissingSprite.png" />
-    <Resource Include="Resources\RawFiles\Images\Player.png" />
+    <Resource Include="Resources\RawFiles\Images\Player\Player.png" />
+    <Resource Include="Resources\RawFiles\Images\Player\PlayerDeath1.png" />
+    <Resource Include="Resources\RawFiles\Images\Player\PlayerDeath2.png" />
   </ItemGroup>
 
 </Project>

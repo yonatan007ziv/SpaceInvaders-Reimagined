@@ -1,22 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using System.Media;
-using SpaceInvaders.Resources;
-using SpaceInvaders.Components.GameComponents;
-using System.Numerics;
-using System.Diagnostics;
-using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 
 namespace SpaceInvaders.Systems
 {
     internal static class SoundManager
     {
-        public static void PlaySound(UnmanagedMemoryStream sound)
+        public static void PlaySound(string path)
         {
-            new SoundPlayer(sound).PlaySync();
+            // fix later on, 1 sound at once currently 
+            Task.Factory.StartNew(() => {
+                MediaPlayer player = new MediaPlayer();
+                player.Open(new Uri("pack://application:,,,/" + path));
+                player.Play();
+            });
+        }
+        public static void PlaySound(string path, Action del)
+        {
+            // fix later on, 1 sound at once currently 
+            Task.Factory.StartNew(() => {
+                MediaPlayer player = new MediaPlayer();
+                player.Open(new Uri("pack://application:,,,/" + path));
+                player.MediaEnded += (s,e) => del();
+                player.MediaFailed += (o, args) =>
+                {
+                    MessageBox.Show("Media Failed!!");
+                };
+                player.Play();
+            });
         }
     }
 }

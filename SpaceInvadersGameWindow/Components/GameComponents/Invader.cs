@@ -1,17 +1,16 @@
 ﻿using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Components.Renderer;
-using SpaceInvaders.Resources;
 using SpaceInvaders.Components.Miscellaneous;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using SpaceInvadersGameWindow;
-using System.Diagnostics;
+using SpaceInvaders.Systems;
 
 namespace SpaceInvaders.Components.GameComponents
 {
-    internal class Invader : ICollidable
+    internal class Invader
     {
         public static List<Invader> invaders = new List<Invader>();
         public enum EnemyTypes
@@ -47,9 +46,9 @@ namespace SpaceInvaders.Components.GameComponents
                     break;
             }
 
-            transform = new Transform(pos, scale);
-            col = new Collider(this, transform.position, transform.scale);
-            sR = new SpriteRenderer(transform.position, transform.scale);
+            transform = new Transform(scale * MainWindow.GlobalTempZoom, pos);
+            col = new Collider(this, transform.scale, transform.position);
+            sR = new SpriteRenderer(transform.scale, transform.position);
 
             this.type = type;
             int times = 1;
@@ -85,7 +84,7 @@ namespace SpaceInvaders.Components.GameComponents
             invaders.Add(this);
         }
 
-        public static void MoveInvadersDown()
+        private static void MoveInvadersDown()
         {
             for (int i = invaders.Count - 1; i >= 0; i--)
                 invaders[i].transform.AddPosY(50);
@@ -96,14 +95,40 @@ namespace SpaceInvaders.Components.GameComponents
                 invaders[i].Move();
             timesMoved++;
         }
+
         public static int dir = 1;
+        private static Random random = new Random();
         private static int timesMoved = 0;
-        public void Move()
+
+        private void Move()
         {
+            // Check touching wall
+            Collider? col = this.col.TouchingCollider();
+            if (col != null)
+            {
+                int prevDir = dir;
+                if (col.parent == Wall.RightWall)
+                    dir = -1;
+                else if (col.parent == Wall.LeftWall)
+                    dir = 1;
+                if (dir != prevDir)
+                    MoveInvadersDown();
+            }
+
             transform.AddPosX(10 * dir);
+
+            // 1% (temp, arbitrary) Chance to shoot
+            int rand = random.Next(100);
+            if (rand == 0)
+                Shoot();
 
             NextClip();
         }
+        private void Shoot()
+        {
+            new InvaderBullet(transform.position);
+        }
+
         void NextClip()
         {
             int times = 2;
@@ -142,7 +167,6 @@ namespace SpaceInvaders.Components.GameComponents
             for (int i = 0; i < 5; i++)
                 for (int j = 0; j < 11; j++)
                 {
-                    Vector2 size;
                     EnemyTypes type;
                     if (i < 1)
                         type = EnemyTypes.Squid;
@@ -158,18 +182,17 @@ namespace SpaceInvaders.Components.GameComponents
                 invaders[i].sR.IsEnabled = true;
         }
 
-        async void Kill()
+        public async void Kill()
         {
             col.Dispose();
 
             invaders.Remove(this);
 
-            //SoundManager.PlaySound(Sounds.InvaderDeath);
+            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\InvaderDeath.wav");
 
             sR.Source = SpriteRenderer.BitmapImageMaker(@"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
-
-            //sR.SetScale(new Vector2(65, 40)); //* GameSettings.ScreenReferenceSize);
-            //transform.UpdatePosition();
+            transform.SetScale(new Vector2(13, 8) * MainWindow.GlobalTempZoom);
+            transform.UpdatePosition();
 
             //GameSettings.score += pointsReward;
 

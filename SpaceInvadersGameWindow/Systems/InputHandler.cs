@@ -9,7 +9,6 @@ namespace SpaceInvaders.Systems
 {
     internal class InputHandler
     {
-        public delegate void VoidDel();
         public static InputHandler? instance;
         public List<Key> keysDown = new List<Key>();
 
@@ -24,10 +23,14 @@ namespace SpaceInvaders.Systems
             InputUpdate();
         }
 
-        VoidDel? inputLoopDel;
-        public void AddInputLoop(VoidDel del)
+        Action? inputLoopDel;
+        public void AddInputLoop(Action del)
         {
             inputLoopDel += del;
+        }
+        public void RemoveInputLoop(Action del)
+        {
+            inputLoopDel -= del;
         }
         public async void InputUpdate()
         {
@@ -40,19 +43,19 @@ namespace SpaceInvaders.Systems
         }
 
         #region delegates
-        VoidDel? keyUpDel;
-        VoidDel? keyPressDel;
+        Action? keyUpDel;
+        Action? keyPressDel;
 
-        public void AddKeyUpDel(VoidDel del)
+        public void AddKeyUpDel(Action del)
         {
             keyUpDel += del;
         }
-        public void AddKeyDownDel(VoidDel del)
+        public void AddKeyDownDel(Action del)
         {
             keyPressDel += del;
         }
         #endregion
-
+        
         public void KeyDown(KeyEventArgs e)
         {
             if (!keysDown.Contains(e.Key))

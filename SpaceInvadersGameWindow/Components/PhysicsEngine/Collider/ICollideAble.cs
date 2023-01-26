@@ -2,6 +2,7 @@
 {
     internal interface ICollidable
     {
-        //public abstract void ColliderHit(Collider hit);
+        public abstract void BulletHit();
+        public abstract void InvaderHit();
     }
 }

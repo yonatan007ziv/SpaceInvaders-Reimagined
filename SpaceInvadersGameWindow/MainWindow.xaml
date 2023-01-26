@@ -5,6 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpaceInvadersGameWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="800">
-    <Canvas Name="GameplayCanvas" Background="Black"/>
+        Title="MainWindow" Height="500" Width="1000">
+    <Canvas Name="GameplayCanvas" Background="Black">
+        <Image Source="D:\Code\VS Community\SpaceInvaders-Reimagined\SpaceInvadersGameWindow\Resources\RawFiles\Images\Enemies\Squid2.png"
+               Stretch="Fill" Canvas.Top="106" Height="42" Width="82" />
+    </Canvas>
 </Window>

@@ -12,19 +12,19 @@ namespace SpaceInvaders.Components.PhysicsEngine.Collider
         private Vector2 pos;
         private Vector2 scale;
 
-        public Collider(object parent, Vector2 pos, Vector2 scale)
+        public Collider(object parent, Vector2 scale, Vector2 pos)
         {
             this.parent = parent;
 
-            SetPosition(pos);
             SetScale(scale);
+            SetPosition(pos);
 
             AllColliders.Add(this);
         }
 
         public void SetPosition(Vector2 pos)
         {
-            this.pos = pos - scale / 2;
+            this.pos = pos;
         }
 
         public void SetScale(Vector2 size)
@@ -38,7 +38,7 @@ namespace SpaceInvaders.Components.PhysicsEngine.Collider
             {
                 if (c == this) continue;
 
-                // check collision 
+                // check collision
                 Rectangle thisRect = new Rectangle((int)pos.X, (int)pos.Y, (int)scale.X, (int)scale.Y);
                 Rectangle otherRect = new Rectangle((int)c.pos.X, (int)c.pos.Y, (int)c.scale.X, (int)c.scale.Y);
 

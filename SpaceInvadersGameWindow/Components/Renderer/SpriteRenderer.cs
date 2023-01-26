@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
-using System.Windows;
 using System.Windows.Media;
 using SpaceInvadersGameWindow;
 
@@ -10,46 +9,63 @@ namespace SpaceInvaders.Components.Renderer
 {
     internal class SpriteRenderer : Image
     {
-        Vector2 pos, scale;
-        public SpriteRenderer(Vector2 pos, Vector2 scale) : base()
+        public SpriteRenderer(Vector2 scale, Vector2 pos) : base()
         {
-            this.pos = pos; this.scale = scale;
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
             MainWindow.instance!.GameplayCanvas.Children.Add(this);
-            SetPosition(pos);
+
+            Stretch = Stretch.Fill;
+            StretchDirection = StretchDirection.Both;
+
             SetScale(scale);
+            SetPosition(pos);
         }
 
-        public SpriteRenderer(string imagePath, Vector2 pos, Vector2 scale) : base()
+        public SpriteRenderer(string imagePath, Vector2 scale, Vector2 pos) : base()
         {
-            this.pos = pos; this.scale = scale;
             Source = BitmapImageMaker(imagePath);
             RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
             MainWindow.instance!.GameplayCanvas.Children.Add(this);
-            SetPosition(pos);
+
+            Stretch = Stretch.Fill;
+            StretchDirection = StretchDirection.Both;
+
             SetScale(scale);
+            SetPosition(pos);
         }
         public void SetPosition(Vector2 pos)
         {
-            SetValue(Canvas.LeftProperty, (double)pos.X - scale.X / 2);
-            SetValue(Canvas.TopProperty, (double)pos.Y - scale.Y / 2);
+            SetValue(Canvas.LeftProperty, (double)pos.X);
+            SetValue(Canvas.TopProperty, (double)pos.Y);
         }
         public void SetScale(Vector2 scale)
         {
-            SetValue(Canvas.WidthProperty, (double)scale.X);
-            SetValue(Canvas.HeightProperty, (double)scale.Y);
-            this.scale = scale;
+            Width = scale.X;
+            Height = scale.Y;
         }
 
         public static BitmapImage BitmapImageMaker(string path)
         {
-            BitmapImage myBitmapImage = new BitmapImage();
+            try
+            {
+                BitmapImage myBitmapImage = new BitmapImage();
 
-            myBitmapImage.BeginInit();
-            myBitmapImage.UriSource = new Uri("pack://application:,,,/" + path);
-            myBitmapImage.EndInit();
+                myBitmapImage.BeginInit();
+                myBitmapImage.UriSource = new Uri("pack://application:,,,/" + path);
+                myBitmapImage.EndInit();
 
-            return myBitmapImage;
+                return myBitmapImage;
+            }
+            catch
+            {
+                BitmapImage myBitmapImage = new BitmapImage();
+
+                myBitmapImage.BeginInit();
+                myBitmapImage.UriSource = new Uri(@"pack://application:,,,/Resources\RawFiles\Images\MissingSprite.png");
+                myBitmapImage.EndInit();
+
+                return myBitmapImage;
+            }
         }
         public void Dispose()
         {

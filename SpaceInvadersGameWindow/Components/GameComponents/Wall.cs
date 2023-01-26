@@ -1,30 +1,28 @@
 ﻿using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Components.Renderer;
-using SpaceInvaders.Resources;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SpaceInvaders.Components.GameComponents
 {
-    internal class Wall : ICollidable
+    internal class Wall
     {
-        public static List<Wall> walls = new List<Wall>();
-        Transform transform;
-        SpriteRenderer sR;
-        Collider col;
-        public Wall(Vector2 pos, Vector2 scale)
+        public static Wall? Ceiling, RightWall, LeftWall;
+        public Transform transform;
+        private SpriteRenderer sR;
+        private Collider col;
+        public Wall(Vector2 scale, Vector2 pos)
         {
-            walls.Add(this);
+            transform = new Transform(scale, pos);
+            sR = new SpriteRenderer(@"", transform.scale, transform.position);
+            col = new Collider(this, transform.scale, transform.position);
 
-            transform = new Transform(pos,scale);
-            sR = new SpriteRenderer(transform.position, transform.scale);
-            col = new Collider(this, transform.position, transform.scale);
+            transform.AddScaleDel((vec) => col.SetScale(vec));
+            transform.AddScaleDel((vec) => sR.SetScale(vec));
+
+            transform.AddPositionDel((vec) => col.SetPosition(vec));
+            transform.AddPositionDel((vec) => sR.SetPosition(vec));
         }
     }
 }

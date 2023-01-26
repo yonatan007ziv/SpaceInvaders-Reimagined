@@ -1,32 +1,27 @@
 ﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine;
 using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Components.Renderer;
-using SpaceInvaders.Resources;
+using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SpaceInvaders.Components.GameComponents
 {
-    internal class Bullet
+    internal class PlayerBullet
     {
-        public static Bullet? instance;
+        public static PlayerBullet? instance;
         public Transform transform;
         private SpriteRenderer sR;
         private Collider col;
-        public Bullet(Vector2 pos)
+        public PlayerBullet(Vector2 pos)
         {
             instance = this;
-            transform = new Transform(pos, new Vector2(1, 7) * 5);
-            col = new Collider(this, transform.position, transform.scale);
-            sR = new SpriteRenderer(@"Resources\RawFiles\Images\Bullet.png", transform.position, transform.scale);
+            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\Shoot.wav");
+
+            transform = new Transform(new Vector2(1, 7) * MainWindow.GlobalTempZoom, pos);
+            col = new Collider(this, transform.scale, transform.position);
+            sR = new SpriteRenderer(@"Resources\RawFiles\Images\Bullet.png", transform.scale, transform.position);
 
             transform.AddPositionDel((pos) => sR.SetPosition(pos));
             transform.AddPositionDel((pos) => col.SetPosition(pos));
@@ -38,10 +33,16 @@ namespace SpaceInvaders.Components.GameComponents
         }
         private async void BulletLoop()
         {
-            while (this.col.TouchingCollider() == null)
+            while (this.col.TouchingCollider() == null || this.col.TouchingCollider()!.parent is Player)
             {
                 transform.AddPosY(-10);
                 await Task.Delay(1000 / 60);
+            }
+
+            Collider col = this.col.TouchingCollider()!;
+            if(col.parent is Invader)
+            {
+                ((Invader)col.parent).Kill();
             }
             Dispose();
         }

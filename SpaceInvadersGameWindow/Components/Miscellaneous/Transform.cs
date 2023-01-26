@@ -14,59 +14,68 @@ namespace SpaceInvaders.Components.Miscellaneous
         private ScalePositionDel? SetPositionDel;
         private ScalePositionDel? SetScaleDel;
 
-        private Vector2 _position;
+        private Vector2 _positionBeforeCenter;
+        private Vector2 centeredPosition;
         public Vector2 position
         {
-            get { return _position; }
-            private set { }
+            get { return _positionBeforeCenter; }
+            private set 
+            {
+                _positionBeforeCenter = value;
+                centeredPosition.X = _positionBeforeCenter.X - scale.X / 2; 
+                centeredPosition.Y = _positionBeforeCenter.Y - scale.Y / 2; 
+            }
         }
 
         private Vector2 _scale;
         public Vector2 scale
         {
             get { return _scale; }
-            private set { }
+            private set { _scale = value; }
         }
 
-        public Transform(Vector2 position, Vector2 scale)
+        public Transform(Vector2 scale, Vector2 position)
         {
             transforms.Add(this);
-            _position = position;
-            _scale = scale;
 
-            MainWindow.instance.SizeChanged += (sender, e) => OnSizeChanged();
+            this.scale = scale;
+            this.position = position;
 
-            UpdatePosition();
+            MainWindow.instance!.SizeChanged += (sender, e) => OnSizeChanged();
+
             UpdateScale();
+            UpdatePosition();
         }
         public void AddPosX(int x)
         {
-            _position += new Vector2(x, 0);
+            position += new Vector2(x, 0);
             UpdatePosition();
         }
         public void AddPosY(int y)
         {
-            _position += new Vector2(0, y);
+            position += new Vector2(0, y);
             UpdatePosition();
         }
         public void SetPosition(Vector2 newPos)
         {
-            if (_position != newPos)
-                _position = newPos;
-            UpdatePosition();
+            if (position != newPos)
+            {
+                position = newPos;
+                UpdatePosition();
+            }
         }
         public void SetScale(Vector2 newSize)
         {
-            if (_scale != newSize)
+            if (scale != newSize)
             {
-                _scale = newSize;
+                scale = newSize;
                 UpdateScale();
             }
         }
         public void UpdatePosition()
         {
             if (SetPositionDel != null)
-                SetPositionDel(_position);
+                SetPositionDel(centeredPosition);
         }
         public void UpdateScale()
         {
@@ -86,10 +95,10 @@ namespace SpaceInvaders.Components.Miscellaneous
         }
         private void OnSizeChanged()
         {
-            Debug.WriteLine(MainWindow.instance.ActualWidth);
-            Debug.WriteLine(MainWindow.instance.ActualHeight);
-            _scale *= new Vector2((float)(MainWindow.instance.ActualWidth /MainWindow.instance.), (float)MainWindow.instance.ActualHeight / 250);
-            UpdateScale();
+            //Debug.WriteLine(MainWindow.instance.ActualWidth);
+            //Debug.WriteLine(MainWindow.instance.ActualHeight);
+            //_scale *= new Vector2((float)(MainWindow.instance.ActualWidth /MainWindow.instance.), (float)MainWindow.instance.ActualHeight / 250);
+            //UpdateScale();
         }
     }
 }

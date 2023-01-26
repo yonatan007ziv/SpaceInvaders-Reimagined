@@ -25,6 +25,7 @@ namespace SpaceInvadersGameWindow
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static int GlobalTempZoom = 3;
         public static MainWindow? instance;
         public MainWindow()
         {
@@ -32,8 +33,14 @@ namespace SpaceInvadersGameWindow
             instance = this;
             new InputHandler();
 
-            new Player(new Vector2(0, 700));
-            new Wall(new Vector2(0,0), new Vector2(500, 500));
+            Wall.Ceiling = new Wall(new Vector2((float)Width, 50), new Vector2((float)Width / 2, 0));
+
+            Vector2 VerticalWallScale = new Vector2(50, (float)Height);
+            Wall.LeftWall = new Wall(VerticalWallScale, new Vector2(50, (float)Height / 2));
+            Wall.RightWall = new Wall(VerticalWallScale, new Vector2((float)Width - 25, (float)Height / 2));
+
+            new Player(new Vector2(200, 450));
+
             Invader.PlotInvaders(0, 0);
 
             TestGameLoopInvaders();
