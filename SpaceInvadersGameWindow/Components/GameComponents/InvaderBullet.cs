@@ -21,15 +21,9 @@ namespace SpaceInvaders.Components.GameComponents
         private Collider col;
         public InvaderBullet(Vector2 pos)
         {
-            transform = new Transform(new Vector2(1, 7) * MainWindow.GlobalTempZoom, pos);
-            col = new Collider(this, transform.scale, transform.position);
-            sR = new SpriteRenderer(@"Resources\RawFiles\Images\Bullet.png", transform.scale, transform.position);
-
-            transform.AddPositionDel((pos) => sR.SetPosition(pos));
-            transform.AddPositionDel((pos) => col.SetPosition(pos));
-
-            transform.AddScaleDel((pos) => sR.SetScale(pos));
-            transform.AddScaleDel((pos) => col.SetScale(pos));
+            transform = new Transform(new Vector2(1, 7), pos);
+            col = new Collider(transform, this);
+            sR = new SpriteRenderer(transform, @"Resources\RawFiles\Images\Bullet.png");
 
             BulletLoop();
         }
@@ -37,7 +31,7 @@ namespace SpaceInvaders.Components.GameComponents
         {
             while (this.col.TouchingCollider() == null || this.col.TouchingCollider()!.parent is Invader)
             {
-                transform.AddPosY(10);
+                transform.AddPosY(5);
                 await Task.Delay(1000 / 60);
             }
             Collider col = this.col.TouchingCollider()!;
@@ -51,6 +45,7 @@ namespace SpaceInvaders.Components.GameComponents
         {
             sR.Dispose();
             col.Dispose();
+            transform.Dispose();
         }
     }
 }

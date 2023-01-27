@@ -28,7 +28,7 @@ namespace SpaceInvaders.Components.Controllers
             int axis = inputHandler.GetAxis("Horizontal");
             Collider? col = this.col.TouchingCollider();
             if (axis == 1 && (col == null || col.parent != Wall.RightWall) || axis == -1 && (col == null || col.parent != Wall.LeftWall))
-                transform.AddPosX(10 * axis);
+                transform.AddPosX(axis);
             if (inputHandler.keysDown.Contains(Key.Space) && PlayerBullet.instance == null)
                 new PlayerBullet(transform.position);
         }

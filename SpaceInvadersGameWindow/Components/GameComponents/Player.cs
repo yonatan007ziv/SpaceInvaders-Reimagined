@@ -20,15 +20,9 @@ namespace SpaceInvaders.Components.GameComponents
         private CharacterController controller;
         public Player(Vector2 pos)
         {
-            transform = new Transform(new Vector2(13, 8) * MainWindow.GlobalTempZoom, pos);
-            col = new Collider(this, transform.scale, transform.position);
-            sR = new SpriteRenderer(@"Resources\RawFiles\Images\Player\Player.png", transform.scale, transform.position);
-
-            transform.AddScaleDel((vec) => col.SetScale(vec));
-            transform.AddScaleDel((vec) => sR.SetScale(vec));
-
-            transform.AddPositionDel((vec) => col.SetPosition(vec));
-            transform.AddPositionDel((vec) => sR.SetPosition(vec));
+            transform = new Transform(new Vector2(13, 8), pos);
+            col = new Collider(transform, this);
+            sR = new SpriteRenderer(transform, @"Resources\RawFiles\Images\Player\Player.png");
 
             controller = new CharacterController(transform, col);
         }
@@ -42,22 +36,18 @@ namespace SpaceInvaders.Components.GameComponents
                 sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Player\PlayerDeath{i % 2 + 1}.png");
                 await Task.Delay(1000 / 10);
             }
+            Respawn();
         }
         private void Respawn()
         {
             timesToLive--;
             col.Dispose();
             sR.Dispose();
+            transform.Dispose();
 
-            transform = new Transform(new Vector2(13, 8) * MainWindow.GlobalTempZoom, transform.position);
-            col = new Collider(this, transform.scale, transform.position);
-            sR = new SpriteRenderer(@"Resources\RawFiles\Images\Player\Player.png", transform.scale, transform.position);
-
-            transform.AddScaleDel((vec) => col.SetScale(vec));
-            transform.AddScaleDel((vec) => sR.SetScale(vec));
-
-            transform.AddPositionDel((vec) => col.SetPosition(vec));
-            transform.AddPositionDel((vec) => sR.SetPosition(vec));
+            transform = new Transform(new Vector2(13, 8), transform.position);
+            col = new Collider(transform, this);
+            sR = new SpriteRenderer(transform, @"Resources\RawFiles\Images\Player\Player.png");
 
             controller = new CharacterController(transform, col);
         }

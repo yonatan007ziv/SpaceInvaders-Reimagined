@@ -10,19 +10,11 @@ namespace SpaceInvaders.Components.GameComponents
     {
         public static Wall? Ceiling, RightWall, LeftWall;
         public Transform transform;
-        private SpriteRenderer sR;
-        private Collider col;
         public Wall(Vector2 scale, Vector2 pos)
         {
             transform = new Transform(scale, pos);
-            sR = new SpriteRenderer(@"", transform.scale, transform.position);
-            col = new Collider(this, transform.scale, transform.position);
-
-            transform.AddScaleDel((vec) => col.SetScale(vec));
-            transform.AddScaleDel((vec) => sR.SetScale(vec));
-
-            transform.AddPositionDel((vec) => col.SetPosition(vec));
-            transform.AddPositionDel((vec) => sR.SetPosition(vec));
+            new SpriteRenderer(transform, @"");
+            new Collider(transform, this);
         }
     }
 }

@@ -1,47 +1,53 @@
 ﻿using SpaceInvadersGameWindow;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System;
 using System.Numerics;
-using System.Windows;
 
 namespace SpaceInvaders.Components.Miscellaneous
 {
     internal class Transform
     {
-        public static List<Transform> transforms = new List<Transform>();
+        public Action PositionChanged;
+        public Action ScaleChanged;
 
-        public delegate void ScalePositionDel(Vector2 vec);
-        private ScalePositionDel? SetPositionDel;
-        private ScalePositionDel? SetScaleDel;
-
-        private Vector2 _positionBeforeCenter;
-        private Vector2 centeredPosition;
+        private Vector2 BasePosition;
+        public Vector2 CenteredPosition;
+        private Vector2 _position;
         public Vector2 position
         {
-            get { return _positionBeforeCenter; }
-            private set 
+            get { return _position; }
+            private set
             {
-                _positionBeforeCenter = value;
-                centeredPosition.X = _positionBeforeCenter.X - scale.X / 2; 
-                centeredPosition.Y = _positionBeforeCenter.Y - scale.Y / 2; 
+                Vector2 tempPosition = _position;
+                _position = value;
+                BasePosition = value / MainWindow.ratio;
+                CenteredPosition = value - (scale / 2);
+                if (tempPosition != value)
+                    UpdatePosition();
             }
         }
 
+        private Vector2 BaseScale;
         private Vector2 _scale;
         public Vector2 scale
         {
             get { return _scale; }
-            private set { _scale = value; }
+            set
+            {
+                Vector2 tempScale = _scale;
+                _scale = value;
+                BaseScale = value / MainWindow.ratio;
+                if (tempScale != value)
+                    UpdateScale();
+            }
         }
 
         public Transform(Vector2 scale, Vector2 position)
         {
-            transforms.Add(this);
+            scale *= MainWindow.ratio;
+            MainWindow.instance!.SizeChanged += (s, e) => OnSizeChanged();
 
             this.scale = scale;
             this.position = position;
-
-            MainWindow.instance!.SizeChanged += (sender, e) => OnSizeChanged();
 
             UpdateScale();
             UpdatePosition();
@@ -56,49 +62,23 @@ namespace SpaceInvaders.Components.Miscellaneous
             position += new Vector2(0, y);
             UpdatePosition();
         }
-        public void SetPosition(Vector2 newPos)
-        {
-            if (position != newPos)
-            {
-                position = newPos;
-                UpdatePosition();
-            }
-        }
-        public void SetScale(Vector2 newSize)
-        {
-            if (scale != newSize)
-            {
-                scale = newSize;
-                UpdateScale();
-            }
-        }
         public void UpdatePosition()
         {
-            if (SetPositionDel != null)
-                SetPositionDel(centeredPosition);
+            PositionChanged?.Invoke();
         }
         public void UpdateScale()
         {
-            if (SetScaleDel != null)
-                SetScaleDel(_scale);
+            ScaleChanged?.Invoke();
         }
 
-        public void AddPositionDel(ScalePositionDel del)
-        {
-            SetPositionDel += del;
-            UpdatePosition();
-        }
-        public void AddScaleDel(ScalePositionDel del)
-        {
-            SetScaleDel += del;
-            UpdateScale();
-        }
         private void OnSizeChanged()
         {
-            //Debug.WriteLine(MainWindow.instance.ActualWidth);
-            //Debug.WriteLine(MainWindow.instance.ActualHeight);
-            //_scale *= new Vector2((float)(MainWindow.instance.ActualWidth /MainWindow.instance.), (float)MainWindow.instance.ActualHeight / 250);
-            //UpdateScale();
+            position = BasePosition * MainWindow.ratio;
+            scale = BaseScale * MainWindow.ratio;
+        }
+        public void Dispose()
+        {
+            MainWindow.instance!.SizeChanged -= (s, e) => OnSizeChanged();
         }
     }
 }

@@ -2,46 +2,60 @@
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
-using System.Windows.Media;
 using SpaceInvadersGameWindow;
+using SpaceInvaders.Components.Miscellaneous;
 
 namespace SpaceInvaders.Components.Renderer
 {
     internal class SpriteRenderer : Image
     {
-        public SpriteRenderer(Vector2 scale, Vector2 pos) : base()
+        Transform transform;
+        public SpriteRenderer(Transform transform) : base()
         {
-            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
-            MainWindow.instance!.GameplayCanvas.Children.Add(this);
+            // link to Transform
+            this.transform = transform;
+            transform.PositionChanged += () => SetPosition();
+            transform.ScaleChanged += () => SetScale();
 
-            Stretch = Stretch.Fill;
+            // image settings set up
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(this, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            MainWindow.instance!.GameplayCanvas.Children.Add(this);
+            Stretch = System.Windows.Media.Stretch.Fill;
             StretchDirection = StretchDirection.Both;
 
-            SetScale(scale);
-            SetPosition(pos);
+            SetPosition();
+            SetScale();
         }
 
-        public SpriteRenderer(string imagePath, Vector2 scale, Vector2 pos) : base()
+        public SpriteRenderer(Transform transform, string imagePath) : base()
         {
+            // link to Transform
+            this.transform = transform;
+            transform.PositionChanged += () => SetPosition();
+            transform.ScaleChanged += () => SetScale();
+
+            // set source image
             Source = BitmapImageMaker(imagePath);
-            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
-            MainWindow.instance!.GameplayCanvas.Children.Add(this);
 
-            Stretch = Stretch.Fill;
+            // image settings set up
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(this, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            MainWindow.instance!.GameplayCanvas.Children.Add(this);
+            Stretch = System.Windows.Media.Stretch.Fill;
             StretchDirection = StretchDirection.Both;
 
-            SetScale(scale);
-            SetPosition(pos);
+            SetPosition();
+            SetScale();
         }
-        public void SetPosition(Vector2 pos)
+
+        public void SetPosition()
         {
-            SetValue(Canvas.LeftProperty, (double)pos.X);
-            SetValue(Canvas.TopProperty, (double)pos.Y);
+            SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
+            SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
         }
-        public void SetScale(Vector2 scale)
+        public void SetScale()
         {
-            Width = scale.X;
-            Height = scale.Y;
+            Width = transform.scale.X;
+            Height = transform.scale.Y;
         }
 
         public static BitmapImage BitmapImageMaker(string path)
@@ -67,6 +81,7 @@ namespace SpaceInvaders.Components.Renderer
                 return myBitmapImage;
             }
         }
+
         public void Dispose()
         {
             MainWindow.instance!.GameplayCanvas.Children.Remove(this);

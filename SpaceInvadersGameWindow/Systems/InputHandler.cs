@@ -37,7 +37,6 @@ namespace SpaceInvaders.Systems
             while (true)
             {
                 inputLoopDel?.Invoke();
-                Debug.WriteLine(keysDown.Contains(Key.A));
                 await Task.Delay(1000/120);
             }
         }

@@ -21,7 +21,7 @@ namespace SpaceInvaders.Components.GameComponents
         public Transform transform;
         private SpriteRenderer sR;
         private Collider col;
-        
+
         private int pointsReward;
         private EnemyTypes type;
         public Invader(EnemyTypes type, Vector2 pos)
@@ -46,9 +46,9 @@ namespace SpaceInvaders.Components.GameComponents
                     break;
             }
 
-            transform = new Transform(scale * MainWindow.GlobalTempZoom, pos);
-            col = new Collider(this, transform.scale, transform.position);
-            sR = new SpriteRenderer(transform.scale, transform.position);
+            transform = new Transform(scale, pos);
+            col = new Collider(transform, this);
+            sR = new SpriteRenderer(transform);
 
             this.type = type;
             int times = 1;
@@ -75,19 +75,13 @@ namespace SpaceInvaders.Components.GameComponents
                     break;
             }
 
-            transform.AddScaleDel((vec) => col.SetScale(vec));
-            transform.AddScaleDel((vec) => sR.SetScale(vec));
-
-            transform.AddPositionDel((vec) => col.SetPosition(vec));
-            transform.AddPositionDel((vec) => sR.SetPosition(vec));
-
             invaders.Add(this);
         }
 
         private static void MoveInvadersDown()
         {
             for (int i = invaders.Count - 1; i >= 0; i--)
-                invaders[i].transform.AddPosY(50);
+                invaders[i].transform.AddPosY(24);
         }
         public static void MoveInvaders()
         {
@@ -115,13 +109,12 @@ namespace SpaceInvaders.Components.GameComponents
                     MoveInvadersDown();
             }
 
-            transform.AddPosX(10 * dir);
-
             // 1% (temp, arbitrary) Chance to shoot
             int rand = random.Next(100);
             if (rand == 0)
                 Shoot();
 
+            transform.AddPosX(10 * dir);
             NextClip();
         }
         private void Shoot()
@@ -157,10 +150,29 @@ namespace SpaceInvaders.Components.GameComponents
                     break;
             }
         }
+        public async void Death()
+        {
+            Dispose();
+
+            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\InvaderDeath.wav");
+
+            // Invader Explosion
+            Transform ExplosionTransform = new Transform(new Vector2(25, 8), transform.position);
+            SpriteRenderer ExplosionSR = new SpriteRenderer(transform, @"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
+
+            //GameSettings.score += pointsReward;
+
+            await Task.Delay(500);
+
+            ExplosionTransform.Dispose();
+            ExplosionSR.Dispose();
+        }
         private void Dispose()
         {
+            invaders.Remove(this);
             sR.Dispose();
             col.Dispose();
+            transform.Dispose();
         }
         public static void PlotInvaders(int startX, int startY)
         {
@@ -174,30 +186,12 @@ namespace SpaceInvaders.Components.GameComponents
                         type = EnemyTypes.Crab;
                     else
                         type = EnemyTypes.Octopus;
-                    Invader invader = new Invader(type, new Vector2(j * 75 + startX, i * 75 + startY));
+                    Invader invader = new Invader(type, new Vector2(j * 16 * MainWindow.ratio + startX, i * 24 * MainWindow.ratio + startY));
                     invader.sR.IsEnabled = false;
                 }
 
             for (int i = invaders.Count - 1; i >= 0; i--)
                 invaders[i].sR.IsEnabled = true;
-        }
-
-        public async void Kill()
-        {
-            col.Dispose();
-
-            invaders.Remove(this);
-
-            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\InvaderDeath.wav");
-
-            sR.Source = SpriteRenderer.BitmapImageMaker(@"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
-            transform.SetScale(new Vector2(13, 8) * MainWindow.GlobalTempZoom);
-            transform.UpdatePosition();
-
-            //GameSettings.score += pointsReward;
-
-            await Task.Delay(500);
-            Dispose();
         }
     }
 }
