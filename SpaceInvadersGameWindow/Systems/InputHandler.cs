@@ -17,8 +17,9 @@ namespace SpaceInvaders.Systems
             instance = this;
 
             // Subscribe to Input methods:
-            MainWindow.instance!.KeyDown += (object? sender, KeyEventArgs e) => KeyDown(e);
-            MainWindow.instance!.KeyUp += (object? sender, KeyEventArgs e) => KeyUp(e);
+            MainWindow.instance!.KeyDown += (s, e) => KeyDown(e);
+            MainWindow.instance!.KeyUp += (s, e) => KeyUp(e);
+            MainWindow.instance!.LostKeyboardFocus += (s, e) => { keysDown.Clear(); };
 
             InputUpdate();
         }

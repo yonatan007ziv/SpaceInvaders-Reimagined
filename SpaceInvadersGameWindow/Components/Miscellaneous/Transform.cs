@@ -52,12 +52,12 @@ namespace SpaceInvaders.Components.Miscellaneous
             UpdateScale();
             UpdatePosition();
         }
-        public void AddPosX(int x)
+        public void AddPosX(float x)
         {
             position += new Vector2(x, 0);
             UpdatePosition();
         }
-        public void AddPosY(int y)
+        public void AddPosY(float y)
         {
             position += new Vector2(0, y);
             UpdatePosition();

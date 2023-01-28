@@ -7,6 +7,6 @@
         mc:Ignorable="d"
         Background="Black"
         Title="MainWindow" Height="256" Width="256">
-    <Canvas Name="GameplayCanvas">
+    <Canvas Name="GameplayCanvas" HorizontalAlignment="Left" VerticalAlignment="Top" Height="256" Width="256">
     </Canvas>
 </Window>

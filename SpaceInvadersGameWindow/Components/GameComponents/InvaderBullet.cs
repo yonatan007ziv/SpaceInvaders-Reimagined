@@ -31,7 +31,7 @@ namespace SpaceInvaders.Components.GameComponents
         {
             while (this.col.TouchingCollider() == null || this.col.TouchingCollider()!.parent is Invader)
             {
-                transform.AddPosY(5);
+                transform.AddPosY(5 * MainWindow.ratio);
                 await Task.Delay(1000 / 60);
             }
             Collider col = this.col.TouchingCollider()!;

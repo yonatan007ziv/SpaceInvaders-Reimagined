@@ -157,8 +157,8 @@ namespace SpaceInvaders.Components.GameComponents
             SoundManager.PlaySound(@"Resources\RawFiles\Sounds\InvaderDeath.wav");
 
             // Invader Explosion
-            Transform ExplosionTransform = new Transform(new Vector2(25, 8), transform.position);
-            SpriteRenderer ExplosionSR = new SpriteRenderer(transform, @"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
+            Transform ExplosionTransform = new Transform(new Vector2(13, 8), transform.position);
+            SpriteRenderer ExplosionSR = new SpriteRenderer(ExplosionTransform, @"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
 
             //GameSettings.score += pointsReward;
 

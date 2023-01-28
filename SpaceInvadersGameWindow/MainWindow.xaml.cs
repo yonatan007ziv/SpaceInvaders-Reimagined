@@ -28,19 +28,18 @@ namespace SpaceInvadersGameWindow
     public partial class MainWindow : Window
     {
         public static MainWindow? instance;
-        public static float ratio;
+        public static float ratio = 1;
         public void CalculateRatio()
         {
             double ratioX = MainWindow.instance!.Width / 256;
             double ratioY = MainWindow.instance!.Height / 256;
             ratio = (float)Math.Min(ratioX, ratioY);
         }
-    public MainWindow()
+        public MainWindow()
         {
             InitializeComponent();
             SizeChanged += (s, e) => CalculateRatio();
             instance = this;
-            //< Image Opacity = "0.25" Height = "240" RenderOptions.BitmapScalingMode = "NearestNeighbor" Source = "/Resources/RawFiles/Images/Overlay.png" Stretch = "Fill" Width = "256" />
             new InputHandler();
             Wall.Ceiling = new Wall(new Vector2((float)Width, 5), new Vector2((float)Width / 2, 0));
 
