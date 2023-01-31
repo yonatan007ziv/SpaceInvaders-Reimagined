@@ -1,12 +1,13 @@
-﻿using System.Numerics;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
 using SpaceInvadersGameWindow;
-using SpaceInvaders.Components.Miscellaneous;
+using System.Windows.Media;
+using Transform = SpaceInvaders.Components.Miscellaneous.Transform; // Due to ambiguity with System.Windows.Media Transform
 
 namespace SpaceInvaders.Components.Renderer
 {
+    /*
     internal class SpriteRenderer : Image
     {
         Transform transform;
@@ -18,13 +19,11 @@ namespace SpaceInvaders.Components.Renderer
             transform.ScaleChanged += () => SetScale();
 
             // image settings set up
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(this, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
             MainWindow.instance!.GameplayCanvas.Children.Add(this);
-            Stretch = System.Windows.Media.Stretch.Fill;
+            Stretch = Stretch.Fill;
             StretchDirection = StretchDirection.Both;
-
-            SetPosition();
-            SetScale();
+            transform.OnSizeChanged();
         }
 
         public SpriteRenderer(Transform transform, string imagePath) : base()
@@ -38,13 +37,14 @@ namespace SpaceInvaders.Components.Renderer
             Source = BitmapImageMaker(imagePath);
 
             // image settings set up
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(this, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
             MainWindow.instance!.GameplayCanvas.Children.Add(this);
-            Stretch = System.Windows.Media.Stretch.Fill;
+            Stretch = Stretch.Fill;
             StretchDirection = StretchDirection.Both;
 
             SetPosition();
             SetScale();
+            transform.OnSizeChanged();
         }
 
         public void SetPosition()
@@ -54,8 +54,8 @@ namespace SpaceInvaders.Components.Renderer
         }
         public void SetScale()
         {
-            Width = transform.scale.X;
-            Height = transform.scale.Y;
+            Width = transform.ActualScale.X;
+            Height = transform.ActualScale.Y;
         }
 
         public static BitmapImage BitmapImageMaker(string path)
@@ -87,4 +87,5 @@ namespace SpaceInvaders.Components.Renderer
             MainWindow.instance!.GameplayCanvas.Children.Remove(this);
         }
     }
+    */
 }

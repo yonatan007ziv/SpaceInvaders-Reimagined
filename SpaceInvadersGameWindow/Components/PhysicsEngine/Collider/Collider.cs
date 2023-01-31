@@ -17,6 +17,7 @@ namespace SpaceInvaders.Components.PhysicsEngine.Collider
             AllColliders.Add(this);
             this.transform = transform;
             this.parent = parent;
+            transform.OnSizeChanged();
         }
         public Collider? TouchingCollider()
         {
@@ -25,9 +26,10 @@ namespace SpaceInvaders.Components.PhysicsEngine.Collider
                 if (c == this) continue;
 
                 // check collision
-                Rectangle thisRect = new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y, (int)transform.scale.X, (int)transform.scale.Y);
-                Rectangle otherRect = new Rectangle((int)c.transform.CenteredPosition.X, (int)c.transform.CenteredPosition.Y, (int)c.transform.scale.X, (int)c.transform.scale.Y);
+                Rectangle thisRect = new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y, (int)transform.ActualScale.X, (int)transform.ActualScale.Y);
+                Rectangle otherRect = new Rectangle((int)c.transform.CenteredPosition.X, (int)c.transform.CenteredPosition.Y, (int)c.transform.ActualScale.X, (int)c.transform.ActualScale.Y);
 
+                // return first detected collision
                 if (thisRect.IntersectsWith(otherRect))
                     return c;
             }

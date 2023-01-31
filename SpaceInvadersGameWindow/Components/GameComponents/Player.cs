@@ -3,10 +3,9 @@ using SpaceInvaders.Components.Renderer;
 using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Components.PhysicsEngine.Collider;
 using System.Numerics;
-using SpaceInvadersGameWindow;
 using System.Threading.Tasks;
 using SpaceInvaders.Systems;
-using System;
+using SpaceInvadersGameWindow.Components.UIElements;
 
 namespace SpaceInvaders.Components.GameComponents
 {
@@ -16,40 +15,57 @@ namespace SpaceInvaders.Components.GameComponents
 
         public Transform transform;
         private Collider col;
-        private SpriteRenderer sR;
+        private Sprite sprite;
         private CharacterController controller;
         public Player(Vector2 pos)
         {
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this);
-            sR = new SpriteRenderer(transform, @"Resources\RawFiles\Images\Player\Player.png");
+            sprite = new Sprite(transform, @"Resources\RawFiles\Images\Player\Player.png");
 
             controller = new CharacterController(transform, col);
         }
+        private bool invincible = false;
         public async void Kill()
         {
+            if (invincible) return;
+
+            invincible = true;
             controller.Dispose();
 
             SoundManager.PlaySound(@"Resources\RawFiles\Sounds\PlayerDeath.wav", () => Respawn());
             for (int i = 0; i < 12; i++)
             {
-                sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Player\PlayerDeath{i % 2 + 1}.png");
+                sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Player\PlayerDeath{i % 2 + 1}.png");
                 await Task.Delay(1000 / 10);
             }
             Respawn();
+            Invincibility();
         }
         private void Respawn()
         {
             timesToLive--;
             col.Dispose();
-            sR.Dispose();
+            sprite.Dispose();
             transform.Dispose();
 
-            transform = new Transform(new Vector2(13, 8), transform.position);
+            transform = new Transform(new Vector2(13, 8), new Vector2(50, 200));
             col = new Collider(transform, this);
-            sR = new SpriteRenderer(transform, @"Resources\RawFiles\Images\Player\Player.png");
+            sprite = new Sprite(transform, @"Resources\RawFiles\Images\Player\Player.png");
 
             controller = new CharacterController(transform, col);
+        }
+        private async void Invincibility()
+        {
+            for (int i = 0; i < 13; i++)
+            {
+                if (i % 2 == 0)
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Player\Player.png");
+                else
+                    sprite.image.Source = null;
+                await Task.Delay(1000 / 10);
+            }
+            invincible = false;
         }
     }
 }

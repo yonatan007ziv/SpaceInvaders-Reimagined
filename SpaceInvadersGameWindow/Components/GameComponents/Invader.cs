@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using SpaceInvadersGameWindow;
 using SpaceInvaders.Systems;
+using System.Runtime.InteropServices;
+using SpaceInvadersGameWindow.Components.UIElements;
 
 namespace SpaceInvaders.Components.GameComponents
 {
@@ -19,7 +20,7 @@ namespace SpaceInvaders.Components.GameComponents
         }
 
         public Transform transform;
-        private SpriteRenderer sR;
+        private Sprite sprite;
         private Collider col;
 
         private int pointsReward;
@@ -48,29 +49,28 @@ namespace SpaceInvaders.Components.GameComponents
 
             transform = new Transform(scale, pos);
             col = new Collider(transform, this);
-            sR = new SpriteRenderer(transform);
+            sprite = new Sprite(transform);
 
             this.type = type;
-            int times = 1;
             switch (type)
             {
                 default:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\MissingSprite.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\MissingSprite.png");
                     throw new Exception();
                 case EnemyTypes.Octopus:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Octopus{times}.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Octopus1.png");
                     pointsReward = 10;
                     break;
                 case EnemyTypes.Crab:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Crab{times}.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Crab1.png");
                     pointsReward = 20;
                     break;
                 case EnemyTypes.Squid:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Squid{times}.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Squid1.png");
                     pointsReward = 30;
                     break;
                 case EnemyTypes.UFO:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\UFO.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\UFO.png");
                     pointsReward = 100;
                     break;
             }
@@ -81,20 +81,24 @@ namespace SpaceInvaders.Components.GameComponents
         private static void MoveInvadersDown()
         {
             for (int i = invaders.Count - 1; i >= 0; i--)
-                invaders[i].transform.AddPosY(24);
+                invaders[i].transform.Position += new Vector2(0, 12);
         }
         public static void MoveInvaders()
         {
+            foreach (Invader i in invaders)
+                i.DecideDir();
+
             for (int i = invaders.Count - 1; i >= 0; i--)
                 invaders[i].Move();
-            timesMoved++;
+
+            SpriteSwitch = !SpriteSwitch;
         }
 
         public static int dir = 1;
         private static Random random = new Random();
-        private static int timesMoved = 0;
+        private static bool SpriteSwitch = false;
 
-        private void Move()
+        private void DecideDir()
         {
             // Check touching wall
             Collider? col = this.col.TouchingCollider();
@@ -108,44 +112,44 @@ namespace SpaceInvaders.Components.GameComponents
                 if (dir != prevDir)
                     MoveInvadersDown();
             }
+        }
+        private void Move()
+        {
+            transform.Position += new Vector2(10 * dir, 0);
+            NextClip();
 
-            // 1% (temp, arbitrary) Chance to shoot
-            int rand = random.Next(100);
+            // 4% (arbitrary) Chance to shoot
+            int rand = random.Next(25);
             if (rand == 0)
                 Shoot();
-
-            transform.AddPosX(10 * dir);
-            NextClip();
         }
         private void Shoot()
         {
-            new InvaderBullet(transform.position);
+            new InvaderBullet(transform.Position);
         }
 
         void NextClip()
         {
-            int times = 2;
-            if (timesMoved % 2 == 0)
-                times = 1;
+            int clipNum = SpriteSwitch ? 2 : 1;
             switch (type)
             {
                 default:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\MissingSprite.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\MissingSprite.png");
                     throw new Exception();
                 case EnemyTypes.Octopus:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Octopus{times}.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Octopus{clipNum}.png");
                     pointsReward = 10;
                     break;
                 case EnemyTypes.Crab:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Crab{times}.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Crab{clipNum}.png");
                     pointsReward = 20;
                     break;
                 case EnemyTypes.Squid:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Squid{times}.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Squid{clipNum}.png");
                     pointsReward = 30;
                     break;
                 case EnemyTypes.UFO:
-                    sR.Source = SpriteRenderer.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\UFO.png");
+                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\UFO.png");
                     pointsReward = 100;
                     break;
             }
@@ -157,20 +161,20 @@ namespace SpaceInvaders.Components.GameComponents
             SoundManager.PlaySound(@"Resources\RawFiles\Sounds\InvaderDeath.wav");
 
             // Invader Explosion
-            Transform ExplosionTransform = new Transform(new Vector2(13, 8), transform.position);
-            SpriteRenderer ExplosionSR = new SpriteRenderer(ExplosionTransform, @"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
+            Transform ExplosionTransform = new Transform(new Vector2(13, 8), transform.Position);
+            Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
 
             //GameSettings.score += pointsReward;
 
             await Task.Delay(500);
 
             ExplosionTransform.Dispose();
-            ExplosionSR.Dispose();
+            ExplosionSprite.Dispose();
         }
         private void Dispose()
         {
             invaders.Remove(this);
-            sR.Dispose();
+            sprite.Dispose();
             col.Dispose();
             transform.Dispose();
         }
@@ -186,12 +190,13 @@ namespace SpaceInvaders.Components.GameComponents
                         type = EnemyTypes.Crab;
                     else
                         type = EnemyTypes.Octopus;
-                    Invader invader = new Invader(type, new Vector2(j * 16 * MainWindow.ratio + startX, i * 24 * MainWindow.ratio + startY));
-                    invader.sR.IsEnabled = false;
+                    Invader invader = new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
+                    invader.sprite.image.IsEnabled = false;
                 }
 
             for (int i = invaders.Count - 1; i >= 0; i--)
-                invaders[i].sR.IsEnabled = true;
+                invaders[i].sprite.image.IsEnabled = true;
         }
+
     }
 }

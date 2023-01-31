@@ -1,24 +1,15 @@
 ﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvaders.Components.PhysicsEngine;
-using SpaceInvaders.Components.Renderer;
 using SpaceInvaders.Systems;
+using SpaceInvadersGameWindow.Components.UIElements;
+using SpaceInvadersGameWindow.Components.UIForms;
+using SpaceInvadersGameWindow.Systems.Networking;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Numerics;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Input.StylusWisp;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SpaceInvadersGameWindow
 {
@@ -28,29 +19,53 @@ namespace SpaceInvadersGameWindow
     public partial class MainWindow : Window
     {
         public static MainWindow? instance;
-        public static float ratio = 1;
-        public void CalculateRatio()
-        {
-            double ratioX = MainWindow.instance!.Width / 256;
-            double ratioY = MainWindow.instance!.Height / 256;
-            ratio = (float)Math.Min(ratioX, ratioY);
-        }
+        public static float ratio;
         public MainWindow()
         {
             InitializeComponent();
-            SizeChanged += (s, e) => CalculateRatio();
             instance = this;
-            new InputHandler();
-            Wall.Ceiling = new Wall(new Vector2((float)Width, 5), new Vector2((float)Width / 2, 0));
+            SizeChanged += (s, e) => CalculateRatio();
+            CalculateRatio();
 
-            Vector2 VerticalWallScale = new Vector2(5, (float)Height);
-            Wall.LeftWall = new Wall(VerticalWallScale, new Vector2(5, (float)Height / 2));
-            Wall.RightWall = new Wall(VerticalWallScale, new Vector2((float)Width - 25, (float)Height / 2));
+            new InputHandler();
+
+            InitializeLoginRegist();
+            //InitializeGameMenu();
+            //InitializeGame();
+        }
+
+        public static void CalculateRatio()
+        {
+            double ratioX = instance!.Width / 256;
+            double ratioY = instance!.Height / 256;
+            ratio = (float)Math.Min(ratioX, ratioY);
+        }
+        private void InitializeLoginRegist()
+        {
+            new RegistValidator("YonatanZiv", "Shifus");
+        }
+        private void InitializeGameMenu()
+        {
+            NavigableButton playButton = new NavigableButton(new Vector2(50, 50), new Vector2(100, 100), () => InitializeGame(), true);
+        }
+        private void InitializeGame()
+        {
+            /*
+            #region temp overlay
+            Transform backgroundT = new Transform(new Vector2(256, 256), new Vector2(256 / 2, 256 / 2));
+            SpriteRenderer backgroundSR = new SpriteRenderer(backgroundT, @"Resources\RawFiles\Images\Background.png");
+
+            //Transform overlayT = new Transform(new Vector2(256, 256), new Vector2(256 / 2, 256 / 2));
+            //SpriteRenderer overlaySR = new SpriteRenderer(overlayT, @"Resources\RawFiles\Images\Overlay.png");
+            #endregion
+            */
+
+            Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 0));
+            Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 256));
+            Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
+            Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256 - 16, 256 / 2));
 
             new Player(new Vector2(50, 200));
-
-            //SpriteRenderer overlay = new SpriteRenderer(@"Resources\RawFiles\Images\Overlay.png", new Vector2(256, 256), new Vector2(0, 0));
-            //overlay.Opacity = 0.25;
 
             Invader.PlotInvaders(0, 0);
 
@@ -62,7 +77,7 @@ namespace SpaceInvadersGameWindow
             {
                 Invader.MoveInvaders();
 
-                await Task.Delay(1000);
+                await Task.Delay(Invader.invaders.Count * 50);
             }
         }
     }

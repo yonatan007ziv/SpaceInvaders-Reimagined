@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\RawFiles\Images\Background.png" />
     <None Remove="Resources\RawFiles\Images\Bullet.png" />
     <None Remove="Resources\RawFiles\Images\Enemies\Crab1.png" />
     <None Remove="Resources\RawFiles\Images\Enemies\Crab2.png" />
@@ -25,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\RawFiles\Images\Background.png" />
     <Resource Include="Resources\RawFiles\Images\Bullet.png" />
     <Resource Include="Resources\RawFiles\Images\Enemies\Crab1.png" />
     <Resource Include="Resources\RawFiles\Images\Enemies\Crab2.png" />

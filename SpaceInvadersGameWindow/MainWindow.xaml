@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpaceInvadersGameWindow"
         mc:Ignorable="d"
-        Background="Black"
-        Title="MainWindow" Height="256" Width="256">
-    <Canvas Name="GameplayCanvas" HorizontalAlignment="Left" VerticalAlignment="Top" Height="256" Width="256">
-    </Canvas>
+        Title="Space Invaders - Reimagined" Height="512" Width="512" Background="Black">
+    <Canvas Name="GameplayCanvas"/>
 </Window>
