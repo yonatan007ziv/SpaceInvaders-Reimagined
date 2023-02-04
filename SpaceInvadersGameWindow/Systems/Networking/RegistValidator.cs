@@ -1,19 +1,21 @@
-﻿using System.Diagnostics;
-using System.Windows.Controls.Primitives;
+﻿using SpaceInvadersGameWindow.Components.UIElements;
+using System.Diagnostics;
 
 namespace SpaceInvadersGameWindow.Systems.Networking
 {
     class RegistValidator : NetworkClient
     {
-        public RegistValidator(string username, string password) : base()
+        private CustomLabel resultLabel;
+        public RegistValidator(string username, string password, CustomLabel resultLabel) : base()
         {
+            this.resultLabel = resultLabel;
             SendMessage($"REGISTER:{username}/{password}");
-            BeginRead();
+            BeginSingleRead();
         }
 
         protected override void DecodeMessage(string msg)
         {
-            Debug.WriteLine(msg);
+            resultLabel.SetText(msg);
             if (msg == "SUCCESS")
             {
 
@@ -30,6 +32,7 @@ namespace SpaceInvadersGameWindow.Systems.Networking
             {
 
             }
+            StopClient();
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using SpaceInvaders.Components.PhysicsEngine.Collider;
+﻿using SpaceInvaders.Components.Miscellaneous;
+using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow.Components.GameComponents;
+using SpaceInvadersGameWindow.Components.UIElements;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -9,7 +11,7 @@ namespace SpaceInvaders.Components.GameComponents
     internal class PlayerBullet : Bullet
     {
         public static PlayerBullet? instance;
-        public PlayerBullet(Vector2 pos) : base(pos)
+        public PlayerBullet(Vector2 pos, int dir) : base(pos, dir)
         {
             instance = this;
             SoundManager.PlaySound(@"Resources\RawFiles\Sounds\Shoot.wav");
@@ -18,26 +20,19 @@ namespace SpaceInvaders.Components.GameComponents
         }
         private async void BulletLoop()
         {
+            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
             while (this.col.TouchingCollider() == null || this.col.TouchingCollider()!.parent is Player || this.col.TouchingCollider()!.parent is Bullet)
             {
-                transform.Position += new Vector2(0, -bulletSpeed);
+                NextClip();
+                transform.Position += SpeedVector;
                 await Task.Delay(1000 / 60);
             }
 
             Collider col = this.col.TouchingCollider()!;
             if(col.parent is Invader)
-            {
                 ((Invader)col.parent).Death();
-            }
-            Dispose();
-        }
 
-
-        public void Dispose()
-        {
-            sprite.Dispose();
-            col.Dispose();
-            transform.Dispose();
+            BulletExplosion();
             instance = null;
         }
     }

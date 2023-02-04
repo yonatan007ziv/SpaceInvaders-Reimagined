@@ -31,13 +31,12 @@ namespace SpaceInvadersServer
             this.dbHandler = dbHandler;
             buffer = new Byte[client.ReceiveBufferSize];
 
-            client.GetStream().BeginRead(buffer, 0, client.ReceiveBufferSize, ReceiveMessage, null);
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
         }
 
         #region Login Logic
         private void Login(string loginData)
         {
-            Console.WriteLine(loginData);
             string username = loginData.Split('/')[0];
             string password = loginData.Split('/')[1];
             LoginResult loginResult = ValidateLogin(username, password);
@@ -106,6 +105,8 @@ namespace SpaceInvadersServer
                     return RegisterResult.UsernameExists;
                 else if (password.Length == 0)
                     return RegisterResult.InvalidPassword;
+                Console.WriteLine($"INSERTING {username} {password}");
+                dbHandler.InsertUser(username, password);
                 return RegisterResult.Success;
             }
             catch
@@ -115,8 +116,9 @@ namespace SpaceInvadersServer
         }
         #endregion
 
-        private void CheckMessage(string msg)
+        private void DecodeMessage(string msg)
         {
+            Console.WriteLine("GOT: " + msg);
             if (msg.Contains("LOGIN"))
                 Login(msg.Split(':')[1]);
             else if (msg.Contains("REGISTER"))
@@ -133,7 +135,7 @@ namespace SpaceInvadersServer
                     bytesRead = client.GetStream().EndRead(aR);
                 string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                CheckMessage(msg);
+                DecodeMessage(msg);
 
                 client.Close();
                 Console.WriteLine("Closed conn");

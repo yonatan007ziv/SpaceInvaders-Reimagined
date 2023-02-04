@@ -5,7 +5,5 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
              d:DesignHeight="0" d:DesignWidth="0">
-    <Grid>
         <Image Name="image" Stretch="Fill"/>
-    </Grid>
 </UserControl>

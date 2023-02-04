@@ -12,34 +12,32 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using SpaceInvadersGameWindow.Components.GameComponents;
+using SpaceInvaders.Systems;
+using SpaceInvadersGameWindow.Components.UIElements;
 
 namespace SpaceInvaders.Components.GameComponents
 {
     internal class InvaderBullet : Bullet
     {
-        public InvaderBullet(Vector2 pos) : base(pos)
+        public InvaderBullet(Vector2 pos, int dir) : base(pos, dir)
         {
-            InvaderBulletLoop();
+            BulletLoop();
         }
-        private async void InvaderBulletLoop()
+        private async void BulletLoop()
         {
+            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
             while (this.col.TouchingCollider() == null || this.col.TouchingCollider()!.parent is Invader || this.col.TouchingCollider()!.parent is Bullet)
             {
-                transform.Position += new Vector2(0, bulletSpeed);
+                NextClip();
+                transform.Position += SpeedVector;
                 await Task.Delay(1000 / 60);
             }
 
             Collider col = this.col.TouchingCollider()!;
             if (col.parent is Player)
                 ((Player)col.parent).Kill();
-            Dispose();
-        }
 
-        public void Dispose()
-        {
-            sprite.Dispose();
-            col.Dispose();
-            transform.Dispose();
+            BulletExplosion();
         }
     }
 }

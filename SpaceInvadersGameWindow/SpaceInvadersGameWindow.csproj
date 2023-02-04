@@ -10,6 +10,19 @@
   <ItemGroup>
     <None Remove="Resources\RawFiles\Images\Background.png" />
     <None Remove="Resources\RawFiles\Images\Bullet.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\BulletExplosion.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Charge\Charge1.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Charge\Charge2.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Charge\Charge3.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Charge\Charge4.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect1.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect2.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect3.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect4.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag1.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag2.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag3.png" />
+    <None Remove="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag4.png" />
     <None Remove="Resources\RawFiles\Images\Enemies\Crab1.png" />
     <None Remove="Resources\RawFiles\Images\Enemies\Crab2.png" />
     <None Remove="Resources\RawFiles\Images\Enemies\InvaderDeath.png" />
@@ -23,11 +36,26 @@
     <None Remove="Resources\RawFiles\Images\Player.png" />
     <None Remove="Resources\RawFiles\Images\Player\PlayerDeath1.png" />
     <None Remove="Resources\RawFiles\Images\Player\PlayerDeath2.png" />
+    <None Remove="Resources\RawFiles\Images\UI\temp.png" />
+    <None Remove="Resources\RawFiles\Sounds\InvaderDeath.wav" />
+    <None Remove="Resources\RawFiles\Sounds\Shoot.wav" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Resources\RawFiles\Images\Background.png" />
-    <Resource Include="Resources\RawFiles\Images\Bullet.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\BulletExplosion.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Charge\Charge1.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Charge\Charge2.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Charge\Charge3.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Charge\Charge4.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect1.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect2.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect3.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\Imperfect\Imperfect4.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag1.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag2.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag3.png" />
+    <Resource Include="Resources\RawFiles\Images\Bullet\ZigZag\ZigZag4.png" />
     <Resource Include="Resources\RawFiles\Images\Enemies\Crab1.png" />
     <Resource Include="Resources\RawFiles\Images\Enemies\Crab2.png" />
     <Resource Include="Resources\RawFiles\Images\Enemies\InvaderDeath.png" />
@@ -41,6 +69,9 @@
     <Resource Include="Resources\RawFiles\Images\Player\Player.png" />
     <Resource Include="Resources\RawFiles\Images\Player\PlayerDeath1.png" />
     <Resource Include="Resources\RawFiles\Images\Player\PlayerDeath2.png" />
+    <Resource Include="Resources\RawFiles\Images\UI\temp.png" />
+    <Resource Include="Resources\RawFiles\Sounds\InvaderDeath.wav" />
+    <Resource Include="Resources\RawFiles\Sounds\Shoot.wav" />
   </ItemGroup>
 
 </Project>

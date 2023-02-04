@@ -9,18 +9,19 @@ namespace SpaceInvadersGameWindow.Systems.Networking
     {
         private TcpClient client;
         private Byte[] buffer;
+        private int port = 7777;
 
         public NetworkClient()
         {
             client = new TcpClient();
-            client.Connect(IPEndPoint.Parse("127.0.0.1:7777"));
+            client.Connect(IPEndPoint.Parse($"127.0.0.1:{port}"));
             buffer = new Byte[client.ReceiveBufferSize];
         }
         protected void ConnectToAddress(string ip)
         {
             client.Connect(IPEndPoint.Parse(ip));
         }
-        protected void BeginRead()
+        protected void BeginSingleRead()
         {
             client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
         }
@@ -29,7 +30,6 @@ namespace SpaceInvadersGameWindow.Systems.Networking
             Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg);
             client.GetStream().Write(toSendBuffer, 0, toSendBuffer.Length);
         }
-        protected abstract void DecodeMessage(string msg);
         private void ReceiveMessage(IAsyncResult ar)
         {
             int bytesRead;
@@ -37,6 +37,11 @@ namespace SpaceInvadersGameWindow.Systems.Networking
                 bytesRead = client.GetStream().EndRead(ar);
             string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
             DecodeMessage(msg);
+        }
+        protected abstract void DecodeMessage(string msg);
+        public void StopClient()
+        {
+            client.Close();
         }
     }
 }

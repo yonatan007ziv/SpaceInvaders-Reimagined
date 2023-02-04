@@ -7,8 +7,27 @@ namespace SpaceInvaders.Components.Miscellaneous
 {
     public class Transform
     {
-        public Action? PositionChanged;
-        public Action? ScaleChanged;
+        private Action? positionChanged;
+        private Action? scaleChanged;
+
+        public Action? PositionChanged
+        {
+            get { return positionChanged; }
+            set
+            {
+                positionChanged = value;
+                positionChanged!();
+            }
+        }
+        public Action? ScaleChanged
+        {
+            get { return scaleChanged; }
+            set
+            {
+                scaleChanged = value;
+                scaleChanged!();
+            }
+        }
 
         #region position logic
         private Vector2 _basePosition;

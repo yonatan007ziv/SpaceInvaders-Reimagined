@@ -11,7 +11,7 @@ namespace SpaceInvaders.Components.GameComponents
 {
     internal class Player
     {
-        private int timesToLive = 3;
+        private int livesLeft = 3;
 
         public Transform transform;
         private Collider col;
@@ -33,10 +33,11 @@ namespace SpaceInvaders.Components.GameComponents
             invincible = true;
             controller.Dispose();
 
-            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\PlayerDeath.wav", () => Respawn());
+            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\PlayerDeath.wav");
+
             for (int i = 0; i < 12; i++)
             {
-                sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Player\PlayerDeath{i % 2 + 1}.png");
+                sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Player\PlayerDeath{i % 2 + 1}.png");
                 await Task.Delay(1000 / 10);
             }
             Respawn();
@@ -44,7 +45,7 @@ namespace SpaceInvaders.Components.GameComponents
         }
         private void Respawn()
         {
-            timesToLive--;
+            livesLeft--;
             col.Dispose();
             sprite.Dispose();
             transform.Dispose();
@@ -60,7 +61,7 @@ namespace SpaceInvaders.Components.GameComponents
             for (int i = 0; i < 13; i++)
             {
                 if (i % 2 == 0)
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Player\Player.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Player\Player.png");
                 else
                     sprite.image.Source = null;
                 await Task.Delay(1000 / 10);

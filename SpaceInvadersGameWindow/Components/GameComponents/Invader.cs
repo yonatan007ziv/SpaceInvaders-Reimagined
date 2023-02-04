@@ -55,22 +55,22 @@ namespace SpaceInvaders.Components.GameComponents
             switch (type)
             {
                 default:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\MissingSprite.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\MissingSprite.png");
                     throw new Exception();
                 case EnemyTypes.Octopus:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Octopus1.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\Octopus1.png");
                     pointsReward = 10;
                     break;
                 case EnemyTypes.Crab:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Crab1.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\Crab1.png");
                     pointsReward = 20;
                     break;
                 case EnemyTypes.Squid:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Squid1.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\Squid1.png");
                     pointsReward = 30;
                     break;
                 case EnemyTypes.UFO:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\UFO.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\UFO.png");
                     pointsReward = 100;
                     break;
             }
@@ -125,7 +125,7 @@ namespace SpaceInvaders.Components.GameComponents
         }
         private void Shoot()
         {
-            new InvaderBullet(transform.Position);
+            new InvaderBullet(transform.Position, 1);
         }
 
         void NextClip()
@@ -134,22 +134,22 @@ namespace SpaceInvaders.Components.GameComponents
             switch (type)
             {
                 default:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\MissingSprite.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\MissingSprite.png");
                     throw new Exception();
                 case EnemyTypes.Octopus:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Octopus{clipNum}.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\Octopus{clipNum}.png");
                     pointsReward = 10;
                     break;
                 case EnemyTypes.Crab:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Crab{clipNum}.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\Crab{clipNum}.png");
                     pointsReward = 20;
                     break;
                 case EnemyTypes.Squid:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\Squid{clipNum}.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\Squid{clipNum}.png");
                     pointsReward = 30;
                     break;
                 case EnemyTypes.UFO:
-                    sprite.image.Source = Sprite.BitmapImageMaker(@$"Resources\RawFiles\Images\Enemies\UFO.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Enemies\UFO.png");
                     pointsReward = 100;
                     break;
             }

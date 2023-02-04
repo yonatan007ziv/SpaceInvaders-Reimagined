@@ -21,7 +21,7 @@ namespace SpaceInvadersServer
         public bool PasswordCorrect(string username, string password)
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT Count(*) FROM [Users] WHERE Username='{username}' AND Password='{password}";
+            cmd.CommandText = $"SELECT Count(*) FROM [Users] WHERE Username='{username}' AND Password='{password}'";
             conn.Open();
             int result = (int)cmd.ExecuteScalar();
             conn.Close();

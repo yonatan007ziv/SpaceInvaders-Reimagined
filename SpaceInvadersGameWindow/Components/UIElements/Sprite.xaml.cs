@@ -5,65 +5,58 @@ using System.Windows.Media.Imaging;
 
 namespace SpaceInvadersGameWindow.Components.UIElements
 {
-    /// <summary>
-    /// Interaction logic for Sprite.xaml
-    /// </summary>
     public partial class Sprite : UserControl
     {
         Transform transform;
         public Sprite(Transform transform) : base()
         {
+            InitializeComponent();
+
             // link to Transform
             this.transform = transform;
-            transform.PositionChanged += () => SetPosition();
-            transform.ScaleChanged += () => SetScale();
+            transform.PositionChanged += SetPosition;
+            transform.ScaleChanged += SetScale;
 
             // image settings set up
-            image = new Image();
             System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-            MainWindow.instance!.GameplayCanvas.Children.Add(image);
             image.Stretch = System.Windows.Media.Stretch.Fill;
             image.StretchDirection = StretchDirection.Both;
 
-            SetPosition();
-            SetScale();
-            transform.OnSizeChanged();
+            MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
         public Sprite(Transform transform, string imagePath) : base()
         {
+            InitializeComponent();
+
             // link to Transform
             this.transform = transform;
-            transform.PositionChanged += () => SetPosition();
-            transform.ScaleChanged += () => SetScale();
+            transform.PositionChanged += SetPosition;
+            transform.ScaleChanged += SetScale;
 
             // image settings set up
-            image = new Image();
             System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-            MainWindow.instance!.GameplayCanvas.Children.Add(image);
             image.Stretch = System.Windows.Media.Stretch.Fill;
             image.StretchDirection = StretchDirection.Both;
 
             // set source image
-            image.Source = BitmapImageMaker(imagePath);
+            image.Source = BitmapFromPath(imagePath);
 
-            SetPosition();
-            SetScale();
-            transform.OnSizeChanged();
+            MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
         public void SetPosition()
         {
-            image.SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
-            image.SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
+            SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
+            SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
         }
         public void SetScale()
         {
-            image.Width = transform.ActualScale.X;
-            image.Height = transform.ActualScale.Y;
+            Width = transform.ActualScale.X;
+            Height = transform.ActualScale.Y;
         }
 
-        public static BitmapImage BitmapImageMaker(string path)
+        public static BitmapImage BitmapFromPath(string path)
         {
             try
             {
@@ -88,7 +81,8 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         }
         public void Dispose()
         {
-            MainWindow.instance!.GameplayCanvas.Children.Remove(image);
+            transform.Dispose();
+            MainWindow.instance!.CenteredCanvas.Children.Remove(this);
         }
     }
 }

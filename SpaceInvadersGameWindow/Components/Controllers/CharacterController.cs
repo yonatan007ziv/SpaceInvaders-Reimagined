@@ -33,7 +33,7 @@ namespace SpaceInvaders.Components.Controllers
                 axis == -1 && (col == null || col.parent != Wall.LeftWall))
                 transform.Position += new Vector2(axis, 0);
             if (inputHandler.keysDown.Contains(Key.Space) && PlayerBullet.instance == null)
-                new PlayerBullet(transform.Position);
+                new PlayerBullet(transform.Position, -1);
         }
         public void Dispose()
         {
