@@ -30,15 +30,7 @@ namespace SpaceInvadersGameWindow.Components.Pages
             if (loginRegistFlip)
                 new RegistValidator(usernameInput.box.Text, passwordInput.box.Text, resultLabel);
             else
-                try
-                {
-                    new LoginValidator(usernameInput.box.Text, passwordInput.box.Text, resultLabel, () => { Dispose(); MainWindow.instance!.InitializeGameMenu(); });
-                }
-                catch(Exception e)
-                {
-                    new CustomLabel(new Vector2(50,50), new Vector2(0,0));
-                    Debug.WriteLine(e);
-                }
+                new LoginValidator(usernameInput.box.Text, passwordInput.box.Text, resultLabel, () => { Dispose(); GameInitializer.instance!.StartGameMenu(); });
         }
         private void Dispose()
         {

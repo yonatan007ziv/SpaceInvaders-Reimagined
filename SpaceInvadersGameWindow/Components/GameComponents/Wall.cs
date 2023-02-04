@@ -12,7 +12,7 @@ namespace SpaceInvaders.Components.GameComponents
         public Wall(Vector2 scale, Vector2 pos)
         {
             transform = new Transform(scale, pos);
-            new Sprite(transform, @"");
+            new Sprite(transform);
             new Collider(transform, this);
         }
     }

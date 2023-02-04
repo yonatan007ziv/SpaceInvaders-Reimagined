@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow.Components.UIElements;
+using SpaceInvadersGameWindow;
 
 namespace SpaceInvaders.Components.GameComponents
 {
@@ -29,6 +30,7 @@ namespace SpaceInvaders.Components.GameComponents
         public async void Kill()
         {
             if (invincible) return;
+            //else if (livesLeft == 0) 
 
             invincible = true;
             controller.Dispose();

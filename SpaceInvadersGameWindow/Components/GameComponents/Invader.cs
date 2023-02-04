@@ -198,5 +198,13 @@ namespace SpaceInvaders.Components.GameComponents
                 invaders[i].sprite.image.IsEnabled = true;
         }
 
+        public static async void StartInvaders()
+        {
+            while (invaders.Count > 0)
+            {
+                MoveInvaders();
+                await Task.Delay(invaders.Count * 50);
+            }
+        }
     }
 }

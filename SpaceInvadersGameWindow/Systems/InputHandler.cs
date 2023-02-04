@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SpaceInvaders.Systems
@@ -12,16 +13,16 @@ namespace SpaceInvaders.Systems
         public static InputHandler? instance;
         public List<Key> keysDown = new List<Key>();
 
-        public InputHandler()
+        public InputHandler(Window TargetInputWindow)
         {
             instance = this;
 
             // Subscribe to Input methods:
-            MainWindow.instance!.KeyDown += (s, e) => KeyDown(e);
-            MainWindow.instance!.KeyUp += (s, e) => KeyUp(e);
-            MainWindow.instance!.LostKeyboardFocus += (s, e) => { keysDown.Clear(); };
+            TargetInputWindow.KeyDown += (s, e) => KeyDown(e);
+            TargetInputWindow.KeyUp += (s, e) => KeyUp(e);
+            TargetInputWindow.LostKeyboardFocus += (s, e) => { keysDown.Clear(); };
 
-            InputUpdate();
+            InputUpdateLoop();
         }
 
         Action? inputLoopDel;
@@ -33,12 +34,12 @@ namespace SpaceInvaders.Systems
         {
             inputLoopDel -= del;
         }
-        public async void InputUpdate()
+        public async void InputUpdateLoop()
         {
             while (true)
             {
                 inputLoopDel?.Invoke();
-                await Task.Delay(1000/120);
+                await Task.Delay(1000 / MainWindow.TargetFPS);
             }
         }
 
