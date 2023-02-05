@@ -1,7 +1,9 @@
 ﻿using SpaceInvadersGameWindow;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using System.Windows.Documents;
 
 namespace SpaceInvaders.Components.Miscellaneous
 {
@@ -9,6 +11,8 @@ namespace SpaceInvaders.Components.Miscellaneous
     {
         private Action? positionChanged;
         private Action? scaleChanged;
+
+        public static List<Transform> transforms = new List<Transform>();
 
         public Action? PositionChanged
         {
@@ -73,7 +77,7 @@ namespace SpaceInvaders.Components.Miscellaneous
 
         public Transform(Vector2 scale, Vector2 position)
         {
-            MainWindow.instance!.SizeChanged += (s, e) => OnSizeChanged();
+            transforms.Add(this);
 
             this._baseScale = scale;
             this._basePosition = position;
@@ -85,7 +89,7 @@ namespace SpaceInvaders.Components.Miscellaneous
         }
         public void Dispose()
         {
-            MainWindow.instance!.SizeChanged -= (s, e) => OnSizeChanged();
+            transforms.Remove(this);
         }
     }
 }

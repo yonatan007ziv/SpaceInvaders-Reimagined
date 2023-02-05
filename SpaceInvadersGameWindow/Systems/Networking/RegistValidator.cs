@@ -15,22 +15,22 @@ namespace SpaceInvadersGameWindow.Systems.Networking
 
         protected override void DecodeMessage(string msg)
         {
-            resultLabel.SetText(msg);
+            resultLabel.Text = msg;
             if (msg == "SUCCESS")
             {
-
+                resultLabel.Text = "Successfully registered!";
             }
-            else if (msg == "NO SUCH USERNAME")
+            else if (msg == "USERNAME EXISTS")
             {
-
+                resultLabel.Text = "Username already exists, maybe try to login?";
             }
-            else if (msg == "WRONG PASSWORD")
+            else if (msg == "INVALID PASSWORD")
             {
-
+                resultLabel.Text = "Invalid password entered.";
             }
             else if (msg == "FAILED")
             {
-
+                resultLabel.Text = "Failed! please try again.";
             }
             StopClient();
         }

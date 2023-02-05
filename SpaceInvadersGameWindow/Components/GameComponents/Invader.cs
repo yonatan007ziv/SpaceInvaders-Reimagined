@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using SpaceInvaders.Systems;
 using System.Runtime.InteropServices;
 using SpaceInvadersGameWindow.Components.UIElements;
+using SpaceInvadersGameWindow.Components;
 
 namespace SpaceInvaders.Components.GameComponents
 {
@@ -31,18 +32,21 @@ namespace SpaceInvaders.Components.GameComponents
             switch (type)
             {
                 default:
-                    scale = new Vector2(0, 0);
                     throw new Exception();
                 case EnemyTypes.Octopus:
+                    pointsReward = 10;
                     scale = new Vector2(12, 8);
                     break;
                 case EnemyTypes.Crab:
+                    pointsReward = 20;
                     scale = new Vector2(11, 8);
                     break;
                 case EnemyTypes.Squid:
+                    pointsReward = 30;
                     scale = new Vector2(8, 8);
                     break;
                 case EnemyTypes.UFO:
+                    pointsReward = 100;
                     scale = new Vector2(16, 8);
                     break;
             }
@@ -164,7 +168,7 @@ namespace SpaceInvaders.Components.GameComponents
             Transform ExplosionTransform = new Transform(new Vector2(13, 8), transform.Position);
             Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
 
-            //GameSettings.score += pointsReward;
+            GameInitializer.instance.Score += pointsReward;
 
             await Task.Delay(500);
 

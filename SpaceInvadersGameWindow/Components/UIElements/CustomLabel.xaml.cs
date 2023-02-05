@@ -9,10 +9,16 @@ namespace SpaceInvadersGameWindow.Components.UIElements
     /// </summary>
     public partial class CustomLabel : UserControl
     {
+        public string Text
+        {
+            get { return (string)label.Content; }
+            set { label.Dispatcher.Invoke(() => label.Content = value); }
+        }
         Transform transform;
-        public CustomLabel(Vector2 scale, Vector2 pos)
+        public CustomLabel(Vector2 scale, Vector2 pos, System.Windows.Media.Color TextColor)
         {
             InitializeComponent();
+            label.SetValue(ForegroundProperty, new System.Windows.Media.SolidColorBrush(TextColor));
 
             transform = new Transform(scale, pos);
             transform.PositionChanged += SetPosition;
@@ -22,23 +28,13 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         }
         public void SetPosition()
         {
-            Dispatcher.Invoke(() =>
-            {
-                SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
-                SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
-            });
+            SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
+            SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
         }
         public void SetScale()
         {
             Width = transform.ActualScale.X;
             Height = transform.ActualScale.Y;
-        }
-        public void SetText(string text)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                label.Content = text;
-            });
         }
         public void Dispose()
         {

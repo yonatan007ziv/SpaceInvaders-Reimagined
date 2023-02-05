@@ -1,25 +1,16 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Components.Renderer;
+﻿using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvadersGameWindow;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using SpaceInvadersGameWindow.Components.GameComponents;
-using SpaceInvaders.Systems;
-using SpaceInvadersGameWindow.Components.UIElements;
+using System;
+using System.Numerics;
+using System.Threading.Tasks;
 
 namespace SpaceInvaders.Components.GameComponents
 {
     internal class InvaderBullet : Bullet
     {
-        public InvaderBullet(Vector2 pos, int dir) : base(pos, dir)
+        private static Random random = new Random();
+        public InvaderBullet(Vector2 pos, int dir) : base(pos, dir, random.Next(0, 3))
         {
             BulletLoop();
         }
@@ -30,7 +21,7 @@ namespace SpaceInvaders.Components.GameComponents
             {
                 NextClip();
                 transform.Position += SpeedVector;
-                await Task.Delay(1000 / 60);
+                await Task.Delay(1000 / MainWindow.TargetFPS);
             }
 
             Collider col = this.col.TouchingCollider()!;

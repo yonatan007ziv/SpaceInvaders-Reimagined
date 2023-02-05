@@ -19,19 +19,21 @@ namespace SpaceInvadersGameWindow.Systems.Networking
 
         protected override void DecodeMessage(string msg)
         {
-            resultLabel.SetText(msg);
             if (msg == "SUCCESS")
             {
                 InitializeMenu();
             }
             else if (msg == "NO SUCH USERNAME")
             {
+                resultLabel.Text = "No such username exists, maybe try to register?";
             }
             else if (msg == "WRONG PASSWORD")
             {
+                resultLabel.Text = "Wrong password entered.";
             }
             else if (msg == "FAILED")
             {
+                resultLabel.Text = "Failed! please try again.";
             }
             StopClient();
         }

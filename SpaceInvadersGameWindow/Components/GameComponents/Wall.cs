@@ -15,5 +15,11 @@ namespace SpaceInvaders.Components.GameComponents
             new Sprite(transform);
             new Collider(transform, this);
         }
+        public Wall(Vector2 scale, Vector2 pos, string image)
+        {
+            transform = new Transform(scale, pos);
+            new Sprite(transform, image);
+            new Collider(transform, this);
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using SpaceInvadersGameWindow;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -39,7 +38,7 @@ namespace SpaceInvaders.Systems
             while (true)
             {
                 inputLoopDel?.Invoke();
-                await Task.Delay(1000 / MainWindow.TargetFPS);
+                await Task.Delay(1000 / (MainWindow.TargetFPS * 2));
             }
         }
 

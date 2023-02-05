@@ -1,31 +1,18 @@
-﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvaders.Components.Miscellaneous;
+﻿using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow.Components;
-using SpaceInvadersGameWindow.Components.Pages;
-using SpaceInvadersGameWindow.Components.UIElements;
 using System;
 using System.Numerics;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace SpaceInvadersGameWindow
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public static MainWindow instance;
+        public static MainWindow? instance;
         public static int TargetFPS = 60;
         public static float ratio;
-        public void CalculateRatio()
-        {
-            double ratioX = Width / 256;
-            double ratioY = Height / 256;
-            ratio = (float)Math.Min(ratioX, ratioY);
-        }
 
         Transform CenteredXCanvasTransform;
         public MainWindow()
@@ -36,6 +23,11 @@ namespace SpaceInvadersGameWindow
             SizeChanged += (s, e) => CalculateRatio();
             CalculateRatio();
 
+            SizeChanged += (s, e) =>
+            {
+                foreach (Transform T in Transform.transforms)
+                    T.OnSizeChanged();
+            };
             Width = 1920;
             Height = 1080;
 
@@ -51,7 +43,15 @@ namespace SpaceInvadersGameWindow
                 CenteredCanvas.Height = CenteredXCanvasTransform.ActualScale.Y;
             };
 
-            new GameInitializer(this);
+            new InputHandler(this);
+            new GameInitializer();
+        }
+
+        public void CalculateRatio()
+        {
+            double ratioX = Width / 256;
+            double ratioY = Height / 256;
+            ratio = (float)Math.Min(ratioX, ratioY);
         }
     }
 }

@@ -1,22 +1,29 @@
 ﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow.Components.Pages;
+using SpaceInvadersGameWindow.Components.UIElements;
 using System.Numerics;
-using System.Windows;
+using System.Windows.Media;
 
 namespace SpaceInvadersGameWindow.Components
 {
     internal class GameInitializer
     {
         public static GameInitializer? instance;
-        public GameInitializer(Window window)
+        private int score = 0;
+        public int Score
+        {
+            get { return score; }
+            set { score = value; CreditsLabel.Text = "CREDIT " + score; }
+        }
+
+        private CustomLabel CreditsLabel;
+
+        public GameInitializer()
         {
             instance = this;
 
-            new InputHandler(window);
-
-            StartLoginRegist();
-            //StartGameMenu();
+            //StartLoginRegist();
+            StartGameMenu();
             //StartGame();
         }
 
@@ -36,15 +43,17 @@ namespace SpaceInvadersGameWindow.Components
             #endregion
 
             Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 0));
-            Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 256));
+            Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 224), @"Resources\RawFiles\Images\Pixels\Green.png");
             Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
             Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256 - 16, 256 / 2));
+
+            CreditsLabel = new CustomLabel(new Vector2(50, 50), new Vector2(200, 200), Colors.White);
+            CreditsLabel.Text = "CREDIT ";
 
             new Player(new Vector2(50, 200));
 
             Invader.PlotInvaders(0, 0);
             Invader.StartInvaders();
         }
-
     }
 }

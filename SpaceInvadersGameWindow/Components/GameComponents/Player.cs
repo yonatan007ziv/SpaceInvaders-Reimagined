@@ -1,12 +1,10 @@
 ﻿using SpaceInvaders.Components.Controllers;
-using SpaceInvaders.Components.Renderer;
 using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Components.PhysicsEngine.Collider;
-using System.Numerics;
-using System.Threading.Tasks;
 using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow.Components.UIElements;
-using SpaceInvadersGameWindow;
+using System.Numerics;
+using System.Threading.Tasks;
 
 namespace SpaceInvaders.Components.GameComponents
 {

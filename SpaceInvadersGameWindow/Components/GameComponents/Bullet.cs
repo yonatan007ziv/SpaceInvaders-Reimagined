@@ -2,7 +2,6 @@
 using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow.Components.UIElements;
-using System;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -10,12 +9,12 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
 {
     class Bullet
     {
-        private static Random random = new Random();
         private enum BulletTypes
         {
             Charge,
             Imperfect,
-            ZigZag
+            ZigZag,
+            Normal
         }
 
         private BulletTypes bulletType;
@@ -24,9 +23,9 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
         protected Sprite sprite;
         protected Collider col;
         protected float bulletSpeed = 3;
-        public Bullet(Vector2 pos, int dir)
+        public Bullet(Vector2 pos, int dir, int type)
         {
-            bulletType = (BulletTypes)random.Next(0, 3);
+            bulletType = (BulletTypes)type;
             bulletSpeed *= dir;
             transform = new Transform(new Vector2(3, 7), pos);
             col = new Collider(transform, this);
@@ -53,6 +52,9 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
                     return;
                 case BulletTypes.ZigZag:
                     sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Bullet\ZigZag\ZigZag{times + 1}.png");
+                    return;
+                case BulletTypes.Normal:
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Bullet\Bullet.png");
                     return;
             }
         }
