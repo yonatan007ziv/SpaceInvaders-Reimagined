@@ -48,7 +48,7 @@ namespace SpaceInvadersGameWindow.Components
             Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256 - 16, 256 / 2));
 
             CreditsLabel = new CustomLabel(new Vector2(50, 50), new Vector2(200, 200), Colors.White);
-            CreditsLabel.Text = "CREDIT ";
+            Score = 0;
 
             new Player(new Vector2(50, 200));
 

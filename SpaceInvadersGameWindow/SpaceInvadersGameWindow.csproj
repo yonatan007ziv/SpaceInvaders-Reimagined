@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Font\SpaceInvadersFont.ttf" />
     <None Remove="Resources\RawFiles\Images\Background.png" />
     <None Remove="Resources\RawFiles\Images\Bullet.png" />
     <None Remove="Resources\RawFiles\Images\Bullet\Bullet.png" />
@@ -43,6 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Font\SpaceInvadersFont.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\RawFiles\Images\Background.png" />
     <Resource Include="Resources\RawFiles\Images\Bullet\BulletExplosion.png" />
     <Resource Include="Resources\RawFiles\Images\Bullet\Charge\Charge1.png" />
