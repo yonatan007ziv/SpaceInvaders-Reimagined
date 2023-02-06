@@ -20,7 +20,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         }
 
         Transform transform;
-        public CustomButton(Vector2 scale, Vector2 pos, Action onClick, string imagePath, bool disposeOnClick)
+        public CustomButton(Vector2 scale, Vector2 pos, Action onClick, string imagePath)
         {
             InitializeComponent();
 
@@ -30,12 +30,10 @@ namespace SpaceInvadersGameWindow.Components.UIElements
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
             button.Click += (s, e) => onClick();
-            if (disposeOnClick)
-                button.Click += (s, e) => Dispose();
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
-        public CustomButton(Vector2 scale, Vector2 pos, Action onClick, string imagePath, bool disposeOnClick, string text)
+        public CustomButton(Vector2 scale, Vector2 pos, Action onClick, string imagePath, string text)
         {
             InitializeComponent();
 
@@ -47,8 +45,6 @@ namespace SpaceInvadersGameWindow.Components.UIElements
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
             button.Click += (s, e) => onClick();
-            if (disposeOnClick)
-                button.Click += (s, e) => Dispose();
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }

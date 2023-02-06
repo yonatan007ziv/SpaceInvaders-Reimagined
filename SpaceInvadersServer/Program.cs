@@ -4,7 +4,8 @@
     {
         public static void Main(string[] args)
         {
-            new LoginRegistServer();
+            //new LoginRegistServer();
+            new MultiplayerGameServer();
         }
     }
 }

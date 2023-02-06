@@ -1,6 +1,7 @@
 ﻿using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Systems;
 using SpaceInvadersGameWindow.Components;
+using SpaceInvadersGameWindow.Components.Initializers;
 using System;
 using System.Numerics;
 using System.Windows;
@@ -28,8 +29,9 @@ namespace SpaceInvadersGameWindow
                 foreach (Transform T in Transform.transforms)
                     T.OnSizeChanged();
             };
-            Width = 1920;
-            Height = 1080;
+
+            Width = 1024;
+            Height = 1024;
 
             CenteredXCanvasTransform = new Transform(new Vector2(256, 256), new Vector2(0, 0));
             CenteredXCanvasTransform.PositionChanged += () =>

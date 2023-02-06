@@ -1,14 +1,14 @@
 ﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvadersGameWindow.Components.Pages;
+using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvadersGameWindow.Components.UIElements;
 using System.Numerics;
-using System.Windows.Media;
 
-namespace SpaceInvadersGameWindow.Components
+namespace SpaceInvadersGameWindow.Components.Initializers
 {
-    internal class GameInitializer
+    internal class LocalGameInitializer
     {
-        public static GameInitializer? instance;
+        public static LocalGameInitializer? instance;
+
         private int score = 0;
         public int Score
         {
@@ -18,36 +18,21 @@ namespace SpaceInvadersGameWindow.Components
 
         private CustomLabel CreditsLabel;
 
-        public GameInitializer()
+        public LocalGameInitializer()
         {
             instance = this;
 
-            //StartLoginRegist();
-            StartGameMenu();
-            //StartGame();
-        }
-
-        public void StartLoginRegist()
-        {
-            new LoginRegistPage();
-        }
-        public void StartGameMenu()
-        {
-            new GameMainMenuPage();
-        }
-        public void StartGame()
-        {
             #region temp overlay
             //Transform ColorOverlayT = new Transform(new Vector2(256, 256), new Vector2(256 / 2, 256 / 2));
             //Sprite ColorOverlaySprite = new Sprite(ColorOverlayT, @"Resources\RawFiles\Images\Overlay.png");
             #endregion
 
-            Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 0));
+            Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 2.5f), @"Resources\RawFiles\Images\Pixels\Red.png");
             Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 224), @"Resources\RawFiles\Images\Pixels\Green.png");
             Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
             Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256 - 16, 256 / 2));
 
-            CreditsLabel = new CustomLabel(new Vector2(50, 50), new Vector2(200, 200), Colors.White);
+            CreditsLabel = new CustomLabel(new Vector2(50, 50), new Vector2(200, 200),"", System.Windows.Media.Colors.White);
             Score = 0;
 
             new Player(new Vector2(50, 200));

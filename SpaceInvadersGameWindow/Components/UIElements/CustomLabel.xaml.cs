@@ -15,9 +15,10 @@ namespace SpaceInvadersGameWindow.Components.UIElements
             set { label.Dispatcher.Invoke(() => label.Content = value); }
         }
         Transform transform;
-        public CustomLabel(Vector2 scale, Vector2 pos, System.Windows.Media.Color TextColor)
+        public CustomLabel(Vector2 scale, Vector2 pos,string text, System.Windows.Media.Color TextColor)
         {
             InitializeComponent();
+            Text = text;
             label.SetValue(ForegroundProperty, new System.Windows.Media.SolidColorBrush(TextColor));
 
             transform = new Transform(scale, pos);

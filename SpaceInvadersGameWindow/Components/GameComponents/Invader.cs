@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using SpaceInvaders.Systems;
 using System.Runtime.InteropServices;
 using SpaceInvadersGameWindow.Components.UIElements;
-using SpaceInvadersGameWindow.Components;
+using SpaceInvadersGameWindow.Components.Initializers;
 
 namespace SpaceInvaders.Components.GameComponents
 {
@@ -168,7 +168,7 @@ namespace SpaceInvaders.Components.GameComponents
             Transform ExplosionTransform = new Transform(new Vector2(13, 8), transform.Position);
             Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\RawFiles\Images\Enemies\InvaderDeath.png");
 
-            GameInitializer.instance.Score += pointsReward;
+            LocalGameInitializer.instance!.Score += pointsReward;
 
             await Task.Delay(500);
 

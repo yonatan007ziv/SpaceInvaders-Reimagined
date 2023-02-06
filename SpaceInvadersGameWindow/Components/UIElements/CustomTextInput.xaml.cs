@@ -9,6 +9,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
     /// </summary>
     public partial class CustomTextInput
     {
+        public string Text { get { return box.Text; }}
         Transform transform;
         public CustomTextInput(Vector2 scale, Vector2 pos)
         {

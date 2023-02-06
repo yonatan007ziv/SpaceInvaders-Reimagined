@@ -9,17 +9,15 @@ namespace SpaceInvadersGameWindow.Systems.Networking
     {
         private TcpClient client;
         private Byte[] buffer;
-        private int port = 7777;
 
         public NetworkClient()
         {
             client = new TcpClient();
-            client.Connect(IPEndPoint.Parse($"127.0.0.1:{port}"));
             buffer = new Byte[client.ReceiveBufferSize];
         }
-        protected void ConnectToAddress(string ip)
+        protected void ConnectToAddress(string ip, int port)
         {
-            client.Connect(IPEndPoint.Parse(ip));
+            client.Connect(IPEndPoint.Parse($"{ip}:{port}"));
         }
         protected void BeginSingleRead()
         {
