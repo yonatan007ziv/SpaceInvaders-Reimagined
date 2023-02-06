@@ -11,6 +11,8 @@ namespace SpaceInvadersServer
 
         private TcpClient client;
         private Byte[] buffer;
+        private bool gotNick;
+        private string? nickname;
 
         public MultiplayerGameClient(TcpClient client)
         {
@@ -22,6 +24,7 @@ namespace SpaceInvadersServer
         }
         private void Broadcast(string msg)
         {
+            Console.WriteLine($"BROADCASTING: {msg}");
             foreach (TcpClient client in clients)
             {
                 Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg);
@@ -30,31 +33,32 @@ namespace SpaceInvadersServer
         }
         private void ReceiveMessage(IAsyncResult ar)
         {
-            int bytesRead;
-            lock (client.GetStream())
-                bytesRead = client.GetStream().EndRead(ar);
-            string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-            DecodeMessage(msg);
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+            try
+            {
+                int bytesRead;
+                lock (client.GetStream())
+                    bytesRead = client.GetStream().EndRead(ar);
+                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                DecodeMessage(msg);
+                client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+            }
+            catch
+            {
+                clients.Remove(client);
+                Broadcast($"{nickname} LEFT");
+            }
         }
-
-        private bool gotNick;
-        private string nickname;
         private void DecodeMessage(string msg)
         {
+            Console.WriteLine("GOT MSG: " + msg);
             if (!gotNick)
             {
                 gotNick = true;
                 nickname = msg;
+                Broadcast($"INITIATE PLAYER:{nickname}");
                 return;
             }
-
-            if (msg.Contains("MOVE:"))
-                Broadcast(msg);
-            else if (msg.Contains("SHOOT:"))
-                Broadcast(msg);
-            else if (msg.Contains("DEATH:"))
-                Broadcast(msg);
+            //Broadcast($"{nickname}${msg}");
         }
     }
 }

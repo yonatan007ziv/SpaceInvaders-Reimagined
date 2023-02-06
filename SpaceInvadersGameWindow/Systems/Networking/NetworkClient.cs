@@ -23,6 +23,10 @@ namespace SpaceInvadersGameWindow.Systems.Networking
         {
             client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
         }
+        protected void BeginRead()
+        {
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessageLoop, null);
+        }
         protected void SendMessage(string msg)
         {
             Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg);
@@ -35,6 +39,15 @@ namespace SpaceInvadersGameWindow.Systems.Networking
                 bytesRead = client.GetStream().EndRead(ar);
             string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
             DecodeMessage(msg);
+        }
+        private void ReceiveMessageLoop(IAsyncResult ar)
+        {
+            int bytesRead;
+            lock (client.GetStream())
+                bytesRead = client.GetStream().EndRead(ar);
+            string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            DecodeMessage(msg);
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessageLoop, null);
         }
         protected abstract void DecodeMessage(string msg);
         public void StopClient()
