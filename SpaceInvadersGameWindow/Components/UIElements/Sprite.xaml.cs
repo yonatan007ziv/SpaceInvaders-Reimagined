@@ -8,7 +8,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
     public partial class Sprite : UserControl
     {
         Transform transform;
-        public Sprite(Transform transform) : base()
+        public Sprite(Transform transform)
         {
             InitializeComponent();
 
@@ -25,7 +25,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
-        public Sprite(Transform transform, string imagePath) : base()
+        public Sprite(Transform transform, string imagePath)
         {
             InitializeComponent();
 
