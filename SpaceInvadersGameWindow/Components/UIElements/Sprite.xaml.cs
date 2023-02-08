@@ -1,5 +1,6 @@
 ﻿using SpaceInvaders.Components.Miscellaneous;
 using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -50,6 +51,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
             SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
             SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
         }
+
         public void SetScale()
         {
             Width = transform.ActualScale.X;

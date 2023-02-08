@@ -1,27 +1,33 @@
 ﻿using SpaceInvadersGameWindow.Components.Pages;
+using System;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace SpaceInvadersGameWindow.Components.Initializers
 {
-    internal class GameInitializer
+    internal static class GameInitializers
     {
-        public static GameInitializer? instance;
-
-        public GameInitializer()
+        public static string? username;
+        public static void StartLoginRegist()
         {
-            instance = this;
-
-            //StartLoginRegist();
-            StartGameMenu();
-            //StartGame();
+            new LoginRegist();
         }
 
-        public void StartLoginRegist()
+        public static void StartGameMenu(string username)
         {
-            new LoginRegistPage();
+            GameInitializers.username = username;
+            new GameMainMenu();
         }
-        public void StartGameMenu()
+
+        public static void StartSingleplayerGame()
         {
-            new GameMainMenuPage();
+            new LocalGameInitializer();
+        }
+
+        public static void StartMultiplayerGameMenu()
+        {
+            new GameMultiplayerMenu();
         }
     }
 }

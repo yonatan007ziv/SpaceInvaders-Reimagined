@@ -38,10 +38,15 @@
     <None Remove="Resources\RawFiles\Images\Pixels\Green.png" />
     <None Remove="Resources\RawFiles\Images\Pixels\Red.png" />
     <None Remove="Resources\RawFiles\Images\Player.png" />
+    <None Remove="Resources\RawFiles\Images\Player\OpponentPlayer.png" />
     <None Remove="Resources\RawFiles\Images\Player\PlayerDeath1.png" />
     <None Remove="Resources\RawFiles\Images\Player\PlayerDeath2.png" />
     <None Remove="Resources\RawFiles\Sounds\InvaderDeath.wav" />
     <None Remove="Resources\RawFiles\Sounds\Shoot.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,6 +80,7 @@
     <Resource Include="Resources\RawFiles\Images\Overlay.png" />
     <Resource Include="Resources\RawFiles\Images\Pixels\Red.png" />
     <Resource Include="Resources\RawFiles\Images\Pixels\Green.png" />
+    <Resource Include="Resources\RawFiles\Images\Player\OpponentPlayer.png" />
     <Resource Include="Resources\RawFiles\Images\Player\Player.png" />
     <Resource Include="Resources\RawFiles\Images\Player\PlayerDeath1.png" />
     <Resource Include="Resources\RawFiles\Images\Player\PlayerDeath2.png" />

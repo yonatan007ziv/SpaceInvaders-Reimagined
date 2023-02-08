@@ -1,4 +1,5 @@
-﻿using SpaceInvadersGameWindow.Components.UIElements;
+﻿using SpaceInvadersGameWindow.Components.Initializers;
+using SpaceInvadersGameWindow.Components.UIElements;
 using System;
 using System.Diagnostics;
 
@@ -6,22 +7,33 @@ namespace SpaceInvadersGameWindow.Systems.Networking
 {
     class LoginValidator : NetworkClient
     {
-        Action InitializeMenu;
+        Action DiposeRegistLoginMenu;
         private CustomLabel resultLabel;
+
+        private string username;
 
         public LoginValidator(string username, string password, CustomLabel resultLabel, Action InitializeMenu) : base()
         {
+            this.username = username;
+
             this.resultLabel = resultLabel;
-            this.InitializeMenu = InitializeMenu;
-            SendMessage($"LOGIN:{username}/{password}");
-            BeginSingleRead();
+            this.DiposeRegistLoginMenu = InitializeMenu;
+            if (ConnectToAddress("127.0.0.1", 7777))
+            {
+                SendMessage($"LOGIN:{username}/{password}");
+                BeginSingleRead();
+            }
+            else
+                resultLabel.Text = "Failed! server unreachable.";
         }
 
         protected override void DecodeMessage(string msg)
         {
             if (msg == "SUCCESS")
             {
-                InitializeMenu();
+                resultLabel.Text = "Successfully logged in!";
+                DiposeRegistLoginMenu();
+                GameInitializers.StartGameMenu(username);
             }
             else if (msg == "NO SUCH USERNAME")
             {

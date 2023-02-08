@@ -2,12 +2,11 @@
 using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Systems;
-using SpaceInvadersGameWindow;
 using System;
 using System.Numerics;
 using System.Windows.Input;
 
-namespace SpaceInvaders.Components.Controllers
+namespace SpaceInvadersGameWindow.Components.GameComponents
 {
     internal class CharacterController
     {

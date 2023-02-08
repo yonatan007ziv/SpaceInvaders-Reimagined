@@ -46,7 +46,7 @@ namespace SpaceInvadersGameWindow
             };
 
             new InputHandler(this);
-            new GameInitializer();
+            GameInitializers.StartLoginRegist();
         }
 
         public void CalculateRatio()

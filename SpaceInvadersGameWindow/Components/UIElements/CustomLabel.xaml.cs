@@ -1,5 +1,6 @@
 ﻿using SpaceInvaders.Components.Miscellaneous;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SpaceInvadersGameWindow.Components.UIElements
@@ -14,14 +15,15 @@ namespace SpaceInvadersGameWindow.Components.UIElements
             get { return (string)label.Content; }
             set { label.Dispatcher.Invoke(() => label.Content = value); }
         }
+
         Transform transform;
-        public CustomLabel(Vector2 scale, Vector2 pos,string text, System.Windows.Media.Color TextColor)
+        public CustomLabel(Transform transform, string text, System.Windows.Media.Color TextColor)
         {
             InitializeComponent();
             Text = text;
             label.SetValue(ForegroundProperty, new System.Windows.Media.SolidColorBrush(TextColor));
 
-            transform = new Transform(scale, pos);
+            this.transform = transform;
             transform.PositionChanged += SetPosition;
             transform.ScaleChanged += SetScale;
 
@@ -40,7 +42,10 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         public void Dispose()
         {
             transform.Dispose();
-            MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            });
         }
     }
 }

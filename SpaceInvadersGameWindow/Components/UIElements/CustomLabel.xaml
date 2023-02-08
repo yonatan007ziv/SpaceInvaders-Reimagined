@@ -6,5 +6,7 @@
              xmlns:local="clr-namespace:SpaceInvadersGameWindow.Components.UIElements"
              mc:Ignorable="d" 
              d:DesignHeight="0" d:DesignWidth="0">
-    <Label Name="label" Foreground="Green" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Viewbox>
+        <Label Name="label" Foreground="Green" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Viewbox>
 </UserControl>

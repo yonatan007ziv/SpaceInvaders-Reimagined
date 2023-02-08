@@ -1,7 +1,7 @@
-﻿using SpaceInvaders.Components.Controllers;
-using SpaceInvaders.Components.Miscellaneous;
+﻿using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Systems;
+using SpaceInvadersGameWindow.Components.GameComponents;
 using SpaceInvadersGameWindow.Components.UIElements;
 using System.Numerics;
 using System.Threading.Tasks;

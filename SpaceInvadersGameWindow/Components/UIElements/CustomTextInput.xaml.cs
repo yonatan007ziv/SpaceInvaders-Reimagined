@@ -1,5 +1,6 @@
 ﻿using SpaceInvaders.Components.Miscellaneous;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SpaceInvadersGameWindow.Components.UIElements
@@ -11,11 +12,11 @@ namespace SpaceInvadersGameWindow.Components.UIElements
     {
         public string Text { get { return box.Text; }}
         Transform transform;
-        public CustomTextInput(Vector2 scale, Vector2 pos)
+        public CustomTextInput(Transform transform)
         {
             InitializeComponent();
 
-            transform = new Transform(scale, pos);
+            this.transform = transform;
             transform.PositionChanged += SetPosition;
             transform.ScaleChanged += SetScale;
 
@@ -34,7 +35,10 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         public void Dispose()
         {
             transform.Dispose();
-            MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            });
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using System.Data.SqlClient;
 
-namespace SpaceInvadersServer
+namespace SpaceInvadersLoginRegistServer
 {
     internal class DatabaseHandler
     {
         private SqlConnection conn;
         public DatabaseHandler()
         {
-            conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\Code\VS Community\SpaceInvaders-Reimagined\SpaceInvadersServer\Users.mdf"";Integrated Security=True");
+            conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\Code\VS Community\SpaceInvaders-Reimagined\SpaceInvadersLoginRegistServer\Users.mdf"";Integrated Security=True");
         }
         public bool UsernameExists(string username)
         {

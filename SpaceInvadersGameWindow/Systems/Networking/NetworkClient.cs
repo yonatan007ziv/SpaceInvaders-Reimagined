@@ -2,12 +2,13 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SpaceInvadersGameWindow.Systems.Networking
 {
     abstract class NetworkClient
     {
-        private TcpClient client;
+        protected TcpClient client;
         private Byte[] buffer;
 
         public NetworkClient()
@@ -15,9 +16,17 @@ namespace SpaceInvadersGameWindow.Systems.Networking
             client = new TcpClient();
             buffer = new Byte[client.ReceiveBufferSize];
         }
-        protected void ConnectToAddress(string ip, int port)
+        protected bool ConnectToAddress(string ip, int port)
         {
-            client.Connect(IPEndPoint.Parse($"{ip}:{port}"));
+            try
+            {
+                client.Connect(IPEndPoint.Parse($"{ip}:{port}"));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
         protected void BeginSingleRead()
         {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SpaceInvadersGameWindow.Components.UIElements
@@ -11,7 +12,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
     /// <summary>
     /// Interaction logic for NavigableButton.xaml
     /// </summary>
-    public partial class CustomButton : UserControl
+    public partial class CustomButton
     {
         public string Text
         {
@@ -20,11 +21,11 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         }
 
         Transform transform;
-        public CustomButton(Vector2 scale, Vector2 pos, Action onClick, string imagePath)
+        public CustomButton(Transform transform, Action onClick, string imagePath)
         {
             InitializeComponent();
 
-            transform = new Transform(scale, pos);
+            this.transform = transform;
             transform.PositionChanged += () => SetPosition();
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
@@ -33,13 +34,13 @@ namespace SpaceInvadersGameWindow.Components.UIElements
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
-        public CustomButton(Vector2 scale, Vector2 pos, Action onClick, string imagePath, string text)
+        public CustomButton(Transform transform, Action onClick, string imagePath, string text)
         {
             InitializeComponent();
 
             Text = text;
 
-            transform = new Transform(scale, pos);
+            this.transform = transform;
             transform.PositionChanged += () => SetPosition();
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
@@ -54,15 +55,20 @@ namespace SpaceInvadersGameWindow.Components.UIElements
             SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
             SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
         }
+
         public void SetScale()
         {
             Width = transform.ActualScale.X;
             Height = transform.ActualScale.Y;
         }
+
         public void Dispose()
         {
             transform.Dispose();
-            MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            });
         }
     }
 }

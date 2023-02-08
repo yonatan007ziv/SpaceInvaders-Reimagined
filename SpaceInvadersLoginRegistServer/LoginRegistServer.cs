@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace SpaceInvadersServer
+namespace SpaceInvadersLoginRegistServer
 {
     internal class LoginRegistServer
     {
@@ -14,7 +14,7 @@ namespace SpaceInvadersServer
             dbHandler = new DatabaseHandler();
 
             while (true)
-                new ClientLoginRegistValidator(listener.AcceptTcpClient(),dbHandler);
+                new ClientLoginRegistValidator(listener.AcceptTcpClient(), dbHandler);
         }
     }
 }
