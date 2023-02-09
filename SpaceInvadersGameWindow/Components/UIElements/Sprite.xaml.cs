@@ -84,7 +84,10 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         public void Dispose()
         {
             transform.Dispose();
-            MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            MainWindow.instance!.CenteredCanvas.Dispatcher.Invoke
+                (
+                () => MainWindow.instance!.CenteredCanvas.Children.Remove(this)
+                );
         }
     }
 }

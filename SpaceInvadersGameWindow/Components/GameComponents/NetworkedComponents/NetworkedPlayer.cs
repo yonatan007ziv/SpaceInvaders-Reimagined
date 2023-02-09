@@ -34,6 +34,8 @@ namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
 
         public NetworkedPlayer(Vector2 pos, string nickname) // online
         {
+            if (currentPlayers.ContainsKey(nickname)) return;
+
             currentPlayers.Add(nickname, this);
 
             transform = new Transform(new Vector2(13, 8), pos);

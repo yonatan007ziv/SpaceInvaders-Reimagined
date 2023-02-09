@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Documents;
 
 namespace SpaceInvaders.Components.Miscellaneous
@@ -43,7 +44,7 @@ namespace SpaceInvaders.Components.Miscellaneous
                 Vector2 TempPosition = _basePosition;
                 _basePosition = value;
                 if (TempPosition != value)
-                    PositionChanged?.Invoke();
+                    Application.Current.Dispatcher.Invoke(() => PositionChanged?.Invoke());
             }
         }
         public Vector2 ActualPosition

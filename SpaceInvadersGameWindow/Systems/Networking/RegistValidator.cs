@@ -9,7 +9,7 @@ namespace SpaceInvadersGameWindow.Systems.Networking
         public RegistValidator(string username, string password, CustomLabel resultLabel) : base()
         {
             this.resultLabel = resultLabel;
-            ConnectToAddress("127.0.0.1", 7777);
+            ConnectToAddress("46.121.140.122", 7777);
             SendMessage($"REGISTER:{username}/{password}");
             BeginSingleRead();
         }

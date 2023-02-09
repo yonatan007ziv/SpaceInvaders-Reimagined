@@ -3,18 +3,16 @@ using SpaceInvaders.Components.Miscellaneous;
 using SpaceInvaders.Components.PhysicsEngine.Collider;
 using SpaceInvaders.Systems;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
 {
     internal class NetworkedCharacterController
     {
+        private NetworkedBullet? myBullet = null;
         InputHandler inputHandler;
         Transform transform;
         Collider col;
@@ -38,14 +36,22 @@ namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
             if (axis == 1 && (col == null || col.parent != Wall.RightWall) || axis == -1 && (col == null || col.parent != Wall.LeftWall))
             {
                 transform.Position += new Vector2(axis, 0);
-                SendPlayerCoords();
+                SendMessage($"PLAYER POS:({transform.Position.X},{transform.Position.Y})");
             }
-            if (inputHandler.keysDown.Contains(Key.Space) && NetworkedBullet.localBullet == null)
-                new NetworkedBullet(transform.Position, ns);
+            if (inputHandler.keysDown.Contains(Key.Space) && myBullet == null)
+            {
+                myBullet = new NetworkedBullet(transform.Position, OnBulletHit);
+                SendMessage($"INITIATE BULLET:({transform.Position.X},{transform.Position.Y})");
+            }
         }
-        private void SendPlayerCoords()
+        private void OnBulletHit(string msg)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes($"PLAYER POS:({transform.Position.X},{transform.Position.Y})");
+            SendMessage(msg);
+            myBullet = null;
+        }
+        private void SendMessage(string msg)
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes(msg);
             ns.Write(buffer, 0, buffer.Length);
         }
         public void Dispose()

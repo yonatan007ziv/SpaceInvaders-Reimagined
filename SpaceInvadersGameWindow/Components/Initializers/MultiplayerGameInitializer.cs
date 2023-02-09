@@ -31,9 +31,9 @@ namespace SpaceInvadersGameWindow.Components.Initializers
             if (msg.Contains("INITIATE PLAYER:"))
             {
                 if (gotNick == GameInitializers.username) // if local player
-                    new NetworkedPlayer(new Vector2(100, 150), gotNick, client.GetStream());
+                    new NetworkedPlayer(new Vector2(100, 200), gotNick, client.GetStream());
                 else
-                    new NetworkedPlayer(new Vector2(100, 150), gotNick);
+                    new NetworkedPlayer(new Vector2(100, 50), gotNick);
             }
 
             if (gotNick == GameInitializers.username) return; // prevent message loopback
@@ -62,25 +62,25 @@ namespace SpaceInvadersGameWindow.Components.Initializers
                 }
                 catch { x = 0; y = 0; };
 
-                new NetworkedBullet(new Vector2(x, y), gotNick);
+                new NetworkedBullet(new Vector2(x, y));
             }
-            else if (msg.Contains("BULLET POS:"))
-            {
-                int x, y;
-                try
-                {
-                    string coords = msg.Split(':')[1];
-                    coords = coords.Substring(1, coords.Length - 2);
-                    x = int.Parse(coords.Split(',')[0]); y = int.Parse(coords.Split(',')[1]);
-                }
-                catch { x = 0; y = 0; };
-
-                NetworkedBullet.NetworkedBullets[gotNick].transform.Position = new Vector2(x, y);
-            }
-            else if (msg.Contains("BULLET EXPLOSION POS:"))
-            {
-                NetworkedBullet.NetworkedBullets[gotNick].BulletExplosion();
-            }
+            //else if (msg.Contains("BULLET POS:"))
+            //{
+            //    int x, y;
+            //    try
+            //    {
+            //        string coords = msg.Split(':')[1];
+            //        coords = coords.Substring(1, coords.Length - 2);
+            //        x = int.Parse(coords.Split(',')[0]); y = int.Parse(coords.Split(',')[1]);
+            //    }
+            //    catch { x = 0; y = 0; };
+            //
+            //    NetworkedBullet.NetworkedBullets[gotNick].transform.Position = new Vector2(x, y);
+            //}
+            //else if (msg.Contains("BULLET EXPLOSION POS:"))
+            //{
+            //    NetworkedBullet.NetworkedBullets[gotNick].BulletExplosion();
+            //}
         }
     }
 }
