@@ -10,6 +10,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 {
     internal class NetworkedPlayer
     {
+        public static NetworkedPlayer? localPlayer;
         public static Dictionary<string, NetworkedPlayer> currentPlayers = new Dictionary<string, NetworkedPlayer>();
 
         public Transform transform;
@@ -17,9 +18,13 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
         private Sprite sprite;
         private NetworkedCharacterController? characterController;
         private CustomLabel nameTag;
-        public NetworkedPlayer(Vector2 pos, string nickname, NetworkStream ns) // local
+        public string username;
+        public NetworkedPlayer(Vector2 pos, string username, NetworkStream ns) // local
         {
-            currentPlayers.Add(nickname, this);
+            currentPlayers.Add(username, this);
+
+            this.username = username;
+            localPlayer = this;
 
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this);
@@ -27,17 +32,18 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                sprite = new Sprite(transform, @"Resources
-\Images\Player\Player.png");
-                nameTag = new CustomLabel(transform, nickname, System.Windows.Media.Colors.Purple);
+                sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
+                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Purple);
             });
         }
 
-        public NetworkedPlayer(Vector2 pos, string nickname) // online
+        public NetworkedPlayer(Vector2 pos, string username) // online
         {
-            if (currentPlayers.ContainsKey(nickname)) return;
+            if (currentPlayers.ContainsKey(username)) return;
 
-            currentPlayers.Add(nickname, this);
+            currentPlayers.Add(username, this);
+
+            this.username = username;
 
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this);
@@ -45,7 +51,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             Application.Current.Dispatcher.Invoke(() =>
             {
                 sprite = new Sprite(transform, @"Resources\Images\Player\OpponentPlayer.png");
-                nameTag = new CustomLabel(transform, nickname, System.Windows.Media.Colors.Purple);
+                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Purple);
             });
         }
 

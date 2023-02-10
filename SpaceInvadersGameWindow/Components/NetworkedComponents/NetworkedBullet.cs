@@ -10,20 +10,21 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using GameWindow.Components.Initializers;
 
 namespace GameWindow.Components.GameComponents
 {
     class NetworkedBullet
     {
-        public delegate void hit(string s);
-        private hit onBulletHit;
+        public delegate void hitCmd(string command);
+        private hitCmd BulletHitMessage;
 
         public Transform transform;
         private Sprite sprite;
         private Collider? col;
         private float bulletSpeed = 3;
 
-        public NetworkedBullet(Vector2 pos, hit onBulletHit)
+        public NetworkedBullet(Vector2 pos, hitCmd onBulletHit)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -34,7 +35,7 @@ namespace GameWindow.Components.GameComponents
 \Images\Bullet\Bullet.png");
             });
 
-            this.onBulletHit = onBulletHit;
+            this.BulletHitMessage = onBulletHit;
             LocalBulletLoop();
         }
         public NetworkedBullet(string shooter)
@@ -52,13 +53,16 @@ namespace GameWindow.Components.GameComponents
         public async void LocalBulletLoop()
         {
             Vector2 SpeedVector = new Vector2(0, -bulletSpeed);
-            while (col!.TouchingCollider() == null || col.TouchingCollider()!.parent is NetworkedPlayer || col.TouchingCollider()!.parent is Bullet)
+            while (col!.TouchingCollider() == null || (col.TouchingCollider()!.parent is NetworkedPlayer && ((NetworkedPlayer)col.TouchingCollider()).username == GameInitializers.username) || col.TouchingCollider()!.parent is Bullet)
             {
                 transform.Position += SpeedVector;
                 await Task.Delay(1000 / MainWindow.TargetFPS);
             }
 
-            onBulletHit($"BULLET EXPLOSION POS:({transform.Position.X},{transform.Position.Y})");
+            Collider hit = col.TouchingCollider()!;
+            if (hit.parent is NetworkedPlayer)
+                BulletHitMessage($"BULLET HIT:{(NetworkedPlayer)(hit.parent).username}");
+            BulletHitMessage($"BULLET EXPLOSION POS:({transform.Position.X},{transform.Position.Y})");
             BulletExplosion();
         }
         public async void OnlineBulletLoop()
