@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SpaceInvadersGameWindow
+namespace GameWindow
 {
     /// <summary>
     /// Interaction logic for App.xaml

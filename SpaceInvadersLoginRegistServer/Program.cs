@@ -1,4 +1,4 @@
-﻿namespace SpaceInvadersLoginRegistServer
+﻿namespace LoginRegistServer
 {
     class ServerEntry
     {

@@ -1,9 +1,9 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 
-namespace SpaceInvaders.Components.PhysicsEngine.Collider
+namespace GameWindow.Components.PhysicsEngine.Collider
 {
     internal class Collider
     {

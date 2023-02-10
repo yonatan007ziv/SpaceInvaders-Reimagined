@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpaceInvadersGameWindow.Systems.Networking
+namespace GameWindow.Systems.Networking
 {
     abstract class NetworkClient
     {

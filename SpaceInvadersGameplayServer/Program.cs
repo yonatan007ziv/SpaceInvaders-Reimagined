@@ -1,4 +1,4 @@
-﻿namespace SpaceInvadersGameplayServer
+﻿namespace GameplayServer
 {
     class ServerEntry
     {

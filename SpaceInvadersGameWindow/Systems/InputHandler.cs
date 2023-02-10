@@ -1,21 +1,18 @@
-﻿using SpaceInvadersGameWindow;
+﻿using GameWindow;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace SpaceInvaders.Systems
+namespace GameWindow.Systems
 {
-    internal class InputHandler
+    public class InputHandler
     {
-        public static InputHandler? instance;
         public List<Key> keysDown = new List<Key>();
 
         public InputHandler(Window TargetInputWindow)
         {
-            instance = this;
-
             // Subscribe to Input methods:
             TargetInputWindow.KeyDown += (s, e) => KeyDown(e);
             TargetInputWindow.KeyUp += (s, e) => KeyUp(e);

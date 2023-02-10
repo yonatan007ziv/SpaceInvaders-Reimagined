@@ -1,13 +1,13 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Systems;
-using SpaceInvadersGameWindow.Components;
-using SpaceInvadersGameWindow.Components.Initializers;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Systems;
+using GameWindow.Components;
+using GameWindow.Components.Initializers;
 using System;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SpaceInvadersGameWindow
+namespace GameWindow
 {
     public partial class MainWindow : Window
     {
@@ -15,7 +15,8 @@ namespace SpaceInvadersGameWindow
         public static int TargetFPS = 60;
         public static float ratio;
 
-        Transform CenteredXCanvasTransform;
+        public InputHandler inputHandler;
+        private Transform CenteredXCanvasTransform;
         public MainWindow()
         {
             InitializeComponent();
@@ -30,8 +31,8 @@ namespace SpaceInvadersGameWindow
                     T.OnSizeChanged();
             };
 
-            Width = 1024;
-            Height = 1024;
+            Width = 1080;
+            Height = 1080;
 
             CenteredXCanvasTransform = new Transform(new Vector2(256, 256), new Vector2(0, 0));
             CenteredXCanvasTransform.PositionChanged += () =>
@@ -45,7 +46,7 @@ namespace SpaceInvadersGameWindow
                 CenteredCanvas.Height = CenteredXCanvasTransform.ActualScale.Y;
             };
 
-            new InputHandler(this);
+            inputHandler = new InputHandler(this);
             GameInitializers.StartLoginRegist();
         }
 

@@ -1,7 +1,7 @@
-﻿using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Components.Renderer;
+﻿using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Components.Renderer;
 
-namespace SpaceInvaders.Components.GameComponents.Bunker
+namespace GameWindow.Components.GameComponents.Bunker
 {
     internal class BunkerPart
     {

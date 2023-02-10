@@ -1,11 +1,11 @@
-﻿using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvadersGameWindow;
-using SpaceInvadersGameWindow.Components.GameComponents;
+﻿using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow;
+using GameWindow.Components.GameComponents;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace SpaceInvaders.Components.GameComponents
+namespace GameWindow.Components.GameComponents
 {
     internal class InvaderBullet : Bullet
     {

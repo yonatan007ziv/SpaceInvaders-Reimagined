@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SpaceInvaders.Components.PhysicsEngine
+namespace GameWindow.Components.PhysicsEngine
 {
     internal class Time
     {

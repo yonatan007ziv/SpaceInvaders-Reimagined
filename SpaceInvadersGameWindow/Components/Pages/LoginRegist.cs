@@ -1,12 +1,12 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvadersGameWindow.Components.Initializers;
-using SpaceInvadersGameWindow.Components.UIElements;
-using SpaceInvadersGameWindow.Systems.Networking;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.Initializers;
+using GameWindow.Components.UIElements;
+using GameWindow.Systems.Networking;
 using System;
 using System.Diagnostics;
 using System.Numerics;
 
-namespace SpaceInvadersGameWindow.Components.Pages
+namespace GameWindow.Components.Pages
 {
     internal class LoginRegist
     {
@@ -19,13 +19,19 @@ namespace SpaceInvadersGameWindow.Components.Pages
 
         public LoginRegist()
         {
-            usernameInput = new CustomTextInput(new Transform(new Vector2(50, 25), new Vector2(25, 50)));
-            passwordInput = new CustomTextInput(new Transform(new Vector2(50, 25), new Vector2(75, 50)));
+            usernameInput = new CustomTextInput(new Transform(new Vector2(50, 25), new Vector2(256 / 2 - 25, 256 / 2 - 50)));
+            passwordInput = new CustomTextInput(new Transform(new Vector2(50, 25), new Vector2(256 / 2 + 25, 256 / 2 - 50)));
 
-            LoginRegistFlipper = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(25, 100)), () => loginRegistFlip = !loginRegistFlip, @"Resources\RawFiles\Images\UI\temp.png");
-            LoginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(75, 100)), loginRegist, @"Resources\RawFiles\Images\UI\temp.png");
+            LoginRegistFlipper = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(256 / 2 - 25, 256 / 2)), flipLoginRegist, @"Resources\Images\Pixels\Green.png", "Register?"); ;
+            LoginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(256 / 2 + 25, 256 / 2)), loginRegist, @"Resources\Images\Pixels\Green.png", "Click To Login");
 
-            resultLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(75, 150)), "", System.Windows.Media.Colors.White);
+            resultLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(256 / 2, 256 / 2 + 50)), "", System.Windows.Media.Colors.White);
+        }
+        private void flipLoginRegist()
+        {
+            loginRegistFlip = !loginRegistFlip;
+            LoginRegistFlipper.Text = loginRegistFlip ? "Login?" : "Register?";
+            LoginRegistButton.Text = loginRegistFlip ? "Click To Register" : "Click To Login";
         }
         private void loginRegist()
         {

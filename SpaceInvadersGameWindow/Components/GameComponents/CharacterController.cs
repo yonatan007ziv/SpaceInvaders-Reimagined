@@ -1,12 +1,12 @@
-﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Systems;
+﻿using GameWindow.Components.GameComponents;
+using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Systems;
 using System;
 using System.Numerics;
 using System.Windows.Input;
 
-namespace SpaceInvadersGameWindow.Components.GameComponents
+namespace GameWindow.Components.GameComponents
 {
     internal class CharacterController
     {
@@ -16,7 +16,7 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
         Action looper;
         public CharacterController(Transform transform, Collider col)
         {
-            inputHandler = InputHandler.instance!;
+            inputHandler = MainWindow.instance!.inputHandler;
             this.transform = transform;
             this.col = col;
 

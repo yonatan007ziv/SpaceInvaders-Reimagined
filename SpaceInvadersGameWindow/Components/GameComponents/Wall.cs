@@ -1,9 +1,9 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Components.UIElements;
 using System.Numerics;
 
-namespace SpaceInvaders.Components.GameComponents
+namespace GameWindow.Components.GameComponents
 {
     internal class Wall
     {

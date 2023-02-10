@@ -1,10 +1,10 @@
-﻿using SpaceInvadersGameWindow.Components.Pages;
+﻿using GameWindow.Components.Pages;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Threading;
 
-namespace SpaceInvadersGameWindow.Components.Initializers
+namespace GameWindow.Components.Initializers
 {
     internal static class GameInitializers
     {

@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace SpaceInvadersGameplayServer
+namespace GameplayServer
 {
     class MultiplayerGameClient
     {
@@ -33,11 +33,9 @@ namespace SpaceInvadersGameplayServer
         private void Broadcast(string msg)
         {
             Console.WriteLine($"BROADCASTING:{msg}");
+            Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg);
             foreach (MultiplayerGameClient p in players)
-            {
-                Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg);
                 p.client.GetStream().Write(toSendBuffer, 0, toSendBuffer.Length);
-            }
         }
         private void ReceiveMessage(IAsyncResult ar)
         {

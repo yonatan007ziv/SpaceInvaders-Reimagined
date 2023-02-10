@@ -1,12 +1,9 @@
-﻿using SpaceInvadersGameWindow;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
 using System.Windows;
-using System.Windows.Documents;
 
-namespace SpaceInvaders.Components.Miscellaneous
+namespace GameWindow.Components.Miscellaneous
 {
     public class Transform
     {

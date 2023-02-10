@@ -1,10 +1,10 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace SpaceInvadersGameWindow.Components.UIElements
+namespace GameWindow.Components.UIElements
 {
     public partial class Sprite : UserControl
     {
@@ -75,7 +75,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
                 BitmapImage myBitmapImage = new BitmapImage();
 
                 myBitmapImage.BeginInit();
-                myBitmapImage.UriSource = new Uri(@"pack://application:,,,/Resources\RawFiles\Images\MissingSprite.png");
+                myBitmapImage.UriSource = new Uri(@"pack://application:,,,/Resources\Images\MissingSprite.png");
                 myBitmapImage.EndInit();
 
                 return myBitmapImage;
@@ -84,10 +84,7 @@ namespace SpaceInvadersGameWindow.Components.UIElements
         public void Dispose()
         {
             transform.Dispose();
-            MainWindow.instance!.CenteredCanvas.Dispatcher.Invoke
-                (
-                () => MainWindow.instance!.CenteredCanvas.Children.Remove(this)
-                );
+            MainWindow.instance!.CenteredCanvas.Dispatcher.Invoke(() => MainWindow.instance!.CenteredCanvas.Children.Remove(this));
         }
     }
 }

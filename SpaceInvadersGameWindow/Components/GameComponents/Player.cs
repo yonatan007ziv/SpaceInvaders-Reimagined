@@ -1,12 +1,12 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Systems;
-using SpaceInvadersGameWindow.Components.GameComponents;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Systems;
+using GameWindow.Components.GameComponents;
+using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace SpaceInvaders.Components.GameComponents
+namespace GameWindow.Components.GameComponents
 {
     internal class Player
     {
@@ -20,7 +20,7 @@ namespace SpaceInvaders.Components.GameComponents
         {
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this);
-            sprite = new Sprite(transform, @"Resources\RawFiles\Images\Player\Player.png");
+            sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
 
             controller = new CharacterController(transform, col);
         }
@@ -33,11 +33,11 @@ namespace SpaceInvaders.Components.GameComponents
             invincible = true;
             controller.Dispose();
 
-            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\PlayerDeath.wav");
+            SoundManager.PlaySound(@"Resources\Sounds\PlayerDeath.wav");
 
             for (int i = 0; i < 12; i++)
             {
-                sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Player\PlayerDeath{i % 2 + 1}.png");
+                sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png");
                 await Task.Delay(1000 / 10);
             }
             Respawn();
@@ -52,7 +52,7 @@ namespace SpaceInvaders.Components.GameComponents
 
             transform = new Transform(new Vector2(13, 8), new Vector2(50, 200));
             col = new Collider(transform, this);
-            sprite = new Sprite(transform, @"Resources\RawFiles\Images\Player\Player.png");
+            sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
 
             controller = new CharacterController(transform, col);
         }
@@ -61,7 +61,7 @@ namespace SpaceInvaders.Components.GameComponents
             for (int i = 0; i < 13; i++)
             {
                 if (i % 2 == 0)
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Player\Player.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Player\Player.png");
                 else
                     sprite.image.Source = null;
                 await Task.Delay(1000 / 10);

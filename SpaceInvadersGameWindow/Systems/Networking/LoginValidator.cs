@@ -1,9 +1,9 @@
-﻿using SpaceInvadersGameWindow.Components.Initializers;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.Initializers;
+using GameWindow.Components.UIElements;
 using System;
 using System.Diagnostics;
 
-namespace SpaceInvadersGameWindow.Systems.Networking
+namespace GameWindow.Systems.Networking
 {
     class LoginValidator : NetworkClient
     {
@@ -18,7 +18,7 @@ namespace SpaceInvadersGameWindow.Systems.Networking
 
             this.resultLabel = resultLabel;
             this.DiposeRegistLoginMenu = InitializeMenu;
-            if (ConnectToAddress("46.121.140.122", 7777))
+            if (ConnectToAddress("127.0.0.1", 7777))
             {
                 SendMessage($"LOGIN:{username}/{password}");
                 BeginSingleRead();

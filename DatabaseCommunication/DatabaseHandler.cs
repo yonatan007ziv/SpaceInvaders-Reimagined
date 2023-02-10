@@ -1,8 +1,8 @@
-﻿using System.Data.SqlClient;
+﻿/*using System.Data.SqlClient;
 
-namespace LoginRegistServer
+namespace DatabaseCommunication
 {
-    internal class DatabaseHandler
+    internal class DatabaseHandler : NetworkServer
     {
         private SqlConnection conn;
         public DatabaseHandler()
@@ -61,4 +61,4 @@ namespace LoginRegistServer
             conn.Close();
         }
     }
-}
+}*/

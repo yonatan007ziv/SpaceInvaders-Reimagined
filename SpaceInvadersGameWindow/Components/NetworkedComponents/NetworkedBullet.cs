@@ -1,9 +1,9 @@
-﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Systems;
-using SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.GameComponents;
+using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Systems;
+using GameWindow.Components.GameComponents.NetworkedComponents;
+using GameWindow.Components.UIElements;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Numerics;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace SpaceInvadersGameWindow.Components.GameComponents
+namespace GameWindow.Components.GameComponents
 {
     class NetworkedBullet
     {
@@ -29,19 +29,21 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
             {
                 transform = new Transform(new Vector2(3, 7), pos);
                 col = new Collider(transform, this);
-                sprite = new Sprite(transform, @"Resources\RawFiles\Images\Bullet\Bullet.png");
+                sprite = new Sprite(transform, @"Resources
+
+\Images\Bullet\Bullet.png");
             });
 
             this.onBulletHit = onBulletHit;
             LocalBulletLoop();
         }
-        public NetworkedBullet(Vector2 pos)
+        public NetworkedBullet(string shooter)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                transform = new Transform(new Vector2(3, 7), pos);
+                transform = new Transform(new Vector2(3, 7), NetworkedPlayer.currentPlayers[shooter].transform.Position);
                 col = new Collider(transform, this);
-                sprite = new Sprite(transform, @"Resources\RawFiles\Images\Bullet\Bullet.png");
+                sprite = new Sprite(transform, @"Resources\Images\Bullet\Bullet.png");
             });
 
             OnlineBulletLoop();
@@ -61,7 +63,7 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
         }
         public async void OnlineBulletLoop()
         {
-            Vector2 SpeedVector = new Vector2(0, -bulletSpeed);
+            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
             while (col!.TouchingCollider() == null || col.TouchingCollider()!.parent is NetworkedPlayer || col.TouchingCollider()!.parent is Bullet)
             {
                 transform.Position += SpeedVector;
@@ -72,13 +74,13 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
         }
         public async void BulletExplosion()
         {
-            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\BulletExplosion.wav");
+            SoundManager.PlaySound(@"Resources\Sounds\BulletExplosion.wav");
 
             // Bullet Explosion
             await Application.Current.Dispatcher.Invoke(async () =>
             {
                 Transform ExplosionTransform = new Transform(new Vector2(6, 8), transform.Position);
-                Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\RawFiles\Images\Bullet\BulletExplosion.png");
+                Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\Images\Bullet\BulletExplosion.png");
                 
                 await Task.Delay(500);
 

@@ -1,10 +1,10 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvadersGameWindow.Components.Initializers;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.Initializers;
+using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Windows;
 
-namespace SpaceInvadersGameWindow.Components.Pages
+namespace GameWindow.Components.Pages
 {
     internal class GameMainMenu
     {

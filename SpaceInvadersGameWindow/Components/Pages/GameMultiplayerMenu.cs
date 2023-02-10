@@ -1,10 +1,10 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvadersGameWindow.Components.Initializers;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.Initializers;
+using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Security.Principal;
 
-namespace SpaceInvadersGameWindow.Components.Pages
+namespace GameWindow.Components.Pages
 {
     internal class GameMultiplayerMenu
     {
@@ -32,7 +32,7 @@ namespace SpaceInvadersGameWindow.Components.Pages
         }
         void OnConnect()
         {
-            if (ipLabel.Text == "" && portInput.Text == "")
+            if (ipInput.Text == "" && portInput.Text == "")
                 return;
             Dispose();
             new MultiplayerGameInitializer(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);

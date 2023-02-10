@@ -1,11 +1,11 @@
-﻿using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Systems;
-using SpaceInvadersGameWindow;
-using SpaceInvadersGameWindow.Components.GameComponents;
+﻿using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Systems;
+using GameWindow;
+using GameWindow.Components.GameComponents;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace SpaceInvaders.Components.GameComponents
+namespace GameWindow.Components.GameComponents
 {
     internal class PlayerBullet : Bullet
     {
@@ -15,7 +15,8 @@ namespace SpaceInvaders.Components.GameComponents
             instance = this;
             bulletSpeed *= 1.75f;
 
-            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\Shoot.wav");
+            SoundManager.PlaySound(@"Resources
+\Sounds\Shoot.wav");
 
             BulletLoop();
         }

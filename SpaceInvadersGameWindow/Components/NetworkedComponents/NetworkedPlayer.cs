@@ -1,12 +1,12 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Components.UIElements;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Numerics;
 using System.Windows;
 
-namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
+namespace GameWindow.Components.GameComponents.NetworkedComponents
 {
     internal class NetworkedPlayer
     {
@@ -27,7 +27,8 @@ namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                sprite = new Sprite(transform, @"Resources\RawFiles\Images\Player\Player.png");
+                sprite = new Sprite(transform, @"Resources
+\Images\Player\Player.png");
                 nameTag = new CustomLabel(transform, nickname, System.Windows.Media.Colors.Purple);
             });
         }
@@ -43,7 +44,7 @@ namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                sprite = new Sprite(transform, @"Resources\RawFiles\Images\Player\OpponentPlayer.png");
+                sprite = new Sprite(transform, @"Resources\Images\Player\OpponentPlayer.png");
                 nameTag = new CustomLabel(transform, nickname, System.Windows.Media.Colors.Purple);
             });
         }

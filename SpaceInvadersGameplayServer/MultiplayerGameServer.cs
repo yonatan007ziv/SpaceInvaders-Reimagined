@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace SpaceInvadersGameplayServer
+namespace GameplayServer
 {
     internal class MultiplayerGameServer
     {

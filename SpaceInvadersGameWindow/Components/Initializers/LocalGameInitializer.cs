@@ -1,9 +1,9 @@
-﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.GameComponents;
+using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.UIElements;
 using System.Numerics;
 
-namespace SpaceInvadersGameWindow.Components.Initializers
+namespace GameWindow.Components.Initializers
 {
     internal class LocalGameInitializer
     {
@@ -24,11 +24,11 @@ namespace SpaceInvadersGameWindow.Components.Initializers
 
             #region temp overlay
             //Transform ColorOverlayT = new Transform(new Vector2(256, 256), new Vector2(256 / 2, 256 / 2));
-            //Sprite ColorOverlaySprite = new Sprite(ColorOverlayT, @"Resources\RawFiles\Images\Overlay.png");
+            //Sprite ColorOverlaySprite = new Sprite(ColorOverlayT, @"Resources\Images\Overlay.png");
             #endregion
 
-            Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 2.5f), @"Resources\RawFiles\Images\Pixels\Red.png");
-            Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 224), @"Resources\RawFiles\Images\Pixels\Green.png");
+            Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 2.5f), @"Resources\Images\Pixels\Red.png");
+            Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 224), @"Resources\Images\Pixels\Green.png");
             Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
             Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256 - 16, 256 / 2));
 

@@ -1,11 +1,11 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Systems;
-using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Systems;
+using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Threading.Tasks;
 
-namespace SpaceInvadersGameWindow.Components.GameComponents
+namespace GameWindow.Components.GameComponents
 {
     class Bullet
     {
@@ -29,7 +29,7 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
             bulletSpeed *= dir;
             transform = new Transform(new Vector2(3, 7), pos);
             col = new Collider(transform, this);
-            sprite = new Sprite(transform, @"Resources\RawFiles\Images\Bullet.png");
+            sprite = new Sprite(transform, @"Resources\Images\Bullet.png");
         }
         int timesCounter = 0;
         public void NextClip()
@@ -45,26 +45,26 @@ namespace SpaceInvadersGameWindow.Components.GameComponents
             switch (bulletType)
             {
                 case BulletTypes.Charge:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Bullet\Charge\Charge{times + 1}.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Charge\Charge{times + 1}.png");
                     return;
                 case BulletTypes.Imperfect:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Bullet\Imperfect\Imperfect{times + 1}.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Imperfect\Imperfect{times + 1}.png");
                     return;
                 case BulletTypes.ZigZag:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Bullet\ZigZag\ZigZag{times + 1}.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\ZigZag\ZigZag{times + 1}.png");
                     return;
                 case BulletTypes.Normal:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\RawFiles\Images\Bullet\Bullet.png");
+                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Bullet.png");
                     return;
             }
         }
         public async void BulletExplosion()
         {
-            SoundManager.PlaySound(@"Resources\RawFiles\Sounds\BulletExplosion.wav");
+            SoundManager.PlaySound(@"Resources\Sounds\BulletExplosion.wav");
 
             // Bullet Explosion
             Transform ExplosionTransform = new Transform(new Vector2(6, 8), transform.Position);
-            Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\RawFiles\Images\Bullet\BulletExplosion.png");
+            Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\Images\Bullet\BulletExplosion.png");
 
             await Task.Delay(500);
 

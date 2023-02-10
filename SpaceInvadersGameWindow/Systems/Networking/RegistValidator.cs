@@ -1,7 +1,7 @@
-﻿using SpaceInvadersGameWindow.Components.UIElements;
+﻿using GameWindow.Components.UIElements;
 using System.Diagnostics;
 
-namespace SpaceInvadersGameWindow.Systems.Networking
+namespace GameWindow.Systems.Networking
 {
     class RegistValidator : NetworkClient
     {
@@ -9,9 +9,13 @@ namespace SpaceInvadersGameWindow.Systems.Networking
         public RegistValidator(string username, string password, CustomLabel resultLabel) : base()
         {
             this.resultLabel = resultLabel;
-            ConnectToAddress("46.121.140.122", 7777);
-            SendMessage($"REGISTER:{username}/{password}");
-            BeginSingleRead();
+            if (ConnectToAddress("127.0.0.1", 7777))
+            {
+                SendMessage($"REGISTER:{username}/{password}");
+                BeginSingleRead();
+            }
+            else
+                resultLabel.Text = "Failed! server unreachable.";
         }
 
         protected override void DecodeMessage(string msg)

@@ -1,11 +1,11 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
-using SpaceInvadersGameWindow;
+using GameWindow;
 using System.Windows.Media;
-using Transform = SpaceInvaders.Components.Miscellaneous.Transform; // Due to ambiguity with System.Windows.Media Transform
+using Transform = GameWindow.Components.Miscellaneous.Transform; // Due to ambiguity with System.Windows.Media Transform
 
-namespace SpaceInvaders.Components.Renderer
+namespace GameWindow.Components.Renderer
 {
     /*
     internal class SpriteRenderer : Image
@@ -75,7 +75,8 @@ namespace SpaceInvaders.Components.Renderer
                 BitmapImage myBitmapImage = new BitmapImage();
 
                 myBitmapImage.BeginInit();
-                myBitmapImage.UriSource = new Uri(@"pack://application:,,,/Resources\RawFiles\Images\MissingSprite.png");
+                myBitmapImage.UriSource = new Uri(@"pack://application:,,,/Resources
+    \Images\MissingSprite.png");
                 myBitmapImage.EndInit();
 
                 return myBitmapImage;

@@ -1,5 +1,5 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.Renderer;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.Renderer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SpaceInvadersGameWindow.Components.UIElements
+namespace GameWindow.Components.UIElements
 {
     /// <summary>
     /// Interaction logic for NavigableButton.xaml

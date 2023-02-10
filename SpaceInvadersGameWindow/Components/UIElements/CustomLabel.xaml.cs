@@ -1,9 +1,9 @@
-﻿using SpaceInvaders.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SpaceInvadersGameWindow.Components.UIElements
+namespace GameWindow.Components.UIElements
 {
     /// <summary>
     /// Interaction logic for CustomLabel.xaml

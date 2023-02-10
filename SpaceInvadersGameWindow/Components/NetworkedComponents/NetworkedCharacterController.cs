@@ -1,14 +1,14 @@
-﻿using SpaceInvaders.Components.GameComponents;
-using SpaceInvaders.Components.Miscellaneous;
-using SpaceInvaders.Components.PhysicsEngine.Collider;
-using SpaceInvaders.Systems;
+﻿using GameWindow.Components.GameComponents;
+using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Systems;
 using System;
 using System.Net.Sockets;
 using System.Numerics;
 using System.Text;
 using System.Windows.Input;
 
-namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
+namespace GameWindow.Components.GameComponents.NetworkedComponents
 {
     internal class NetworkedCharacterController
     {
@@ -20,7 +20,7 @@ namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
         private NetworkStream ns;
         public NetworkedCharacterController(Transform transform, Collider col, NetworkStream ns)
         {
-            inputHandler = InputHandler.instance!;
+            inputHandler = MainWindow.instance!.inputHandler;
             this.transform = transform;
             this.col = col;
             this.ns = ns;
@@ -36,7 +36,7 @@ namespace SpaceInvadersGameWindow.Components.GameComponents.NetworkedComponents
             if (axis == 1 && (col == null || col.parent != Wall.RightWall) || axis == -1 && (col == null || col.parent != Wall.LeftWall))
             {
                 transform.Position += new Vector2(axis, 0);
-                SendMessage($"PLAYER POS:({transform.Position.X},{transform.Position.Y})");
+                SendMessage($"PLAYER POS:{transform.Position.X}");
             }
             if (inputHandler.keysDown.Contains(Key.Space) && myBullet == null)
             {
