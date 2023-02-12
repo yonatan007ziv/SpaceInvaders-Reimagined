@@ -53,15 +53,15 @@ namespace GameWindow.Components.GameComponents
         public async void LocalBulletLoop()
         {
             Vector2 SpeedVector = new Vector2(0, -bulletSpeed);
-            while (col!.TouchingCollider() == null || (col.TouchingCollider()!.parent is NetworkedPlayer && ((NetworkedPlayer)col.TouchingCollider()).username == GameInitializers.username) || col.TouchingCollider()!.parent is Bullet)
+            while (col!.TouchingCollider() == null || (col.TouchingCollider()!.parent is NetworkedPlayer /*&& ((NetworkedPlayer)col.TouchingCollider()).username == GameInitializers.username) */|| col.TouchingCollider()!.parent is Bullet))
             {
                 transform.Position += SpeedVector;
                 await Task.Delay(1000 / MainWindow.TargetFPS);
             }
 
             Collider hit = col.TouchingCollider()!;
-            if (hit.parent is NetworkedPlayer)
-                BulletHitMessage($"BULLET HIT:{(NetworkedPlayer)(hit.parent).username}");
+            //if (hit.parent is NetworkedPlayer)
+            //    BulletHitMessage($"BULLET HIT:{(NetworkedPlayer)(hit.parent).username}");
             BulletHitMessage($"BULLET EXPLOSION POS:({transform.Position.X},{transform.Position.Y})");
             BulletExplosion();
         }
