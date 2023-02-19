@@ -23,6 +23,7 @@ namespace GameWindow.Components.GameComponents
         protected Sprite sprite;
         protected Collider col;
         protected float bulletSpeed = 3;
+
         public Bullet(Vector2 pos, int dir, int type)
         {
             bulletType = (BulletTypes)type;

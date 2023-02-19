@@ -9,7 +9,7 @@ namespace GameWindow.Systems.Networking
         public RegistValidator(string username, string password, CustomLabel resultLabel) : base()
         {
             this.resultLabel = resultLabel;
-            if (ConnectToAddress("127.0.0.1", 7777))
+            if (ConnectToAddress("46.121.140.104", 7777))
             {
                 SendMessage($"REGISTER:{username}/{password}");
                 BeginSingleRead();

@@ -22,7 +22,7 @@ namespace GameWindow.Components.Initializers
 
         public static void StartSingleplayerGame()
         {
-            new LocalGameInitializer();
+            new LocalGame();
         }
 
         public static void StartMultiplayerGameMenu()

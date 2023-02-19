@@ -1,29 +1,29 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.GameComponents.NetworkedComponents;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems.Networking;
 using System.Diagnostics;
 using System.Numerics;
 
 namespace GameWindow.Components.Initializers
 {
-    internal class MultiplayerGameInitializer : NetworkClient
+    internal class MultiplayerGameClient : NetworkClient
     {
-        public MultiplayerGameInitializer(string ip, int port, string username)
+        public MultiplayerGameClient(string ip, int port, string username)
         {
             if (ConnectToAddress(ip, port))
             {
                 SendMessage(username);
                 BeginRead();
 
-                Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 2.5f), @"Resources\Images\Pixels\Red.png");
-                Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 224), @"Resources\Images\Pixels\Green.png");
-                //Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
-                //Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256 - 16, 256 / 2));
+                Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 0), @"Resources\Images\Pixels\Red.png");
+                Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 256), @"Resources\Images\Pixels\Green.png");
+                Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
+                Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256, 256 / 2));
             }
         }
         protected override void DecodeMessage(string msg)
         {
-            Debug.WriteLine(msg);
             string gotNick = msg.Split('$')[0];
 
             if (msg.Contains("INITIATE PLAYER:"))
@@ -38,23 +38,22 @@ namespace GameWindow.Components.Initializers
 
             if (msg.Contains("PLAYER POS:"))
             {
-                int x, y;
-                try { x = int.Parse(msg.Split(':')[1]); }
-                catch { x = 0; y = 0; };
+                int x;
+                try
+                {
+                    x = int.Parse(msg.Split(':')[1]);
+                    Transform t = NetworkedPlayer.currentPlayers[gotNick].transform;
+                    t.Position = new Vector2(x, t.Position.Y);
+                }
+                catch
+                {
 
-                NetworkedPlayer.currentPlayers[gotNick].transform.Position = new Vector2(x, NetworkedPlayer.currentPlayers[gotNick].transform.Position.Y);
+                    x = 0; System.Console.WriteLine(msg);
+                    NetworkedPlayer.currentPlayers[gotNick].transform.Position = new Vector2(x, NetworkedPlayer.currentPlayers[gotNick].transform.Position.Y);
+                }
             }
             else if (msg.Contains("INITIATE BULLET:"))
             {
-                int x, y;
-                try
-                {
-                    string coords = msg.Split(':')[1];
-                    coords = coords.Substring(1, coords.Length - 2);
-                    x = int.Parse(coords.Split(',')[0]); y = int.Parse(coords.Split(',')[1]);
-                }
-                catch { x = 0; y = 0; };
-
                 new NetworkedBullet(gotNick);
             }
             //else if (msg.Contains("BULLET POS:"))

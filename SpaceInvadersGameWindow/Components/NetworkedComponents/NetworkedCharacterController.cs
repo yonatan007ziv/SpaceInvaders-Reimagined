@@ -41,7 +41,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             if (inputHandler.keysDown.Contains(Key.Space) && myBullet == null)
             {
                 myBullet = new NetworkedBullet(transform.Position, OnBulletHit);
-                SendMessage($"INITIATE BULLET:({transform.Position.X},{transform.Position.Y})");
+                SendMessage($"INITIATE BULLET:");
             }
         }
         private void OnBulletHit(string msg)

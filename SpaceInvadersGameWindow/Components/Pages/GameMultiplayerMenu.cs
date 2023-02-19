@@ -35,7 +35,7 @@ namespace GameWindow.Components.Pages
             if (ipInput.Text == "" && portInput.Text == "")
                 return;
             Dispose();
-            new MultiplayerGameInitializer(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
+            new MultiplayerGameClient(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
             connectButton.Dispose();
         }
     }

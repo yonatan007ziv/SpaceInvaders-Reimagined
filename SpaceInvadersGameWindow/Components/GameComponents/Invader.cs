@@ -168,7 +168,7 @@ namespace GameWindow.Components.GameComponents
             Transform ExplosionTransform = new Transform(new Vector2(13, 8), transform.Position);
             Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\Images\Enemies\InvaderDeath.png");
 
-            LocalGameInitializer.instance!.Score += pointsReward;
+            LocalGame.instance!.Score += pointsReward;
 
             await Task.Delay(500);
 
@@ -202,13 +202,18 @@ namespace GameWindow.Components.GameComponents
                 invaders[i].sprite.image.IsEnabled = true;
         }
 
-        public static async void StartInvaders()
+        public static async void StartInvaders(LocalGame currentGame)
         {
-            while (invaders.Count > 0)
+            while (invaders.Count > 0 && invaders[invaders.Count - 1].transform.Position.Y > 200)  // won or lowest invader y position is more than 200
             {
                 MoveInvaders();
                 await Task.Delay(invaders.Count * 50);
             }
+
+            if (invaders.Count == 0)
+                currentGame.Won();
+            else
+                currentGame.Lost();
         }
     }
 }

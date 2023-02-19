@@ -47,7 +47,8 @@ namespace GameWindow
             };
 
             inputHandler = new InputHandler(this);
-            GameInitializers.StartLoginRegist();
+            //GameInitializers.StartLoginRegist();
+            GameInitializers.StartGameMenu("YonatanZiv");
         }
 
         public void CalculateRatio()

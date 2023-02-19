@@ -5,6 +5,8 @@ using GameWindow.Components.GameComponents;
 using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Threading.Tasks;
+using GameWindow.Components.Initializers;
+using System.Windows.Media.Imaging;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -16,8 +18,11 @@ namespace GameWindow.Components.GameComponents
         private Collider col;
         private Sprite sprite;
         private CharacterController controller;
-        public Player(Vector2 pos)
+        private LocalGame currentGame;
+        public Player(Vector2 pos, LocalGame currentGame)
         {
+            this.currentGame = currentGame;
+
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this);
             sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
@@ -25,13 +30,22 @@ namespace GameWindow.Components.GameComponents
             controller = new CharacterController(transform, col);
         }
         private bool invincible = false;
+        public void StopInput()
+        {
+            controller.Dispose();
+        }
+        public void StartInput()
+        {
+            controller = new CharacterController(transform, col);
+        }
         public async void Kill()
         {
             if (invincible) return;
-            //else if (livesLeft == 0) 
+            else if (livesLeft == 0) 
+
 
             invincible = true;
-            controller.Dispose();
+            StopInput();
 
             SoundManager.PlaySound(@"Resources\Sounds\PlayerDeath.wav");
 
@@ -54,19 +68,27 @@ namespace GameWindow.Components.GameComponents
             col = new Collider(transform, this);
             sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
 
-            controller = new CharacterController(transform, col);
+            StartInput();
         }
         private async void Invincibility()
         {
+            BitmapImage playerSprite = Sprite.BitmapFromPath(@$"Resources\Images\Player\Player.png");
             for (int i = 0; i < 13; i++)
             {
                 if (i % 2 == 0)
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Player\Player.png");
+                    sprite.image.Source = playerSprite;
                 else
                     sprite.image.Source = null;
                 await Task.Delay(1000 / 10);
             }
             invincible = false;
+        }
+        private void Dispose()
+        {
+            controller?.Dispose();
+            col.Dispose();
+            sprite.Dispose();
+            transform.Dispose();
         }
     }
 }

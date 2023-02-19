@@ -15,8 +15,7 @@ namespace GameWindow.Components.GameComponents
             instance = this;
             bulletSpeed *= 1.75f;
 
-            SoundManager.PlaySound(@"Resources
-\Sounds\Shoot.wav");
+            //SoundManager.PlaySound(@"Resources\Sounds\Shoot.wav");
 
             BulletLoop();
         }

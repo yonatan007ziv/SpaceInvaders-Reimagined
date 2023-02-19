@@ -30,9 +30,7 @@ namespace GameWindow.Components.GameComponents
             {
                 transform = new Transform(new Vector2(3, 7), pos);
                 col = new Collider(transform, this);
-                sprite = new Sprite(transform, @"Resources
-
-\Images\Bullet\Bullet.png");
+                sprite = new Sprite(transform, @"Resources\Images\Bullet\Bullet.png");
             });
 
             this.BulletHitMessage = onBulletHit;

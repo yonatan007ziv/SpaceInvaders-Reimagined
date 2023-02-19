@@ -5,9 +5,9 @@ using System.Numerics;
 
 namespace GameWindow.Components.Initializers
 {
-    internal class LocalGameInitializer
+    internal class LocalGame
     {
-        public static LocalGameInitializer? instance;
+        public static LocalGame? instance;
 
         private int score = 0;
         public int Score
@@ -18,7 +18,7 @@ namespace GameWindow.Components.Initializers
 
         private CustomLabel CreditsLabel;
 
-        public LocalGameInitializer()
+        public LocalGame()
         {
             instance = this;
 
@@ -35,10 +35,21 @@ namespace GameWindow.Components.Initializers
             CreditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(200, 200)),"", System.Windows.Media.Colors.White);
             Score = 0;
 
-            new Player(new Vector2(50, 200));
+            player = new Player(new Vector2(50, 200), this);
 
             Invader.PlotInvaders(0, 0);
-            Invader.StartInvaders();
+            Invader.StartInvaders(this);
+        }
+
+        private Player player;
+
+        public void Won()
+        {
+            player.StopInput();
+        }
+        public void Lost()
+        {
+
         }
     }
 }
