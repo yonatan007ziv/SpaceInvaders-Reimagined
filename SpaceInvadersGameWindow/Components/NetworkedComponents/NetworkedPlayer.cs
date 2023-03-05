@@ -2,9 +2,9 @@
 using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using System.Collections.Generic;
-using System.Net.Sockets;
 using System.Numerics;
 using System.Windows;
+using static GameWindow.Components.Miscellaneous.Delegates;
 
 namespace GameWindow.Components.GameComponents.NetworkedComponents
 {
@@ -13,13 +13,14 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
         public static NetworkedPlayer? localPlayer;
         public static Dictionary<string, NetworkedPlayer> currentPlayers = new Dictionary<string, NetworkedPlayer>();
 
+        public NetworkedBullet? myBullet = null;
         public Transform transform;
         private Collider col;
         private Sprite sprite;
-        private NetworkedCharacterController? characterController;
+        public NetworkedCharacterController? characterController;
         private CustomLabel nameTag;
         public string username;
-        public NetworkedPlayer(Vector2 pos, string username, NetworkStream ns) // local
+        public NetworkedPlayer(Vector2 pos, string username, ActionString sendMessage) // local
         {
             currentPlayers.Add(username, this);
 
@@ -28,7 +29,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this);
-            characterController = new NetworkedCharacterController(transform, col, ns);
+            characterController = new NetworkedCharacterController(this, transform, col, sendMessage);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -39,8 +40,6 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
         public NetworkedPlayer(Vector2 pos, string username) // online
         {
-            if (currentPlayers.ContainsKey(username)) return;
-
             currentPlayers.Add(username, this);
 
             this.username = username;

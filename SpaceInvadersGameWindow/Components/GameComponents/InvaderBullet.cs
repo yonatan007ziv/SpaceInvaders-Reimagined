@@ -25,8 +25,8 @@ namespace GameWindow.Components.GameComponents
             }
 
             Collider col = this.col.TouchingCollider()!;
-            if (col.parent is Player)
-                ((Player)col.parent).Kill();
+            if (col.parent is Player player)
+                player.Kill();
 
             BulletExplosion();
         }

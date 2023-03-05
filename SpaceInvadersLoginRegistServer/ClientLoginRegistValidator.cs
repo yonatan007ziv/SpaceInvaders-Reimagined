@@ -5,6 +5,8 @@ namespace LoginRegistServer
 {
     internal class ClientLoginRegistValidator
     {
+        private static readonly char messageSeperator = '+';
+
         private enum LoginResult
         {
             Success,
@@ -118,6 +120,7 @@ namespace LoginRegistServer
 
         private void DecodeMessage(string msg)
         {
+            msg = msg.Split(messageSeperator)[0];
             Console.WriteLine("GOT: " + msg);
             if (msg.Contains("LOGIN"))
                 Login(msg.Split(':')[1]);

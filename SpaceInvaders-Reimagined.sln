@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoginRegistServer", "SpaceI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameplayServer", "SpaceInvadersGameplayServer\GameplayServer.csproj", "{B8E9EA17-699E-40E9-9BB3-798C2207DA4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseCommunication", "DatabaseCommunication\DatabaseCommunication.csproj", "{2947D523-8D80-4692-9C1F-96B804FE0ED2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseCommunication", "DatabaseCommunication\DatabaseCommunication.csproj", "{2947D523-8D80-4692-9C1F-96B804FE0ED2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A2769C1B-F9F5-4DCE-9CFD-7373568EE142}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

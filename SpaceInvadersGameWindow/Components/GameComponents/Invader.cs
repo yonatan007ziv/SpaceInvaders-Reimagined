@@ -204,7 +204,7 @@ namespace GameWindow.Components.GameComponents
 
         public static async void StartInvaders(LocalGame currentGame)
         {
-            while (invaders.Count > 0 && invaders[invaders.Count - 1].transform.Position.Y > 200)  // won or lowest invader y position is more than 200
+            while (invaders.Count > 0) //&& invaders[invaders.Count - 1].transform.Position.Y > 200)  // won or lowest invader y position is more than 200
             {
                 MoveInvaders();
                 await Task.Delay(invaders.Count * 50);

@@ -30,8 +30,8 @@ namespace GameWindow.Components.GameComponents
             }
 
             Collider col = this.col.TouchingCollider()!;
-            if(col.parent is Invader)
-                ((Invader)col.parent).Death();
+            if(col.parent is Invader inv)
+                inv.Death();
 
             BulletExplosion();
             instance = null;

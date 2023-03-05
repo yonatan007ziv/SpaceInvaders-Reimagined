@@ -1,30 +1,28 @@
-﻿using GameWindow.Components.GameComponents;
+﻿using GameWindow.Components.GameComponents.NetworkedComponents;
+using GameWindow.Components.Initializers;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.PhysicsEngine.Collider;
-using GameWindow.Systems;
-using GameWindow.Components.GameComponents.NetworkedComponents;
 using GameWindow.Components.UIElements;
-using System.Collections.Generic;
-using System.Net.Sockets;
+using GameWindow.Systems;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using GameWindow.Components.Initializers;
+using static GameWindow.Components.Miscellaneous.Delegates;
 
 namespace GameWindow.Components.GameComponents
 {
     class NetworkedBullet
     {
-        public delegate void hitCmd(string command);
-        private hitCmd BulletHitMessage;
+        private ActionString? sendMessage;
+        private Action? killBullet;
+        private string shooter;
 
         public Transform transform;
         private Sprite sprite;
-        private Collider? col;
-        private float bulletSpeed = 3;
+        private Collider col;
+        private readonly float bulletSpeed = 3;
 
-        public NetworkedBullet(Vector2 pos, hitCmd onBulletHit)
+        public NetworkedBullet(Vector2 pos, ActionString sendMessage, Action killBullet)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -33,7 +31,9 @@ namespace GameWindow.Components.GameComponents
                 sprite = new Sprite(transform, @"Resources\Images\Bullet\Bullet.png");
             });
 
-            this.BulletHitMessage = onBulletHit;
+            this.shooter = GameInitializers.username!;
+            this.sendMessage = sendMessage;
+            this.killBullet = killBullet;
             LocalBulletLoop();
         }
         public NetworkedBullet(string shooter)
@@ -45,6 +45,8 @@ namespace GameWindow.Components.GameComponents
                 sprite = new Sprite(transform, @"Resources\Images\Bullet\Bullet.png");
             });
 
+            this.shooter = shooter;
+            NetworkedPlayer.currentPlayers[shooter].myBullet = this;
             OnlineBulletLoop();
         }
 
@@ -58,9 +60,10 @@ namespace GameWindow.Components.GameComponents
             }
 
             Collider hit = col.TouchingCollider()!;
-            //if (hit.parent is NetworkedPlayer)
-            //    BulletHitMessage($"BULLET HIT:{(NetworkedPlayer)(hit.parent).username}");
-            BulletHitMessage($"BULLET EXPLOSION POS:({transform.Position.X},{transform.Position.Y})");
+            if (hit.parent is NetworkedPlayer player)
+                sendMessage!($"BULLET HIT:{player.username}");
+            sendMessage!($"BULLET EXPLOSION:");
+            killBullet!();
             BulletExplosion();
         }
         public async void OnlineBulletLoop()
@@ -71,8 +74,6 @@ namespace GameWindow.Components.GameComponents
                 transform.Position += SpeedVector;
                 await Task.Delay(1000 / MainWindow.TargetFPS);
             }
-
-            Dispose();
         }
         public async void BulletExplosion()
         {
@@ -95,6 +96,7 @@ namespace GameWindow.Components.GameComponents
 
         public void Dispose()
         {
+            NetworkedPlayer.currentPlayers[shooter].myBullet = null;
             sprite.Dispose();
             col?.Dispose();
             transform.Dispose();

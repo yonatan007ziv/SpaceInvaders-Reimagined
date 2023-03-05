@@ -7,6 +7,7 @@ namespace GameplayServer
 {
     class MultiplayerGameClient
     {
+        private static readonly char messageSeperator = '+';
         private static List<MultiplayerGameClient> players = new List<MultiplayerGameClient>();
 
         private TcpClient client;
@@ -56,6 +57,15 @@ namespace GameplayServer
         }
         private void DecodeMessage(string msg)
         {
+            if (msg == "") return;
+
+            if (msg.Contains(messageSeperator))
+            {
+                DecodeMessage(msg.Split(messageSeperator)[0]);
+                DecodeMessage(msg.Split(messageSeperator)[1]);
+                return;
+            }
+
             if (!gotNick)
             {
                 gotNick = true;

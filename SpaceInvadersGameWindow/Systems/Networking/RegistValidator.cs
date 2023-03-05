@@ -1,5 +1,4 @@
 ﻿using GameWindow.Components.UIElements;
-using System.Diagnostics;
 
 namespace GameWindow.Systems.Networking
 {

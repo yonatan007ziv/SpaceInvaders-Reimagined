@@ -1,15 +1,18 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.GameComponents.NetworkedComponents;
 using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.UIElements;
 using GameWindow.Systems.Networking;
 using System.Diagnostics;
 using System.Numerics;
+using System.Windows;
+using System.Windows.Interop;
 
 namespace GameWindow.Components.Initializers
 {
     internal class MultiplayerGameClient : NetworkClient
     {
-        public MultiplayerGameClient(string ip, int port, string username)
+        public MultiplayerGameClient(string ip, int port, string username) : base()
         {
             if (ConnectToAddress(ip, port))
             {
@@ -21,6 +24,7 @@ namespace GameWindow.Components.Initializers
                 Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
                 Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256, 256 / 2));
             }
+            else { GameInitializers.StartGameMenu(GameInitializers.username!); }
         }
         protected override void DecodeMessage(string msg)
         {
@@ -29,8 +33,8 @@ namespace GameWindow.Components.Initializers
             if (msg.Contains("INITIATE PLAYER:"))
             {
                 if (gotNick == GameInitializers.username) // if local player
-                    new NetworkedPlayer(new Vector2(100, 200), gotNick, client.GetStream());
-                else
+                    new NetworkedPlayer(new Vector2(100, 200), gotNick, SendMessage);
+                else if (!NetworkedPlayer.currentPlayers.ContainsKey(gotNick))
                     new NetworkedPlayer(new Vector2(100, 50), gotNick);
             }
 
@@ -38,41 +42,18 @@ namespace GameWindow.Components.Initializers
 
             if (msg.Contains("PLAYER POS:"))
             {
-                int x;
-                try
-                {
-                    x = int.Parse(msg.Split(':')[1]);
-                    Transform t = NetworkedPlayer.currentPlayers[gotNick].transform;
-                    t.Position = new Vector2(x, t.Position.Y);
-                }
-                catch
-                {
-
-                    x = 0; System.Console.WriteLine(msg);
-                    NetworkedPlayer.currentPlayers[gotNick].transform.Position = new Vector2(x, NetworkedPlayer.currentPlayers[gotNick].transform.Position.Y);
-                }
+                int.TryParse(msg.Split(':')[1], out int x);
+                Transform t = NetworkedPlayer.currentPlayers[gotNick].transform;
+                t.Position = new Vector2(x, t.Position.Y);
             }
             else if (msg.Contains("INITIATE BULLET:"))
             {
                 new NetworkedBullet(gotNick);
             }
-            //else if (msg.Contains("BULLET POS:"))
-            //{
-            //    int x, y;
-            //    try
-            //    {
-            //        string coords = msg.Split(':')[1];
-            //        coords = coords.Substring(1, coords.Length - 2);
-            //        x = int.Parse(coords.Split(',')[0]); y = int.Parse(coords.Split(',')[1]);
-            //    }
-            //    catch { x = 0; y = 0; };
-            //
-            //    NetworkedBullet.NetworkedBullets[gotNick].transform.Position = new Vector2(x, y);
-            //}
-            //else if (msg.Contains("BULLET EXPLOSION POS:"))
-            //{
-            //    NetworkedBullet.NetworkedBullets[gotNick].BulletExplosion();
-            //}
+            else if (msg.Contains("BULLET EXPLOSION:"))
+            {
+                NetworkedPlayer.currentPlayers[gotNick].myBullet!.BulletExplosion();
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using GameWindow.Components.Initializers;
 using GameWindow.Components.UIElements;
 using System;
-using System.Diagnostics;
 
 namespace GameWindow.Systems.Networking
 {
