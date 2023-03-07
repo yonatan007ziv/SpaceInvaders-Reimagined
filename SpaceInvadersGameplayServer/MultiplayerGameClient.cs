@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
+﻿using System.Net.Sockets;
 using System.Text;
 
 namespace GameplayServer
@@ -17,26 +15,26 @@ namespace GameplayServer
 
         public MultiplayerGameClient(TcpClient client)
         {
-            players.Add(this);
             this.client = client;
             buffer = new byte[this.client.ReceiveBufferSize];
 
             this.client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
 
             foreach (MultiplayerGameClient p in players)
-            {
-                if (p == this) continue;
-                Byte[] toSendBuffer = Encoding.UTF8.GetBytes($"{p.nickname}$INITIATE PLAYER:");
-                client.GetStream().Write(toSendBuffer, 0, toSendBuffer.Length);
-            }
+                this.SendMessage($"{p.nickname}$INITIATE PLAYER:");
 
+            players.Add(this);
         }
-        private void Broadcast(string msg)
+        private static void Broadcast(string msg)
         {
             Console.WriteLine($"BROADCASTING:{msg}");
-            Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg);
             foreach (MultiplayerGameClient p in players)
-                p.client.GetStream().Write(toSendBuffer, 0, toSendBuffer.Length);
+                p.SendMessage(msg);
+        }
+        private void SendMessage(string msg)
+        {
+            Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg + messageSeperator);
+            client.GetStream().Write(toSendBuffer, 0, toSendBuffer.Length);
         }
         private void ReceiveMessage(IAsyncResult ar)
         {
@@ -46,7 +44,8 @@ namespace GameplayServer
                 lock (client.GetStream())
                     bytesRead = client.GetStream().EndRead(ar);
                 string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                DecodeMessage(msg);
+                DecodeSeperator(msg);
+
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
             }
             catch
@@ -55,17 +54,20 @@ namespace GameplayServer
                 Broadcast($"{nickname}$LEFT:");
             }
         }
-        private void DecodeMessage(string msg)
+        private void DecodeSeperator(string msg)
         {
             if (msg == "") return;
 
             if (msg.Contains(messageSeperator))
             {
-                DecodeMessage(msg.Split(messageSeperator)[0]);
-                DecodeMessage(msg.Split(messageSeperator)[1]);
-                return;
+                DecodeSeperator(msg.Split(messageSeperator)[0]);
+                DecodeSeperator(msg.Split(messageSeperator)[1]);
             }
-
+            else
+                DecodeMessage(msg);
+        }
+        private void DecodeMessage(string msg)
+        {
             if (!gotNick)
             {
                 gotNick = true;

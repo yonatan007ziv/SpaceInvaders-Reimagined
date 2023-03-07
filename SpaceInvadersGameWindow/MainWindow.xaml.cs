@@ -31,9 +31,6 @@ namespace GameWindow
                     T.OnSizeChanged();
             };
 
-            Width = 1080;
-            Height = 1080;
-
             CenteredXCanvasTransform = new Transform(new Vector2(256, 256), new Vector2(0, 0));
             CenteredXCanvasTransform.PositionChanged += () =>
             {

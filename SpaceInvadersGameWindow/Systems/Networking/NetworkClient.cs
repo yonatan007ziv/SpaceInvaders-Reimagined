@@ -41,16 +41,28 @@ namespace GameWindow.Systems.Networking
             Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg + messageSeperator);
             client.GetStream().Write(toSendBuffer, 0, toSendBuffer.Length);
         }
-        private void ReceiveMessage(IAsyncResult ar,bool loop)
+        private void ReceiveMessage(IAsyncResult ar, bool loop)
         {
             int bytesRead;
             lock (client.GetStream())
                 bytesRead = client.GetStream().EndRead(ar);
             string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-            DecodeMessage(msg);
+            DecodeSeperator(msg);
 
             if (loop)
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, true), null);
+        }
+        private void DecodeSeperator(string msg)
+        {
+            if (msg == "") return;
+
+            if (msg.Contains(messageSeperator))
+            {
+                DecodeSeperator(msg.Split(messageSeperator)[0]);
+                DecodeSeperator(msg.Split(messageSeperator)[1]);
+            }
+            else
+                DecodeMessage(msg);
         }
         protected abstract void DecodeMessage(string msg);
         public void StopClient()
