@@ -1,6 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems;
-using GameWindow.Components;
 using GameWindow.Components.Initializers;
 using System;
 using System.Numerics;

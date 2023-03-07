@@ -15,15 +15,16 @@ namespace GameplayServer
 
         public MultiplayerGameClient(TcpClient client)
         {
+            players.Add(this);
+
             this.client = client;
             buffer = new byte[this.client.ReceiveBufferSize];
 
             this.client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
 
             foreach (MultiplayerGameClient p in players)
-                this.SendMessage($"{p.nickname}$INITIATE PLAYER:");
-
-            players.Add(this);
+                if (p != this)
+                    this.SendMessage($"{p.nickname}$INITIATE PLAYER:");
         }
         private static void Broadcast(string msg)
         {
