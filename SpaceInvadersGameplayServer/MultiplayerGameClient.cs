@@ -26,11 +26,12 @@ namespace GameplayServer
                 if (p != this)
                     this.SendMessage($"{p.nickname}$INITIATE PLAYER:");
         }
-        private static void Broadcast(string msg)
+        private void Broadcast(string msg)
         {
             Console.WriteLine($"BROADCASTING:{msg}");
             foreach (MultiplayerGameClient p in players)
-                p.SendMessage(msg);
+                if (p != this)
+                    p.SendMessage(msg);
         }
         private void SendMessage(string msg)
         {
