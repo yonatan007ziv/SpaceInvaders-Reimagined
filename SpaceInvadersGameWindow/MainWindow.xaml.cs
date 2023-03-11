@@ -5,6 +5,8 @@ using System;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
+using GameWindow.Components.GameComponents;
+using GameWindow.Components.UIElements;
 
 namespace GameWindow
 {
@@ -12,6 +14,8 @@ namespace GameWindow
     {
         public static MainWindow? instance;
         public static int TargetFPS = 60;
+
+        public readonly Vector2 referenceSize = new Vector2(512, 512);
         public static float ratio;
 
         public InputHandler inputHandler;
@@ -30,16 +34,18 @@ namespace GameWindow
                     T.OnSizeChanged();
             };
 
-            CenteredXCanvasTransform = new Transform(new Vector2(256, 256), new Vector2(0, 0));
+            CenteredXCanvasTransform = new Transform(new Vector2(512, 512), new Vector2(256, 256));
             CenteredXCanvasTransform.PositionChanged += () =>
             {
-                CenteredCanvas.SetValue(Canvas.LeftProperty, (double)CenteredXCanvasTransform.CenteredPosition.X);
-                CenteredCanvas.SetValue(Canvas.TopProperty, (double)CenteredXCanvasTransform.CenteredPosition.Y);
+                Vector2 position = CenteredXCanvasTransform.CenteredPosition;
+                CenteredCanvas.SetValue(Canvas.LeftProperty, (double)position.X);
+                CenteredCanvas.SetValue(Canvas.TopProperty, (double)position.Y);
             };
             CenteredXCanvasTransform.ScaleChanged += () =>
             {
-                CenteredCanvas.Width = CenteredXCanvasTransform.ActualScale.X;
-                CenteredCanvas.Height = CenteredXCanvasTransform.ActualScale.Y;
+                Vector2 scale = CenteredXCanvasTransform.ActualScale;
+                CenteredCanvas.Width = scale.X;
+                CenteredCanvas.Height = scale.Y;
             };
 
             inputHandler = new InputHandler(this);
@@ -48,8 +54,8 @@ namespace GameWindow
 
         public void CalculateRatio()
         {
-            double ratioX = Width / 256;
-            double ratioY = Height / 256;
+            double ratioX = Width / referenceSize.X;
+            double ratioY = Height / referenceSize.Y;
             ratio = (float)Math.Min(ratioX, ratioY);
         }
     }
