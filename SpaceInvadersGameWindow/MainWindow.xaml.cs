@@ -1,12 +1,10 @@
-﻿using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Initializers;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems;
-using GameWindow.Components.Initializers;
 using System;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
-using GameWindow.Components.GameComponents;
-using GameWindow.Components.UIElements;
 
 namespace GameWindow
 {
@@ -15,15 +13,18 @@ namespace GameWindow
         public static MainWindow? instance;
         public static int TargetFPS = 60;
 
-        public readonly Vector2 referenceSize = new Vector2(512, 512);
+        public static readonly Vector2 referenceSize = new Vector2(384, 448);
         public static float ratio;
 
         public InputHandler inputHandler;
-        private Transform CenteredXCanvasTransform;
+        private Transform CenteredCanvasTransform;
         public MainWindow()
         {
             InitializeComponent();
             instance = this;
+
+            Height = referenceSize.Y * 2;
+            Width = referenceSize.X * 2;
 
             SizeChanged += (s, e) => CalculateRatio();
             CalculateRatio();
@@ -34,16 +35,16 @@ namespace GameWindow
                     T.OnSizeChanged();
             };
 
-            CenteredXCanvasTransform = new Transform(new Vector2(512, 512), new Vector2(256, 256));
-            CenteredXCanvasTransform.PositionChanged += () =>
+            CenteredCanvasTransform = new Transform(referenceSize, new Vector2(referenceSize.X / 2, referenceSize.Y / 2));
+            CenteredCanvasTransform.PositionChanged += () =>
             {
-                Vector2 position = CenteredXCanvasTransform.CenteredPosition;
+                Vector2 position = CenteredCanvasTransform.CenteredPosition;
                 CenteredCanvas.SetValue(Canvas.LeftProperty, (double)position.X);
                 CenteredCanvas.SetValue(Canvas.TopProperty, (double)position.Y);
             };
-            CenteredXCanvasTransform.ScaleChanged += () =>
+            CenteredCanvasTransform.ScaleChanged += () =>
             {
-                Vector2 scale = CenteredXCanvasTransform.ActualScale;
+                Vector2 scale = CenteredCanvasTransform.ActualScale;
                 CenteredCanvas.Width = scale.X;
                 CenteredCanvas.Height = scale.Y;
             };

@@ -59,12 +59,13 @@ namespace GameWindow.Components.GameComponents
         }
         private void Respawn()
         {
+            float x = transform.Position.X;
             livesLeft--;
             col.Dispose();
             sprite.Dispose();
             transform.Dispose();
 
-            transform = new Transform(new Vector2(13, 8), new Vector2(50, 200));
+            transform = new Transform(new Vector2(13, 8), new Vector2(x, MainWindow.referenceSize.Y * 0.8f));
             col = new Collider(transform, this);
             sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
 

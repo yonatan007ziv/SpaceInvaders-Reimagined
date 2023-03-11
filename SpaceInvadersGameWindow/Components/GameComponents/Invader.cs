@@ -194,12 +194,9 @@ namespace GameWindow.Components.GameComponents
                         type = EnemyTypes.Crab;
                     else
                         type = EnemyTypes.Octopus;
-                    Invader invader = new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
-                    invader.sprite.image.IsEnabled = false;
+                    Invader invader = new Invader(type, new Vector2(j * 16 * MainWindow.referenceSize.X / 384 + startX, i * 24 * MainWindow.referenceSize.X / 384 + startY));
+                    invader.sprite.image.IsEnabled = true;
                 }
-
-            for (int i = invaders.Count - 1; i >= 0; i--)
-                invaders[i].sprite.image.IsEnabled = true;
         }
 
         public static async void StartInvaders(LocalGame currentGame)
@@ -207,7 +204,7 @@ namespace GameWindow.Components.GameComponents
             while (invaders.Count > 0) //&& invaders[invaders.Count - 1].transform.Position.Y > 200)  // won or lowest invader y position is more than 200
             {
                 MoveInvaders();
-                await Task.Delay(invaders.Count * 50);
+                await Task.Delay(invaders.Count);
             }
 
             if (invaders.Count == 0)
