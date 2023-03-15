@@ -28,7 +28,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             localPlayer = this;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this);
+            col = new Collider(transform, this, Collider.Layers.Player);
             characterController = new NetworkedCharacterController(this, transform, col, sendMessage);
 
             Application.Current.Dispatcher.Invoke(() =>
@@ -45,7 +45,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             this.username = username;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this);
+            col = new Collider(transform, this, Collider.Layers.Player);
 
             Application.Current.Dispatcher.Invoke(() =>
             {

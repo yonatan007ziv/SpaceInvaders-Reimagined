@@ -1,7 +1,5 @@
-﻿using GameWindow.Components.PhysicsEngine.Collider;
-using GameWindow.Systems;
-using GameWindow;
-using GameWindow.Components.GameComponents;
+﻿using GameWindow.Components.GameComponents.Bunker;
+using GameWindow.Components.PhysicsEngine.Collider;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -10,28 +8,33 @@ namespace GameWindow.Components.GameComponents
     internal class PlayerBullet : Bullet
     {
         public static PlayerBullet? instance;
-        public PlayerBullet(Vector2 pos, int dir) : base(pos, dir, 3)
+        public PlayerBullet(Vector2 pos, int dir) : base(pos, dir, BulletTypes.Normal, Collider.Layers.PlayerBullet)
         {
             instance = this;
             bulletSpeed *= 1.75f;
 
             //SoundManager.PlaySound(@"Resources\Sounds\Shoot.wav");
+            col.IgnoreLayer(Collider.Layers.Player);
+            col.IgnoreLayer(Collider.Layers.PlayerBullet);
+            col.IgnoreLayer(Collider.Layers.InvaderBullet);
 
             BulletLoop();
         }
         private async void BulletLoop()
         {
             Vector2 SpeedVector = new Vector2(0, bulletSpeed);
-            while (this.col.TouchingCollider() == null || this.col.TouchingCollider()!.parent is Player || this.col.TouchingCollider()!.parent is Bullet)
+            while (col.TouchingCollider() == null)
             {
                 NextClip();
                 transform.Position += SpeedVector;
-                await Task.Delay(1000 / MainWindow.TargetFPS);
+                await Task.Delay(1000 / MainWindow.TARGET_FPS);
             }
 
-            Collider col = this.col.TouchingCollider()!;
-            if(col.parent is Invader inv)
+            Collider touching = col.TouchingCollider()!;
+            if (touching.parent is Invader inv)
                 inv.Death();
+            if (touching.parent is BunkerPart bunker)
+                bunker.Hit();
 
             BulletExplosion();
             instance = null;

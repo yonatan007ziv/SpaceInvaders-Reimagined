@@ -10,10 +10,10 @@ namespace GameWindow
 {
     public partial class MainWindow : Window
     {
+        public static readonly int TARGET_FPS = 60;
         public static MainWindow? instance;
-        public static int TargetFPS = 60;
 
-        public static readonly Vector2 referenceSize = new Vector2(384, 448);
+        public static readonly Vector2 referenceSize = new Vector2(350, 448);//new Vector2(384, 448);
         public static float ratio;
 
         public InputHandler inputHandler;
@@ -50,7 +50,7 @@ namespace GameWindow
             };
 
             inputHandler = new InputHandler(this);
-            GameInitializers.StartLoginRegist();
+            GameInitializers.StartGameMenu("YonatanZiv");
         }
 
         public void CalculateRatio()

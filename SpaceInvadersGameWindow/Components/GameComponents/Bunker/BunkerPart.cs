@@ -1,37 +1,87 @@
-﻿using GameWindow.Components.PhysicsEngine.Collider;
-using GameWindow.Components.Renderer;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Components.UIElements;
+using System.Numerics;
+using System.Windows.Media.Imaging;
 
 namespace GameWindow.Components.GameComponents.Bunker
 {
     internal class BunkerPart
     {
-        /*
-        Bitmap[] stages;
-        int stage;
-
-        public SpriteRenderer sR;
-        //Collider col;
-
-
-        public BunkerPart(Bitmap[] stages, Vector2 pos)
+        public enum BunkerParts
         {
-            sR = new SpriteRenderer(stages[0], pos);
-            this.stages = stages;
-            stage = 0;
-            sR.Image = this.stages[stage];
+            TopLeft = 1,
+            BottomLeft = 2,
+            MiddleTopLeft = 3,
+            MiddleBottomLeft = 4,
+            MiddleTopRight = 5,
+            MiddleBottomRight = 6,
+            TopRight = 7,
+            BottomRight = 8,
         }
-        public void GetHit()
+
+        BunkerParts part;
+        Transform transform;
+        Sprite sprite;
+        Collider col;
+
+        public BunkerPart(BunkerParts part, Vector2 pos)
         {
-            stage++;
-            if (stage > 3)
+            this.part = part;
+            transform = new Transform(new Vector2(6, 8), pos);
+            sprite = new Sprite(transform, @"");
+            col = new Collider(transform, this, Collider.Layers.Bunker);
+            NextClip();
+        }
+
+        private int timesHit = 1;
+        public void Hit()
+        {
+            if (timesHit == 3)
                 Dispose();
-            else
-                sR.Image = stages[stage];
+            timesHit++;
+            NextClip();
         }
-        private void Dispose()
+        public void NextClip()
         {
-            sR.Dispose();
+            BitmapImage bunkerImage;
+            switch (part)
+            {
+                case BunkerParts.TopLeft:
+                    bunkerImage = Sprite.BitmapFromPath(@$"Resources\Images\Bunker\TopLeft{timesHit}.png");
+                    break;
+                case BunkerParts.BottomLeft:
+                    bunkerImage = Sprite.BitmapFromPath(@$"Resources\Images\Bunker\BottomLeft{timesHit}.png");
+                    break;
+                case BunkerParts.MiddleTopLeft:
+                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleTopLeft{timesHit}.png");
+                    break;
+                case BunkerParts.MiddleBottomLeft:
+                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleBottomLeft{timesHit}.png");
+                    break;
+                case BunkerParts.MiddleTopRight:
+                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleTopRight{timesHit}.png");
+                    break;
+                case BunkerParts.MiddleBottomRight:
+                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleBottomRight{timesHit}.png");
+                    break;
+                case BunkerParts.TopRight:
+                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\TopRight{timesHit}.png");
+                    break;
+                case BunkerParts.BottomRight:
+                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\BottomRight{timesHit}.png");
+                    break;
+                default:
+                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\TopLeft{timesHit}.png");
+                    break;
+            }
+            sprite.image.Source = bunkerImage;
         }
-        */
+        public void Dispose()
+        {
+            transform.Dispose();
+            sprite.Dispose();
+            col.Dispose();
+        }
     }
 }

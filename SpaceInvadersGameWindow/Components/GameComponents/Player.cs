@@ -1,19 +1,16 @@
-﻿using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Initializers;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.PhysicsEngine.Collider;
-using GameWindow.Systems;
-using GameWindow.Components.GameComponents;
 using GameWindow.Components.UIElements;
+using GameWindow.Systems;
 using System.Numerics;
 using System.Threading.Tasks;
-using GameWindow.Components.Initializers;
 using System.Windows.Media.Imaging;
 
 namespace GameWindow.Components.GameComponents
 {
     internal class Player
     {
-        private int livesLeft = 3;
-
         public Transform transform;
         private Collider col;
         private Sprite sprite;
@@ -24,7 +21,7 @@ namespace GameWindow.Components.GameComponents
             this.currentGame = currentGame;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this);
+            col = new Collider(transform, this, Collider.Layers.Player);
             sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
 
             controller = new CharacterController(transform, col);
@@ -38,12 +35,15 @@ namespace GameWindow.Components.GameComponents
         {
             controller = new CharacterController(transform, col);
         }
-        public async void Kill()
+        public async void Die()
         {
             if (invincible) return;
-            else if (livesLeft == 0) 
-
-
+            if (currentGame.LivesLeft == 0)
+            {
+                currentGame.Lost();
+                return;
+            }
+            currentGame.LivesLeft--;
             invincible = true;
             StopInput();
 
@@ -52,28 +52,27 @@ namespace GameWindow.Components.GameComponents
             for (int i = 0; i < 12; i++)
             {
                 sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png");
-                await Task.Delay(1000 / 10);
+                await Task.Delay(1000 / (MainWindow.TARGET_FPS / 6));
             }
             Respawn();
             Invincibility();
         }
         private void Respawn()
         {
-            float x = transform.Position.X;
-            livesLeft--;
             col.Dispose();
             sprite.Dispose();
+            float x = transform.Position.X;
             transform.Dispose();
 
             transform = new Transform(new Vector2(13, 8), new Vector2(x, MainWindow.referenceSize.Y * 0.8f));
-            col = new Collider(transform, this);
+            col = new Collider(transform, this, Collider.Layers.Player);
             sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
 
             StartInput();
         }
         private async void Invincibility()
         {
-            BitmapImage playerSprite = Sprite.BitmapFromPath(@$"Resources\Images\Player\Player.png");
+            BitmapImage playerSprite = Sprite.BitmapFromPath(@"Resources\Images\Player\Player.png");
             for (int i = 0; i < 13; i++)
             {
                 if (i % 2 == 0)
@@ -84,7 +83,7 @@ namespace GameWindow.Components.GameComponents
             }
             invincible = false;
         }
-        private void Dispose()
+        public void Dispose()
         {
             controller?.Dispose();
             col.Dispose();

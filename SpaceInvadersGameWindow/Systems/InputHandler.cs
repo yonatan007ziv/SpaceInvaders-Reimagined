@@ -35,7 +35,7 @@ namespace GameWindow.Systems
             while (true)
             {
                 inputLoopDel?.Invoke();
-                await Task.Delay(1000 / (MainWindow.TargetFPS * 2));
+                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 2));
             }
         }
 

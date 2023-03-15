@@ -1,14 +1,12 @@
-﻿using GameWindow.Components.PhysicsEngine.Collider;
-using GameWindow.Components.Renderer;
+﻿using GameWindow.Components.Initializers;
 using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Components.UIElements;
+using GameWindow.Systems;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using GameWindow.Systems;
-using System.Runtime.InteropServices;
-using GameWindow.Components.UIElements;
-using GameWindow.Components.Initializers;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -52,7 +50,7 @@ namespace GameWindow.Components.GameComponents
             }
 
             transform = new Transform(scale, pos);
-            col = new Collider(transform, this);
+            col = new Collider(transform, this, Collider.Layers.Invader);
             sprite = new Sprite(transform);
 
             this.type = type;
@@ -123,8 +121,8 @@ namespace GameWindow.Components.GameComponents
             NextClip();
 
             // 4% (arbitrary) Chance to shoot
-            int rand = random.Next(25);
-            if (rand == 0)
+            int rand = random.Next(100 / 4) + 1;
+            if (rand == 1)
                 Shoot();
         }
         private void Shoot()
@@ -160,6 +158,7 @@ namespace GameWindow.Components.GameComponents
         }
         public async void Death()
         {
+            invaders.Remove(this);
             Dispose();
 
             SoundManager.PlaySound(@"Resources\Sounds\InvaderDeath.wav");
@@ -175,9 +174,14 @@ namespace GameWindow.Components.GameComponents
             ExplosionTransform.Dispose();
             ExplosionSprite.Dispose();
         }
+        public static void DisposeAll()
+        {
+            foreach (Invader i in invaders)
+                i.Dispose();
+            invaders.Clear();
+        }
         private void Dispose()
         {
-            invaders.Remove(this);
             sprite.Dispose();
             col.Dispose();
             transform.Dispose();
@@ -194,17 +198,17 @@ namespace GameWindow.Components.GameComponents
                         type = EnemyTypes.Crab;
                     else
                         type = EnemyTypes.Octopus;
-                    Invader invader = new Invader(type, new Vector2(j * 16 * MainWindow.referenceSize.X / 384 + startX, i * 24 * MainWindow.referenceSize.X / 384 + startY));
+                    Invader invader = new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
                     invader.sprite.image.IsEnabled = true;
                 }
         }
 
         public static async void StartInvaders(LocalGame currentGame)
         {
-            while (invaders.Count > 0) //&& invaders[invaders.Count - 1].transform.Position.Y > 200)  // won or lowest invader y position is more than 200
+            while (invaders.Count > 0)
             {
                 MoveInvaders();
-                await Task.Delay(invaders.Count);
+                await Task.Delay(invaders.Count * 25);
             }
 
             if (invaders.Count == 0)
