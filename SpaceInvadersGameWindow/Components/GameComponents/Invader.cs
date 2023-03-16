@@ -13,6 +13,38 @@ namespace GameWindow.Components.GameComponents
     internal class Invader
     {
         public static List<Invader> invaders = new List<Invader>();
+        public static float InvaderSpeed = 2.5f;
+        public static void PlotInvaders(int startX, int startY)
+        {
+            for (int i = 0; i < 5; i++)
+                for (int j = 0; j < 11; j++)
+                {
+                    EnemyTypes type;
+                    if (i < 1)
+                        type = EnemyTypes.Squid;
+                    else if (i < 3)
+                        type = EnemyTypes.Crab;
+                    else
+                        type = EnemyTypes.Octopus;
+                    Invader invader = new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
+                    invader.sprite.image.IsEnabled = true;
+                }
+        }
+
+        public static async void StartInvaders(LocalGame currentGame)
+        {
+            while (invaders.Count > 0)
+            {
+                MoveInvaders();
+                await Task.Delay(invaders.Count);
+            }
+
+            //if (invaders.Count == 0)
+            //    currentGame.Won();
+            //else
+            //    currentGame.Lost();
+        }
+
         public enum EnemyTypes
         {
             Octopus, Crab, Squid, UFO,
@@ -80,11 +112,6 @@ namespace GameWindow.Components.GameComponents
             invaders.Add(this);
         }
 
-        private static void MoveInvadersDown()
-        {
-            for (int i = invaders.Count - 1; i >= 0; i--)
-                invaders[i].transform.Position += new Vector2(0, 12);
-        }
         public static void MoveInvaders()
         {
             foreach (Invader i in invaders)
@@ -94,6 +121,11 @@ namespace GameWindow.Components.GameComponents
                 invaders[i].Move();
 
             SpriteSwitch = !SpriteSwitch;
+        }
+        private static void MoveInvadersDown()
+        {
+            foreach (Invader i in invaders)
+                i.transform.Position += new Vector2(0, InvaderSpeed);
         }
 
         public static int dir = 1;
@@ -117,13 +149,13 @@ namespace GameWindow.Components.GameComponents
         }
         private void Move()
         {
-            transform.Position += new Vector2(10 * dir, 0);
+            transform.Position += new Vector2(InvaderSpeed* dir, 0);
             NextClip();
 
             // 4% (arbitrary) Chance to shoot
-            int rand = random.Next(100 / 4) + 1;
-            if (rand == 1)
-                Shoot();
+            //int rand = random.Next(100 / 4) + 1;
+            //if (rand == 1)
+            //    Shoot();
         }
         private void Shoot()
         {
@@ -156,7 +188,7 @@ namespace GameWindow.Components.GameComponents
                     break;
             }
         }
-        public async void Death()
+        public void Death()
         {
             invaders.Remove(this);
             Dispose();
@@ -164,15 +196,16 @@ namespace GameWindow.Components.GameComponents
             SoundManager.PlaySound(@"Resources\Sounds\InvaderDeath.wav");
 
             // Invader Explosion
-            Transform ExplosionTransform = new Transform(new Vector2(13, 8), transform.Position);
-            Sprite ExplosionSprite = new Sprite(ExplosionTransform, @"Resources\Images\Enemies\InvaderDeath.png");
+            transform = new Transform(new Vector2(13, 8), transform.Position);
+            sprite = new Sprite(transform, @"Resources\Images\Enemies\InvaderDeath.png");
 
             LocalGame.instance!.Score += pointsReward;
 
-            await Task.Delay(500);
-
-            ExplosionTransform.Dispose();
-            ExplosionSprite.Dispose();
+            Task.Delay(500).ContinueWith((p) =>
+            {
+                transform.Dispose();
+                sprite.Dispose();
+            });
         }
         public static void DisposeAll()
         {
@@ -185,36 +218,6 @@ namespace GameWindow.Components.GameComponents
             sprite.Dispose();
             col.Dispose();
             transform.Dispose();
-        }
-        public static void PlotInvaders(int startX, int startY)
-        {
-            for (int i = 0; i < 5; i++)
-                for (int j = 0; j < 11; j++)
-                {
-                    EnemyTypes type;
-                    if (i < 1)
-                        type = EnemyTypes.Squid;
-                    else if (i < 3)
-                        type = EnemyTypes.Crab;
-                    else
-                        type = EnemyTypes.Octopus;
-                    Invader invader = new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
-                    invader.sprite.image.IsEnabled = true;
-                }
-        }
-
-        public static async void StartInvaders(LocalGame currentGame)
-        {
-            while (invaders.Count > 0)
-            {
-                MoveInvaders();
-                await Task.Delay(invaders.Count * 25);
-            }
-
-            if (invaders.Count == 0)
-                currentGame.Won();
-            else
-                currentGame.Lost();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace GameWindow.Components.GameComponents
         public PlayerBullet(Vector2 pos, int dir) : base(pos, dir, BulletTypes.Normal, Collider.Layers.PlayerBullet)
         {
             instance = this;
-            bulletSpeed *= 1.75f;
+            bulletSpeed *= 2;
 
             //SoundManager.PlaySound(@"Resources\Sounds\Shoot.wav");
             col.IgnoreLayer(Collider.Layers.Player);

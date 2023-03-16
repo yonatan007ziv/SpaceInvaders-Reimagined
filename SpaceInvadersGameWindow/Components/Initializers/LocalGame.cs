@@ -48,12 +48,12 @@ namespace GameWindow.Components.Initializers
             LivesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(200, 250)), "", System.Windows.Media.Colors.White);
             LivesLeft = 3;
 
-            new Bunker(new Vector2(0.25f * (MainWindow.referenceSize.X / 2), MainWindow.referenceSize.Y / 2 + 100));
-            new Bunker(new Vector2(0.75f * (MainWindow.referenceSize.X / 2), MainWindow.referenceSize.Y / 2 + 100));
-            new Bunker(new Vector2(1.25f * (MainWindow.referenceSize.X / 2), MainWindow.referenceSize.Y / 2 + 100));
-            new Bunker(new Vector2(1.75f * (MainWindow.referenceSize.X / 2), MainWindow.referenceSize.Y / 2 + 100));
+            new Bunker(new Vector2(0.25f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
+            new Bunker(new Vector2(0.75f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
+            new Bunker(new Vector2(1.25f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
+            new Bunker(new Vector2(1.75f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
 
-            Invader.PlotInvaders((int)(MainWindow.referenceSize.X / 2 - 100), 50);
+            Invader.PlotInvaders((int)(MainWindow.referenceSize.X / 4), (int)(MainWindow.referenceSize.X / 6));
             Invader.StartInvaders(this);
         }
 
