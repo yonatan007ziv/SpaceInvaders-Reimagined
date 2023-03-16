@@ -36,13 +36,13 @@ namespace GameWindow.Components.GameComponents
             while (invaders.Count > 0)
             {
                 MoveInvaders();
-                await Task.Delay(invaders.Count);
+                await Task.Delay(invaders.Count * 25);
             }
 
-            //if (invaders.Count == 0)
-            //    currentGame.Won();
-            //else
-            //    currentGame.Lost();
+            if (invaders.Count == 0)
+                currentGame.Won();
+            else
+                currentGame.Lost();
         }
 
         public enum EnemyTypes
@@ -125,7 +125,7 @@ namespace GameWindow.Components.GameComponents
         private static void MoveInvadersDown()
         {
             foreach (Invader i in invaders)
-                i.transform.Position += new Vector2(0, InvaderSpeed);
+                i.transform.Position += new Vector2(0, InvaderSpeed / 2);
         }
 
         public static int dir = 1;
@@ -153,9 +153,9 @@ namespace GameWindow.Components.GameComponents
             NextClip();
 
             // 4% (arbitrary) Chance to shoot
-            //int rand = random.Next(100 / 4) + 1;
-            //if (rand == 1)
-            //    Shoot();
+            int rand = random.Next(100 / 4) + 1;
+            if (rand == 1)
+                Shoot();
         }
         private void Shoot()
         {

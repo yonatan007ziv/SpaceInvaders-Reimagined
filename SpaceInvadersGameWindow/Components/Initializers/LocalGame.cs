@@ -36,24 +36,24 @@ namespace GameWindow.Components.Initializers
             #endregion
 
             Wall.Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), @"Resources\Images\Pixels\Red.png");
-            Wall.Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y - 25), @"Resources\Images\Pixels\Green.png");
+            Wall.Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 1.08f), @"Resources\Images\Pixels\Green.png");
             Wall.LeftWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(25, MainWindow.referenceSize.Y / 2));
             Wall.RightWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X - 25, MainWindow.referenceSize.Y / 2));
 
             player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.8f), this);
 
-            CreditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(200, 150)), "", System.Windows.Media.Colors.White);
+            CreditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
             Score = 0;
 
-            LivesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(200, 250)), "", System.Windows.Media.Colors.White);
+            LivesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
             LivesLeft = 3;
 
-            new Bunker(new Vector2(0.25f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
-            new Bunker(new Vector2(0.75f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
-            new Bunker(new Vector2(1.25f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
-            new Bunker(new Vector2(1.75f * (MainWindow.referenceSize.X / 2), 5 * MainWindow.referenceSize.Y / 6));
+            new Bunker(new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
+            new Bunker(new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
+            new Bunker(new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
+            new Bunker(new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
 
-            Invader.PlotInvaders((int)(MainWindow.referenceSize.X / 4), (int)(MainWindow.referenceSize.X / 6));
+            Invader.PlotInvaders((int)(MainWindow.referenceSize.X / 4), (int)(MainWindow.referenceSize.Y / 10));
             Invader.StartInvaders(this);
         }
 
