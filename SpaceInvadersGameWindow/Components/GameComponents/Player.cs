@@ -4,7 +4,9 @@ using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Numerics;
+using System.Security.Policy;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace GameWindow.Components.GameComponents
@@ -22,20 +24,17 @@ namespace GameWindow.Components.GameComponents
 
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this, Collider.Layers.Player);
-            sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Player\Player.png"));
 
             controller = new CharacterController(transform, col);
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            sprite!.ToString();
         }
         private bool invincible = false;
-        public void StopInput()
-        {
-            controller.Dispose();
-        }
-        public void StartInput()
-        {
-            controller = new CharacterController(transform, col);
-        }
-        public async void Die()
+        public async void Kill()
         {
             if (invincible) return;
             if (currentGame.LivesLeft == 0)
@@ -45,40 +44,38 @@ namespace GameWindow.Components.GameComponents
             }
             currentGame.LivesLeft--;
             invincible = true;
-            StopInput();
+            controller.disabled = true;
 
-            SoundManager.PlaySound(@"Resources\Sounds\PlayerDeath.wav");
+            //SoundManager.PlaySound("PlayerDeath");
+
+            transform.Scale = new Vector2(16, 8);
+
+            // UI Objects need to be changed in an STA thread
+            sprite.ChangeImage(Sprite.BitmapFromPath(@"Resources\Images\Player\PlayerDeath1.png"));
 
             for (int i = 0; i < 12; i++)
             {
-                sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png");
+                sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png"));
                 await Task.Delay(1000 / (MainWindow.TARGET_FPS / 6));
             }
+
             Respawn();
             Invincibility();
         }
         private void Respawn()
         {
-            col.Dispose();
-            sprite.Dispose();
-            float x = transform.Position.X;
-            transform.Dispose();
+            transform.Scale = new Vector2(13, 8);
 
-            transform = new Transform(new Vector2(13, 8), new Vector2(x, MainWindow.referenceSize.Y * 0.8f));
-            col = new Collider(transform, this, Collider.Layers.Player);
-            sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
+            // UI Objects need to be changed in an STA thread
+            sprite.ChangeImage(Sprite.BitmapFromPath(@"Resources\Images\Player\Player.png"));
 
-            StartInput();
+            controller.disabled = false;
         }
         private async void Invincibility()
         {
-            BitmapImage playerSprite = Sprite.BitmapFromPath(@"Resources\Images\Player\Player.png");
             for (int i = 0; i < 13; i++)
             {
-                if (i % 2 == 0)
-                    sprite.image.Source = playerSprite;
-                else
-                    sprite.image.Source = null;
+                sprite.Visible(i % 2 == 0);
                 await Task.Delay(1000 / 10);
             }
             invincible = false;

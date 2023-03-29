@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace GameplayServer
@@ -13,48 +14,73 @@ namespace GameplayServer
         private bool gotNick;
         private string? nickname;
 
+        // Encryption related fields
+        private RSA rsa = RSA.Create();
+        private Aes aes = Aes.Create();
+
         public MultiplayerGameClient(TcpClient client)
         {
             players.Add(this);
 
             this.client = client;
-            buffer = new byte[this.client.ReceiveBufferSize];
+            buffer = new Byte[client.ReceiveBufferSize];
 
-            this.client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+            this.client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveRSA, null);
 
             foreach (MultiplayerGameClient p in players)
                 if (p != this)
-                    this.SendMessage($"{p.nickname}$INITIATE PLAYER:");
+                    SendMessage($"{p.nickname}$INITIATE PLAYER:");
         }
+        private void ReceiveRSA(IAsyncResult aR)
+        {
+            rsa.ImportRSAPublicKey(buffer, out _);
+
+            byte[] aesKey = aes.Key;
+            byte[] aesIV = aes.IV;
+
+            byte[] encryptedAesKey = rsa.Encrypt(aesKey, RSAEncryptionPadding.OaepSHA256);
+            byte[] encryptedAesIV = rsa.Encrypt(aesIV, RSAEncryptionPadding.OaepSHA256);
+
+            byte[] encryptedAesKeyIV = encryptedAesKey.Concat(encryptedAesIV).ToArray();
+            client.GetStream().Write(encryptedAesKeyIV, 0, encryptedAesKeyIV.Length);
+
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+        }
+
         private void Broadcast(string msg)
         {
             Console.WriteLine($"BROADCASTING:{msg}");
             foreach (MultiplayerGameClient p in players)
-                if (p != this)
-                    p.SendMessage(msg);
+                p.SendMessage(msg);
         }
         private void SendMessage(string msg)
         {
-            Byte[] toSendBuffer = Encoding.UTF8.GetBytes(msg + messageSeperator);
-            client.GetStream().Write(toSendBuffer, 0, toSendBuffer.Length);
+            byte[] bytes = Encoding.UTF8.GetBytes(msg);
+            byte[] encrypted = aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length);
+            client.GetStream().Write(encrypted, 0, encrypted.Length);
         }
-        private void ReceiveMessage(IAsyncResult ar)
+        private void ReceiveMessage(IAsyncResult aR)
         {
+            int bytesRead = -1;
             try
             {
-                int bytesRead;
                 lock (client.GetStream())
-                    bytesRead = client.GetStream().EndRead(ar);
-                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                DecodeSeperator(msg);
-
-                client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+                    bytesRead = client.GetStream().EndRead(aR);
             }
-            catch
+            catch (Exception ex)
             {
                 players.Remove(this);
                 Broadcast($"{nickname}$LEFT:");
+                return;
             }
+
+            byte[] encrypted = new byte[bytesRead];
+            Array.Copy(buffer, encrypted, bytesRead);
+            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
+
+            string msg = Encoding.UTF8.GetString(decrypted);
+            DecodeSeperator(msg);
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
         }
         private void DecodeSeperator(string msg)
         {

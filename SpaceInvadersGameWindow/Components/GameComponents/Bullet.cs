@@ -5,6 +5,7 @@ using GameWindow.Systems;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -18,12 +19,14 @@ namespace GameWindow.Components.GameComponents
             Normal
         }
         public static List<Bullet> AllBullets = new List<Bullet>();
-        private BulletTypes bulletType;
-        private float times;
+
+        public bool BulletHit = false;
         public Transform transform;
+        protected float bulletSpeed = 3;
         protected Sprite sprite;
         protected Collider col;
-        protected float bulletSpeed = 3;
+        private float times;
+        private BulletTypes bulletType;
 
         public static void DisposeAll()
         {
@@ -38,7 +41,12 @@ namespace GameWindow.Components.GameComponents
             bulletSpeed *= dir;
             transform = new Transform(new Vector2(3, 7), pos);
             col = new Collider(transform, this, colliderLayer);
-            sprite = new Sprite(transform, @"Resources\Images\Bullet.png");
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Bullet\Bullet.png"));
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            sprite!.ToString();
         }
         int timesCounter = 0;
         public void NextClip()
@@ -54,29 +62,32 @@ namespace GameWindow.Components.GameComponents
             switch (bulletType)
             {
                 case BulletTypes.Charge:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Charge\Charge{times + 1}.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Charge\Charge{times + 1}.png"));
                     break;
                 case BulletTypes.Imperfect:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Imperfect\Imperfect{times + 1}.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Imperfect\Imperfect{times + 1}.png"));
                     break;
                 case BulletTypes.ZigZag:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\ZigZag\ZigZag{times + 1}.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Bullet\ZigZag\ZigZag{times + 1}.png"));
                     break;
                 case BulletTypes.Normal:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Bullet.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Bullet\Bullet.png"));
                     break;
             }
         }
         public void BulletExplosion()
         {
+            BulletHit = true;
             AllBullets.Remove(this);
             Dispose();
 
-            SoundManager.PlaySound(@"Resources\Sounds\BulletExplosion.wav");
+            SoundManager.PlaySound("BulletExplosion");
 
             // Bullet Explosion
             transform = new Transform(new Vector2(6, 8), transform.Position);
-            sprite = new Sprite(transform, @"Resources\Images\Bullet\BulletExplosion.png");
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Bullet\BulletExplosion.png"));
 
             Task.Delay(500).ContinueWith((p) =>
             {

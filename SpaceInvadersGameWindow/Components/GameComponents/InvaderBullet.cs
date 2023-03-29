@@ -31,7 +31,7 @@ namespace GameWindow.Components.GameComponents
 
             Collider touching = col.TouchingCollider()!;
             if (touching.parent is Player player)
-                player.Die();
+                player.Kill();
             if (touching.parent is BunkerPart bunker)
                 bunker.Hit();
 

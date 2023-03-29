@@ -5,14 +5,11 @@ namespace LoginRegistServer
 {
     internal class LoginRegistServer
     {
-        TcpListener listener;
-        DatabaseHandler dbHandler;
-        public LoginRegistServer()
+        private static TcpListener listener = new TcpListener(IPAddress.Any, 7777);
+        private static DatabaseHandler dbHandler= new DatabaseHandler();
+        public static void Main()
         {
-            listener = new TcpListener(IPAddress.Any, 7777);
             listener.Start();
-            dbHandler = new DatabaseHandler();
-
             while (true)
                 new ClientLoginRegistValidator(listener.AcceptTcpClient(), dbHandler);
         }

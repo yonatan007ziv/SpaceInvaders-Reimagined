@@ -1,5 +1,6 @@
 ﻿using GameWindow.Components.GameComponents.Bunker;
 using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Systems;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace GameWindow.Components.GameComponents
             instance = this;
             bulletSpeed *= 2;
 
-            //SoundManager.PlaySound(@"Resources\Sounds\Shoot.wav");
+            SoundManager.PlaySound("Shoot");
             col.IgnoreLayer(Collider.Layers.Player);
             col.IgnoreLayer(Collider.Layers.PlayerBullet);
             col.IgnoreLayer(Collider.Layers.InvaderBullet);

@@ -10,7 +10,7 @@ namespace GameWindow.Components.UIElements
     /// </summary>
     public partial class CustomTextInput
     {
-        public string Text { get { return box.Text; }}
+        public string Text { get { return box.Text; } set { box.Text = value; } }
         Transform transform;
         public CustomTextInput(Transform transform)
         {
@@ -24,21 +24,24 @@ namespace GameWindow.Components.UIElements
         }
         public void SetPosition()
         {
-            SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
-            SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
+            Application.Current.Dispatcher.Invoke(() =>
+            { // UI Objects need to be changed in an STA thread
+                SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
+                SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
+            });
         }
         public void SetScale()
         {
-            Width = transform.ActualScale.X;
-            Height = transform.ActualScale.Y;
+            Application.Current.Dispatcher.Invoke(() =>
+            { // UI Objects need to be changed in an STA thread
+                Width = transform.ActualScale.X;
+                Height = transform.ActualScale.Y;
+            });
         }
         public void Dispose()
         {
-            transform.Dispose();
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MainWindow.instance!.CenteredCanvas.Children.Remove(this);
-            });
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => MainWindow.instance!.CenteredCanvas.Children.Remove(this));
         }
     }
 }

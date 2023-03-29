@@ -1,4 +1,5 @@
-﻿using GameWindow.Components.Initializers;
+﻿using GameWindow.Components.GameComponents;
+using GameWindow.Components.Initializers;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems;
 using System;
@@ -11,7 +12,7 @@ namespace GameWindow
     public partial class MainWindow : Window
     {
         public static readonly int TARGET_FPS = 60;
-        public static MainWindow? instance;
+        public static MainWindow instance;
 
         public static readonly Vector2 referenceSize = new Vector2(256, 320);//new Vector2(384, 448);
         public static float ratio;
@@ -26,11 +27,10 @@ namespace GameWindow
             Height = referenceSize.Y * 2;
             Width = referenceSize.X * 2;
 
-            SizeChanged += (s, e) => CalculateRatio();
             CalculateRatio();
-
             SizeChanged += (s, e) =>
             {
+                CalculateRatio();
                 foreach (Transform T in Transform.transforms)
                     T.OnSizeChanged();
             };
@@ -50,7 +50,7 @@ namespace GameWindow
             };
 
             inputHandler = new InputHandler(this);
-            GameInitializers.StartGameMenu("YonatanZiv");
+            GameInitializers.StartLoginRegist();
         }
 
         public void CalculateRatio()

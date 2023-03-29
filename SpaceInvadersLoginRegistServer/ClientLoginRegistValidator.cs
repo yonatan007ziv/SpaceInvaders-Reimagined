@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LoginRegistServer
@@ -22,9 +23,14 @@ namespace LoginRegistServer
             failed
         }
 
-        Byte[] buffer;
-        TcpClient client;
-        DatabaseHandler dbHandler;
+        private Byte[] buffer;
+        private TcpClient client;
+        private DatabaseHandler dbHandler;
+
+        // Encryption related fields
+        private RSA rsa = RSA.Create();
+        private Aes aes = Aes.Create();
+
         public ClientLoginRegistValidator(TcpClient client, DatabaseHandler dbHandler)
         {
             Console.WriteLine("New client accepted.");
@@ -33,7 +39,7 @@ namespace LoginRegistServer
             this.dbHandler = dbHandler;
             buffer = new Byte[client.ReceiveBufferSize];
 
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveRSA, null);
         }
 
         #region Login Logic
@@ -129,29 +135,49 @@ namespace LoginRegistServer
             else
                 SendMessage("Invalid Message");
         }
+        private void ReceiveRSA(IAsyncResult aR)
+        {
+            rsa.ImportRSAPublicKey(buffer, out _);
+
+            byte[] aesKey = aes.Key;
+            byte[] aesIV = aes.IV;
+
+            byte[] encryptedAesKey = rsa.Encrypt(aesKey, RSAEncryptionPadding.OaepSHA256);
+            byte[] encryptedAesIV = rsa.Encrypt(aesIV, RSAEncryptionPadding.OaepSHA256);
+
+            byte[] encryptedAesKeyIV = encryptedAesKey.Concat(encryptedAesIV).ToArray();
+            client.GetStream().Write(encryptedAesKeyIV, 0, encryptedAesKeyIV.Length);
+
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+        }
         private void ReceiveMessage(IAsyncResult aR)
         {
+            int bytesRead = -1;
             try
             {
-                int bytesRead;
                 lock (client.GetStream())
                     bytesRead = client.GetStream().EndRead(aR);
-                string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-                DecodeMessage(msg);
-
-                client.Close();
-                Console.WriteLine("Closed conn");
             }
             catch (Exception ex)
             {
+                client.Close();
+                Console.WriteLine("Closed conn");
                 Console.WriteLine($"Caught Exception: {ex}");
+                return;
             }
+
+            byte[] encrypted = new byte[bytesRead];
+            Array.Copy(buffer, encrypted, bytesRead);
+            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
+
+            string msg = Encoding.UTF8.GetString(decrypted);
+            DecodeMessage(msg);
         }
         private void SendMessage(string msg)
         {
-            Byte[] buffer = Encoding.UTF8.GetBytes(msg);
-            client.GetStream().Write(buffer, 0, buffer.Length);
+            byte[] bytes = Encoding.UTF8.GetBytes(msg);
+            byte[] encrypted = aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length);
+            client.GetStream().Write(encrypted, 0, encrypted.Length);
         }
     }
 }

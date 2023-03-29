@@ -2,6 +2,7 @@
 using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace GameWindow.Components.GameComponents.Bunker
@@ -29,9 +30,15 @@ namespace GameWindow.Components.GameComponents.Bunker
         {
             this.part = part;
             transform = new Transform(new Vector2(6, 8), pos);
-            sprite = new Sprite(transform, @"");
             col = new Collider(transform, this, Collider.Layers.Bunker);
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @""));
+
             NextClip();
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            sprite!.ToString();
         }
 
         private int timesHit = 1;
@@ -75,13 +82,13 @@ namespace GameWindow.Components.GameComponents.Bunker
                     bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\TopLeft{timesHit}.png");
                     break;
             }
-            sprite.image.Source = bunkerImage;
+            sprite.ChangeImage(bunkerImage);
         }
         public void Dispose()
         {
-            transform.Dispose();
             sprite.Dispose();
             col.Dispose();
+            transform.Dispose();
         }
     }
 }

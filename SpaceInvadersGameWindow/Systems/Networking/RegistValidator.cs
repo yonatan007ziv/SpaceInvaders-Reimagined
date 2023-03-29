@@ -8,7 +8,7 @@ namespace GameWindow.Systems.Networking
         public RegistValidator(string username, string password, CustomLabel resultLabel) : base()
         {
             this.resultLabel = resultLabel;
-            if (ConnectToAddress("46.121.140.104", 7777))
+            if (ConnectToAddress("46.121.140.242", 7777))
             {
                 SendMessage($"REGISTER:{username}/{password}");
                 BeginSingleRead();
@@ -16,7 +16,6 @@ namespace GameWindow.Systems.Networking
             else
                 resultLabel.Text = "Failed! server unreachable.";
         }
-
         protected override void DecodeMessage(string msg)
         {
             resultLabel.Text = msg;

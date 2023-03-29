@@ -2,6 +2,7 @@
 using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using System.Numerics;
+using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -14,14 +15,24 @@ namespace GameWindow.Components.GameComponents
         public Wall(Vector2 scale, Vector2 pos)
         {
             transform = new Transform(scale, pos);
-            sprite = new Sprite(transform);
             col = new Collider(transform, this, Collider.Layers.Wall);
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform));
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            sprite!.ToString();
         }
         public Wall(Vector2 scale, Vector2 pos, string image)
         {
             transform = new Transform(scale, pos);
-            sprite = new Sprite(transform, image);
             col = new Collider(transform, this, Collider.Layers.Wall);
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, image));
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            sprite!.ToString();
         }
         public void Dispose()
         {

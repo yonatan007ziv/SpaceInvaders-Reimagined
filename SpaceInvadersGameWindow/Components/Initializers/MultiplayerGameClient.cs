@@ -1,12 +1,8 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.GameComponents.NetworkedComponents;
 using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.UIElements;
 using GameWindow.Systems.Networking;
-using System.Diagnostics;
 using System.Numerics;
-using System.Windows;
-using System.Windows.Interop;
 
 namespace GameWindow.Components.Initializers
 {
@@ -19,12 +15,15 @@ namespace GameWindow.Components.Initializers
                 SendMessage(username);
                 BeginRead();
 
+                /*
                 Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 0), @"Resources\Images\Pixels\Red.png");
                 Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 256), @"Resources\Images\Pixels\Green.png");
                 Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
                 Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256, 256 / 2));
+                */
             }
-            else { GameInitializers.StartGameMenu(GameInitializers.username!); }
+            else 
+                GameInitializers.StartGameMenu(GameInitializers.username);
         }
         protected override void DecodeMessage(string msg)
         {
@@ -52,7 +51,15 @@ namespace GameWindow.Components.Initializers
             }
             else if (msg.Contains("BULLET EXPLOSION:"))
             {
-                NetworkedPlayer.currentPlayers[gotNick].myBullet!.BulletExplosion();
+                NetworkedPlayer.currentPlayers[gotNick].myBullet?.BulletExplosion();
+            }
+            else if (msg.Contains("BULLET HIT:"))
+            {
+                string hitName = msg.Split(":")[1];
+                if (hitName == GameInitializers.username)
+                    NetworkedPlayer.currentPlayers[hitName].LocalKill();
+                else
+                    NetworkedPlayer.currentPlayers[hitName].OnlineKill();
             }
         }
     }

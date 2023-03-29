@@ -5,7 +5,7 @@ namespace GameplayServer
 {
     internal class MultiplayerGameServer
     {
-        public MultiplayerGameServer()
+        public static void Main()
         {
             TcpListener listener = new TcpListener(IPAddress.Any, 7778);
             listener.Start();

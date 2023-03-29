@@ -18,7 +18,7 @@ namespace GameWindow.Components.Miscellaneous
             set
             {
                 positionChanged = value;
-                positionChanged!();
+                positionChanged?.Invoke();
             }
         }
         public Action? ScaleChanged
@@ -41,7 +41,7 @@ namespace GameWindow.Components.Miscellaneous
                 Vector2 TempPosition = _basePosition;
                 _basePosition = value;
                 if (TempPosition != value)
-                    Application.Current.Dispatcher.Invoke(() => PositionChanged?.Invoke());
+                    OnSizeChanged();
             }
         }
         public Vector2 ActualPosition
@@ -64,7 +64,7 @@ namespace GameWindow.Components.Miscellaneous
                 Vector2 TempScale = _baseScale;
                 _baseScale = value;
                 if (TempScale != value)
-                    ScaleChanged?.Invoke();
+                    OnSizeChanged();
             }
         }
         public Vector2 ActualScale

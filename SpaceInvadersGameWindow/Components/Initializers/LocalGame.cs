@@ -3,6 +3,7 @@ using GameWindow.Components.GameComponents.Bunker;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using System.Numerics;
+using System.Windows;
 
 namespace GameWindow.Components.Initializers
 {
@@ -25,6 +26,9 @@ namespace GameWindow.Components.Initializers
 
         private CustomLabel CreditsLabel;
         private CustomLabel LivesLabel;
+        private CustomLabel LostLabel;
+        private CustomButton PlayAgainBtn;
+        private CustomButton MainMenuBtn;
 
         public LocalGame()
         {
@@ -35,6 +39,13 @@ namespace GameWindow.Components.Initializers
             //Sprite ColorOverlaySprite = new Sprite(ColorOverlayT, @"Resources\Images\Overlay.png");
             #endregion
 
+            StartGame();
+        }
+
+        private Player player;
+
+        private void StartGame()
+        {
             Wall.Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), @"Resources\Images\Pixels\Red.png");
             Wall.Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 1.08f), @"Resources\Images\Pixels\Green.png");
             Wall.LeftWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(25, MainWindow.referenceSize.Y / 2));
@@ -42,10 +53,13 @@ namespace GameWindow.Components.Initializers
 
             player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.8f), this);
 
-            CreditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
-            Score = 0;
+            Application.Current.Dispatcher.Invoke(() =>
+            { // UI Objects need to be created in an STA thread
 
-            LivesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+                CreditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+                LivesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+            });
+            Score = 0;
             LivesLeft = 3;
 
             new Bunker(new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
@@ -57,11 +71,9 @@ namespace GameWindow.Components.Initializers
             Invader.StartInvaders(this);
         }
 
-        private Player player;
-
         public void Won()
         {
-            player.StopInput();
+            //player.();
         }
         public void Lost()
         {
@@ -76,8 +88,33 @@ namespace GameWindow.Components.Initializers
             Bullet.DisposeAll();
             Bunker.DisposeAll();
 
-            CustomLabel lostLabel = new CustomLabel(new Transform(new Vector2(MainWindow.referenceSize.X, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)),
-                "You Lost", System.Windows.Media.Colors.White);
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                LostLabel = new CustomLabel(new Transform(new Vector2(MainWindow.referenceSize.X, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)),
+                    "You Lost", System.Windows.Media.Colors.White);
+
+                PlayAgainBtn = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X * 3 / 4, MainWindow.referenceSize.Y * 5 / 6)),
+                    () =>
+                    {
+                        LostLabel.Dispose();
+                        PlayAgainBtn.Dispose();
+                        MainMenuBtn.Dispose();
+                        StartGame();
+                    }, "", "Play Again");
+
+                MainMenuBtn = new CustomButton(
+                    new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X / 4, MainWindow.referenceSize.Y * 5 / 6)),
+                    () =>
+                    {
+                        LostLabel.Dispose();
+                        PlayAgainBtn.Dispose();
+                        MainMenuBtn.Dispose();
+                        GameInitializers.StartGameMenu(GameInitializers.username);
+                    }, "", "Main Menu");
+                // ...
+            });
         }
     }
 }

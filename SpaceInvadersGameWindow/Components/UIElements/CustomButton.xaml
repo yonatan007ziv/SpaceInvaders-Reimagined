@@ -6,7 +6,7 @@
              mc:Ignorable="d" Height="0" Width="0">
     <Button Name="button">
         <Grid>
-            <Image Name="buttonImage"></Image>
+            <Image Name="buttonImage"/>
             <Viewbox>
                 <TextBlock Name="buttonText" Foreground="White"/>
             </Viewbox>

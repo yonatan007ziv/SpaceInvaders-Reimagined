@@ -8,7 +8,7 @@ namespace GameWindow.Components.Initializers
 {
     internal static class GameInitializers
     {
-        public static string? username;
+        public static string username = "";
         public static void StartLoginRegist()
         {
             new LoginRegist();

@@ -9,6 +9,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 {
     internal class NetworkedCharacterController
     {
+        public bool disabled = false;
         InputHandler inputHandler;
         Transform transform;
         Collider col;
@@ -23,8 +24,11 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             this.sendMessage = sendMessage;
             inputHandler.AddInputLoop(InputLoop);
         }
+
         private void InputLoop()
         {
+            if (disabled) return;
+
             //Touching walls?
             int axis = inputHandler.GetAxis("Horizontal");
             Collider? col = this.col.TouchingCollider();
@@ -39,6 +43,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
                 sendMessage($"INITIATE BULLET:");
             }
         }
+
         public void Dispose()
         {
             inputHandler.RemoveInputLoop(InputLoop);

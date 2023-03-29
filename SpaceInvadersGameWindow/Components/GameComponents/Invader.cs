@@ -7,13 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
     internal class Invader
     {
         public static List<Invader> invaders = new List<Invader>();
-        public static float InvaderSpeed = 2.5f;
+        public static float InvaderSpeed = 5;
         public static void PlotInvaders(int startX, int startY)
         {
             for (int i = 0; i < 5; i++)
@@ -26,8 +27,7 @@ namespace GameWindow.Components.GameComponents
                         type = EnemyTypes.Crab;
                     else
                         type = EnemyTypes.Octopus;
-                    Invader invader = new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
-                    invader.sprite.image.IsEnabled = true;
+                    new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
                 }
         }
 
@@ -36,7 +36,7 @@ namespace GameWindow.Components.GameComponents
             while (invaders.Count > 0)
             {
                 MoveInvaders();
-                await Task.Delay(invaders.Count * 25);
+                await Task.Delay(invaders.Count * 15);
             }
 
             if (invaders.Count == 0)
@@ -83,28 +83,32 @@ namespace GameWindow.Components.GameComponents
 
             transform = new Transform(scale, pos);
             col = new Collider(transform, this, Collider.Layers.Invader);
-            sprite = new Sprite(transform);
+            Application.Current.Dispatcher.Invoke(() =>
+            { // UI Objects need to be created in an STA thread
+                sprite = new Sprite(transform);
+            });
+
 
             this.type = type;
             switch (type)
             {
                 default:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\MissingSprite.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\MissingSprite.png"));
                     throw new Exception();
                 case EnemyTypes.Octopus:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Octopus1.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Octopus1.png"));
                     pointsReward = 10;
                     break;
                 case EnemyTypes.Crab:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Crab1.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Crab1.png"));
                     pointsReward = 20;
                     break;
                 case EnemyTypes.Squid:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Squid1.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Squid1.png"));
                     pointsReward = 30;
                     break;
                 case EnemyTypes.UFO:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\UFO.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\UFO.png"));
                     pointsReward = 100;
                     break;
             }
@@ -125,7 +129,7 @@ namespace GameWindow.Components.GameComponents
         private static void MoveInvadersDown()
         {
             foreach (Invader i in invaders)
-                i.transform.Position += new Vector2(0, InvaderSpeed / 2);
+                i.transform.Position += new Vector2(0, InvaderSpeed * 2);
         }
 
         public static int dir = 1;
@@ -168,22 +172,22 @@ namespace GameWindow.Components.GameComponents
             switch (type)
             {
                 default:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\MissingSprite.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath($@"Resources\Images\MissingSprite.png"));
                     throw new Exception();
                 case EnemyTypes.Octopus:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Octopus{clipNum}.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Octopus{clipNum}.png"));
                     pointsReward = 10;
                     break;
                 case EnemyTypes.Crab:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Crab{clipNum}.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath($@"Resources\Images\Enemies\Crab{clipNum}.png"));
                     pointsReward = 20;
                     break;
                 case EnemyTypes.Squid:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Squid{clipNum}.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath($@"Resources\Images\Enemies\Squid{clipNum}.png"));
                     pointsReward = 30;
                     break;
                 case EnemyTypes.UFO:
-                    sprite.image.Source = Sprite.BitmapFromPath(@$"Resources\Images\Enemies\UFO.png");
+                    sprite.ChangeImage(Sprite.BitmapFromPath($@"Resources\Images\Enemies\UFO.png"));
                     pointsReward = 100;
                     break;
             }
@@ -193,11 +197,13 @@ namespace GameWindow.Components.GameComponents
             invaders.Remove(this);
             Dispose();
 
-            SoundManager.PlaySound(@"Resources\Sounds\InvaderDeath.wav");
+            SoundManager.PlaySound("InvaderDeath");
 
             // Invader Explosion
             transform = new Transform(new Vector2(13, 8), transform.Position);
-            sprite = new Sprite(transform, @"Resources\Images\Enemies\InvaderDeath.png");
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Enemies\InvaderDeath.png"));
 
             LocalGame.instance!.Score += pointsReward;
 

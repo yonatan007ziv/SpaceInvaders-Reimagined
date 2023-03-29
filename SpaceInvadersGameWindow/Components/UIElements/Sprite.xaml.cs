@@ -1,5 +1,7 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using System;
+using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -8,56 +10,6 @@ namespace GameWindow.Components.UIElements
 {
     public partial class Sprite : UserControl
     {
-        Transform transform;
-        public Sprite(Transform transform)
-        {
-            InitializeComponent();
-
-            // link to Transform
-            this.transform = transform;
-            transform.PositionChanged += SetPosition;
-            transform.ScaleChanged += SetScale;
-
-            // image settings set up
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-            image.Stretch = System.Windows.Media.Stretch.Fill;
-            image.StretchDirection = StretchDirection.Both;
-
-            MainWindow.instance!.CenteredCanvas.Children.Add(this);
-        }
-
-        public Sprite(Transform transform, string imagePath)
-        {
-            InitializeComponent();
-
-            // link to Transform
-            this.transform = transform;
-            transform.PositionChanged += SetPosition;
-            transform.ScaleChanged += SetScale;
-
-            // image settings set up
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-            image.Stretch = System.Windows.Media.Stretch.Fill;
-            image.StretchDirection = StretchDirection.Both;
-
-            // set source image
-            image.Source = BitmapFromPath(imagePath);
-
-            MainWindow.instance!.CenteredCanvas.Children.Add(this);
-        }
-
-        public void SetPosition()
-        {
-            SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
-            SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
-        }
-
-        public void SetScale()
-        {
-            Width = transform.ActualScale.X;
-            Height = transform.ActualScale.Y;
-        }
-
         public static BitmapImage BitmapFromPath(string path)
         {
             try
@@ -81,10 +33,83 @@ namespace GameWindow.Components.UIElements
                 return myBitmapImage;
             }
         }
+
+        Transform transform;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        // Called within an STA thread
+        public Sprite(Transform transform)
+        {
+            InitializeComponent();
+
+            // link to Transform
+            this.transform = transform;
+            transform.PositionChanged += SetPosition;
+            transform.ScaleChanged += SetScale;
+
+            // Image set up
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            image.Stretch = System.Windows.Media.Stretch.Fill;
+            image.StretchDirection = StretchDirection.Both;
+
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => MainWindow.instance.CenteredCanvas.Children.Add(this));
+        }
+
+        // Called within an STA thread
+        public Sprite(Transform transform, string imagePath)
+        {
+            InitializeComponent();
+
+            // link to Transform
+            this.transform = transform;
+            transform.PositionChanged += SetPosition;
+            transform.ScaleChanged += SetScale;
+
+            // image settings set up
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            image.Stretch = System.Windows.Media.Stretch.Fill;
+            image.StretchDirection = StretchDirection.Both;
+
+            // set source image
+            image.Source = BitmapFromPath(imagePath);
+
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => MainWindow.instance.CenteredCanvas.Children.Add(this));
+        }
+
+        public void SetPosition()
+        {
+            Application.Current.Dispatcher.BeginInvoke(() =>
+            { // UI Objects need to be changed in an STA thread
+                SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
+                SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
+            });
+        }
+
+        public void SetScale()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            { // UI Objects need to be changed in an STA thread
+                Width = transform.ActualScale.X;
+                Height = transform.ActualScale.Y;
+            });
+        }
+        public void Visible(bool visible)
+        {
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => Visibility = visible ? Visibility.Visible : Visibility.Hidden);
+        }
+        public void ChangeImage(BitmapImage image)
+        {
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => this.image.Source = image);
+        }
         public void Dispose()
         {
-            transform.Dispose();
-            MainWindow.instance!.CenteredCanvas.Dispatcher.Invoke(() => MainWindow.instance!.CenteredCanvas.Children.Remove(this));
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => MainWindow.instance!.CenteredCanvas.Children.Remove(this));
         }
     }
 }

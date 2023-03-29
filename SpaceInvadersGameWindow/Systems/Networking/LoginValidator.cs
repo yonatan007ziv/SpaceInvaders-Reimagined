@@ -17,7 +17,7 @@ namespace GameWindow.Systems.Networking
 
             this.resultLabel = resultLabel;
             this.DiposeRegistLoginMenu = InitializeMenu;
-            if (ConnectToAddress("46.121.140.104", 7777))
+            if (ConnectToAddress("46.121.140.242", 7777))
             {
                 SendMessage($"LOGIN:{username}/{password}");
                 BeginSingleRead();

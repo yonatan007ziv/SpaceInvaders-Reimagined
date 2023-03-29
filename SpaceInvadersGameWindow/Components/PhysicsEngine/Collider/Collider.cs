@@ -13,15 +13,16 @@ namespace GameWindow.Components.PhysicsEngine.Collider
             Wall = 1,
             Bunker = 2,
             Player = 3,
-            Invader = 4,
-            PlayerBullet = 5,
-            OnlinePlayerBullet = 6,
-            InvaderBullet = 7,
+            OnlinePlayer = 4,
+            Invader = 5,
+            PlayerBullet = 6,
+            OnlinePlayerBullet = 7,
+            InvaderBullet = 8,
         }
         private static List<Collider> AllColliders = new List<Collider>();
 
         private Layers layer;
-        private int[] IgnoredLayers;
+        private int[] IgnoredLayers = new int[5];
         private Transform transform;
         public object parent;
 
@@ -29,10 +30,8 @@ namespace GameWindow.Components.PhysicsEngine.Collider
         {
             AllColliders.Add(this);
             this.layer = layer;
-            this.IgnoredLayers = new int[5];
             this.transform = transform;
             this.parent = parent;
-            transform.OnSizeChanged();
         }
         public Collider? TouchingCollider()
         {

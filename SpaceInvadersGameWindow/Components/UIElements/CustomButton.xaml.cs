@@ -1,5 +1,6 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.Renderer;
+using GameWindow.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => onClick();
+            button.Click += (s, e) => { SoundManager.PlaySound("MenuClick"); onClick(); };
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
@@ -45,30 +46,33 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => onClick();
+            button.Click += (s, e) => { SoundManager.PlaySound("MenuClick"); onClick(); };
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
         public void SetPosition()
         {
-            SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
-            SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
+            Application.Current.Dispatcher.Invoke(() =>
+            { // UI Objects need to be changed in an STA thread
+                SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
+                SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
+            });
         }
 
         public void SetScale()
         {
-            Width = transform.ActualScale.X;
-            Height = transform.ActualScale.Y;
+            Application.Current.Dispatcher.Invoke(() =>
+            { // UI Objects need to be changed in an STA thread
+                Width = transform.ActualScale.X;
+                Height = transform.ActualScale.Y;
+            });
         }
 
         public void Dispose()
         {
-            transform.Dispose();
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                MainWindow.instance!.CenteredCanvas.Children.Remove(this);
-            });
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => MainWindow.instance!.CenteredCanvas.Children.Remove(this));
         }
     }
 }
