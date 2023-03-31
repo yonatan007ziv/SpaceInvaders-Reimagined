@@ -14,7 +14,8 @@ namespace GameWindow.Components.GameComponents
             instance = this;
             bulletSpeed *= 2;
 
-            SoundManager.PlaySound("Shoot");
+            SoundManager.PlaySound(SoundManager.Sounds.BulletInitiated);
+
             col.IgnoreLayer(Collider.Layers.Player);
             col.IgnoreLayer(Collider.Layers.PlayerBullet);
             col.IgnoreLayer(Collider.Layers.InvaderBullet);
@@ -37,6 +38,7 @@ namespace GameWindow.Components.GameComponents
             if (touching.parent is BunkerPart bunker)
                 bunker.Hit();
 
+            SoundManager.PlaySound(SoundManager.Sounds.BulletExplosion);
             BulletExplosion();
             instance = null;
         }

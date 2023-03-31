@@ -25,6 +25,13 @@ namespace GameWindow.Components.Pages
                 LoginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 25, MainWindow.referenceSize.Y / 2)), loginRegist, @"Resources\Images\Pixels\Green.png", "Click To Login");
                 resultLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 + 50)), "", System.Windows.Media.Colors.White);
             });
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            usernameInput!.ToString();
+            passwordInput!.ToString();
+            LoginRegistFlipper!.ToString();
+            LoginRegistButton!.ToString();
+            resultLabel!.ToString();
         }
         private void flipLoginRegist()
         {

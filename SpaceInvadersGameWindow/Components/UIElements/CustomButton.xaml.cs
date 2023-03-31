@@ -31,7 +31,7 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => { SoundManager.PlaySound("MenuClick"); onClick(); };
+            button.Click += (s, e) => { SoundManager.PlaySound(SoundManager.Sounds.MenuClick); onClick(); };
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
@@ -46,7 +46,7 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => { SoundManager.PlaySound("MenuClick"); onClick(); };
+            button.Click += (s, e) => { SoundManager.PlaySound(SoundManager.Sounds.MenuClick); onClick(); };
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }

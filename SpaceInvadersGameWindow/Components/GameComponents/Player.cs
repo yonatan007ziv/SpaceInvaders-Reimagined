@@ -4,10 +4,8 @@ using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Numerics;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -37,21 +35,18 @@ namespace GameWindow.Components.GameComponents
         public async void Kill()
         {
             if (invincible) return;
-            if (currentGame.LivesLeft == 0)
+            if (--currentGame.LivesLeft == 0)
             {
                 currentGame.Lost();
                 return;
             }
-            currentGame.LivesLeft--;
+
             invincible = true;
             controller.disabled = true;
 
-            //SoundManager.PlaySound("PlayerDeath");
+            SoundManager.PlaySound(SoundManager.Sounds.PlayerDeath);
 
             transform.Scale = new Vector2(16, 8);
-
-            // UI Objects need to be changed in an STA thread
-            sprite.ChangeImage(Sprite.BitmapFromPath(@"Resources\Images\Player\PlayerDeath1.png"));
 
             for (int i = 0; i < 12; i++)
             {
@@ -80,9 +75,18 @@ namespace GameWindow.Components.GameComponents
             }
             invincible = false;
         }
+        public void EnableInput()
+        {
+            controller.EnableInput();
+        }
+        public void DisableInput()
+        {
+            controller.DisableInput();
+        }
+
         public void Dispose()
         {
-            controller?.Dispose();
+            controller?.DisableInput();
             col.Dispose();
             sprite.Dispose();
             transform.Dispose();

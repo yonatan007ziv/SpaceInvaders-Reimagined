@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace GameWindow.Systems.Networking
 {
@@ -12,11 +12,11 @@ namespace GameWindow.Systems.Networking
     {
         private static readonly char messageSeperator = '+';
 
-        protected TcpClient client;
+        private TcpClient client;
         private Byte[] buffer;
 
         // Encryption related fields
-        TaskCompletionSource<bool> EncryptionReady = new TaskCompletionSource<bool>();
+        private TaskCompletionSource<bool> EncryptionReady = new TaskCompletionSource<bool>();
         private RSA rsa = RSA.Create();
         private Aes aes = Aes.Create();
 
@@ -80,15 +80,8 @@ namespace GameWindow.Systems.Networking
         private void ReceiveMessage(IAsyncResult ar, bool loop)
         {
             int bytesRead = -1;
-            try
-            {
-                lock (client.GetStream())
-                    bytesRead = client.GetStream().EndRead(ar);
-            }
-            catch (Exception ex)
-            {
-
-            }
+            lock (client.GetStream())
+                bytesRead = client.GetStream().EndRead(ar);
 
             byte[] encrypted = new byte[bytesRead];
             Array.Copy(buffer, encrypted, bytesRead);

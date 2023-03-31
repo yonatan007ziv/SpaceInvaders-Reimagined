@@ -1,9 +1,7 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
-using GameWindow.Systems;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,7 +24,6 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
         public NetworkedPlayer(Vector2 pos, string username, ActionString sendMessage) // local
         {
-            //new Invader(Invader.EnemyTypes.Octopus, new Vector2(150, 10));
             currentPlayers.Add(username, this);
 
             this.username = username;

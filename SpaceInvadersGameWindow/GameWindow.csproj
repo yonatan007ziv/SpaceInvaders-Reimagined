@@ -5,6 +5,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -58,14 +59,15 @@
     <None Remove="Resources\Images\Player\PlayerDeath1.png" />
     <None Remove="Resources\Images\Player\PlayerDeath2.png" />
     <None Remove="Resources\Sounds\BulletExplosion.wav" />
+    <None Remove="Resources\Sounds\BulletInitiated.wav" />
     <None Remove="Resources\Sounds\InvaderDeath.wav" />
     <None Remove="Resources\Sounds\MenuClick.wav" />
     <None Remove="Resources\Sounds\PlayerDeath.wav" />
     <None Remove="Resources\Sounds\Shoot - Copy.wav" />
-    <None Remove="Resources\Sounds\Shoot.wav" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.1.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
@@ -111,11 +113,21 @@
     <Resource Include="Resources\Images\Player\Player.png" />
     <Resource Include="Resources\Images\Player\PlayerDeath1.png" />
     <Resource Include="Resources\Images\Player\PlayerDeath2.png" />
-    <EmbeddedResource Include="Resources\Sounds\BulletExplosion.wav" />
-    <EmbeddedResource Include="Resources\Sounds\InvaderDeath.wav" />
-    <EmbeddedResource Include="Resources\Sounds\MenuClick.wav" />
-    <EmbeddedResource Include="Resources\Sounds\PlayerDeath.wav" />
-    <EmbeddedResource Include="Resources\Sounds\Shoot.wav" />
+    <Resource Include="Resources\Sounds\BulletExplosion.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Sounds\InvaderDeath.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Sounds\MenuClick.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Sounds\PlayerDeath.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Sounds\BulletInitiated.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

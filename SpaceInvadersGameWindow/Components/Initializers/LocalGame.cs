@@ -3,6 +3,7 @@ using GameWindow.Components.GameComponents.Bunker;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using System.Numerics;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace GameWindow.Components.Initializers
@@ -26,9 +27,9 @@ namespace GameWindow.Components.Initializers
 
         private CustomLabel CreditsLabel;
         private CustomLabel LivesLabel;
-        private CustomLabel LostLabel;
-        private CustomButton PlayAgainBtn;
-        private CustomButton MainMenuBtn;
+        private CustomLabel? LostLabel;
+        private CustomButton? PlayAgainBtn;
+        private CustomButton? MainMenuBtn;
 
         public LocalGame()
         {
@@ -40,18 +41,22 @@ namespace GameWindow.Components.Initializers
             #endregion
 
             StartGame();
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            CreditsLabel!.ToString();
+            LivesLabel!.ToString();
+            player!.ToString();
         }
 
         private Player player;
 
-        private void StartGame()
+        private async void StartGame()
         {
             Wall.Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), @"Resources\Images\Pixels\Red.png");
             Wall.Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 1.08f), @"Resources\Images\Pixels\Green.png");
             Wall.LeftWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(25, MainWindow.referenceSize.Y / 2));
             Wall.RightWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X - 25, MainWindow.referenceSize.Y / 2));
 
-            player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.8f), this);
 
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
@@ -67,8 +72,10 @@ namespace GameWindow.Components.Initializers
             new Bunker(new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
             new Bunker(new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
 
-            Invader.PlotInvaders((int)(MainWindow.referenceSize.X / 4), (int)(MainWindow.referenceSize.Y / 10));
-            Invader.StartInvaders(this);
+            player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.8f), this);
+            await Invader.PlotInvaders();
+            Invader.StartInvaders(this, player);
+            player.EnableInput();
         }
 
         public void Won()

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
 
 namespace GameWindow.Components.PhysicsEngine.Collider
 {
@@ -11,18 +10,18 @@ namespace GameWindow.Components.PhysicsEngine.Collider
         public enum Layers
         {
             Wall = 1,
-            Bunker = 2,
-            Player = 3,
-            OnlinePlayer = 4,
-            Invader = 5,
-            PlayerBullet = 6,
-            OnlinePlayerBullet = 7,
-            InvaderBullet = 8,
+            Bunker,
+            Player,
+            OnlinePlayer,
+            Invader,
+            PlayerBullet,
+            OnlinePlayerBullet,
+            InvaderBullet,
         }
         private static List<Collider> AllColliders = new List<Collider>();
 
         private Layers layer;
-        private int[] IgnoredLayers = new int[5];
+        private Layers[] IgnoredLayers = new Layers[8];
         private Transform transform;
         public object parent;
 
@@ -37,7 +36,7 @@ namespace GameWindow.Components.PhysicsEngine.Collider
         {
             foreach (Collider c in AllColliders)
             {
-                if (c == this || IgnoredLayers.Contains((int)c.layer)) continue;
+                if (c == this || IgnoredLayers.Contains(c.layer)) continue;
 
                 // check collision
                 Rectangle thisRect = new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y, (int)transform.ActualScale.X, (int)transform.ActualScale.Y);
@@ -53,7 +52,7 @@ namespace GameWindow.Components.PhysicsEngine.Collider
         private int currentLayerIndex = 0;
         public void IgnoreLayer(Layers layer)
         {
-            IgnoredLayers[currentLayerIndex++] = (int)layer;
+            IgnoredLayers[currentLayerIndex++] = layer;
         }
         public void Dispose()
         {

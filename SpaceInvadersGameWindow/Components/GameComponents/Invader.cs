@@ -14,11 +14,15 @@ namespace GameWindow.Components.GameComponents
     internal class Invader
     {
         public static List<Invader> invaders = new List<Invader>();
+        public static Invader? currentUFO = null;
         public static float InvaderSpeed = 5;
-        public static void PlotInvaders(int startX, int startY)
+        public static float UFOSpeed = 0.8f;
+        public static async Task PlotInvaders()
         {
-            for (int i = 0; i < 5; i++)
-                for (int j = 0; j < 11; j++)
+            int startX = (int)(MainWindow.referenceSize.X / 6);
+            int startY = (int)(MainWindow.referenceSize.Y / 10);
+            for (int i = 4; i >= 0; i--)
+                for (int j = 10; j >= 0; j--)
                 {
                     EnemyTypes type;
                     if (i < 1)
@@ -28,10 +32,12 @@ namespace GameWindow.Components.GameComponents
                     else
                         type = EnemyTypes.Octopus;
                     new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
+                    await Task.Delay(25);
                 }
+            await Task.Delay(50);
         }
 
-        public static async void StartInvaders(LocalGame currentGame)
+        public static async void StartInvaders(LocalGame currentGame, Player player)
         {
             while (invaders.Count > 0)
             {
@@ -39,10 +45,14 @@ namespace GameWindow.Components.GameComponents
                 await Task.Delay(invaders.Count * 15);
             }
 
-            if (invaders.Count == 0)
-                currentGame.Won();
-            else
-                currentGame.Lost();
+            if (currentGame.LivesLeft > 0)
+            {
+                Bullet.DisposeAll();
+                player.DisableInput();
+                await PlotInvaders();
+                player.EnableInput();
+                StartInvaders(currentGame, player);
+            }
         }
 
         public enum EnemyTypes
@@ -58,24 +68,34 @@ namespace GameWindow.Components.GameComponents
         private EnemyTypes type;
         public Invader(EnemyTypes type, Vector2 pos)
         {
+            this.type = type;
+
+            string imgPath;
             Vector2 scale;
             switch (type)
             {
                 default:
+                    imgPath = "";
+                    pointsReward = -1;
+                    scale = new Vector2(0, 0);
                     throw new Exception();
                 case EnemyTypes.Octopus:
+                    imgPath = @$"Resources\Images\Enemies\Octopus1.png";
                     pointsReward = 10;
                     scale = new Vector2(12, 8);
                     break;
                 case EnemyTypes.Crab:
+                    imgPath = @$"Resources\Images\Enemies\Crab1.png";
                     pointsReward = 20;
                     scale = new Vector2(11, 8);
                     break;
                 case EnemyTypes.Squid:
+                    imgPath = @$"Resources\Images\Enemies\Squid1.png";
                     pointsReward = 30;
                     scale = new Vector2(8, 8);
                     break;
                 case EnemyTypes.UFO:
+                    imgPath = @$"Resources\Images\Enemies\UFO.png";
                     pointsReward = 100;
                     scale = new Vector2(16, 8);
                     break;
@@ -83,57 +103,66 @@ namespace GameWindow.Components.GameComponents
 
             transform = new Transform(scale, pos);
             col = new Collider(transform, this, Collider.Layers.Invader);
-            Application.Current.Dispatcher.Invoke(() =>
-            { // UI Objects need to be created in an STA thread
-                sprite = new Sprite(transform);
-            });
 
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, imgPath));
 
-            this.type = type;
-            switch (type)
-            {
-                default:
-                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\MissingSprite.png"));
-                    throw new Exception();
-                case EnemyTypes.Octopus:
-                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Octopus1.png"));
-                    pointsReward = 10;
-                    break;
-                case EnemyTypes.Crab:
-                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Crab1.png"));
-                    pointsReward = 20;
-                    break;
-                case EnemyTypes.Squid:
-                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\Squid1.png"));
-                    pointsReward = 30;
-                    break;
-                case EnemyTypes.UFO:
-                    sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Enemies\UFO.png"));
-                    pointsReward = 100;
-                    break;
-            }
+            if (type == EnemyTypes.UFO)
+                currentUFO = this;
+            else
+                invaders.Add(this);
 
-            invaders.Add(this);
+            // Suppressing the "Null When Leaving a Constructor" warning
+            sprite!.ToString();
         }
 
+        private static Random random = new Random();
         public static void MoveInvaders()
         {
             foreach (Invader i in invaders)
                 i.DecideDir();
 
             for (int i = invaders.Count - 1; i >= 0; i--)
-                invaders[i].Move();
+                invaders[i].MoveSide();
+
+            if (random.Next(50) < invaders.Count)
+                invaders[random.Next(invaders.Count)].Shoot();
+
+            GenerateUFO();
 
             SpriteSwitch = !SpriteSwitch;
         }
+
+        #region UFO
+        private static void GenerateUFO()
+        {
+            if (random.Next(50) == 0 && invaders.Count >= 8 && currentUFO == null)
+                new Invader(EnemyTypes.UFO, new Vector2(-25, 15)).UFOMovementLoop();
+        }
+        private async void UFOMovementLoop()
+        {
+            //SoundManager.PlaySound(SoundManager.Sounds.UFO);
+            while (currentUFO != null)
+            {
+                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 2));
+                transform.Position += new Vector2(UFOSpeed, 0);
+
+                if (transform.Position.X > MainWindow.referenceSize.X)
+                {
+                    currentUFO = null;
+                    Dispose();
+                }
+            }
+        }
+        #endregion
+
         private static void MoveInvadersDown()
         {
             foreach (Invader i in invaders)
-                i.transform.Position += new Vector2(0, InvaderSpeed * 2);
+                i.transform.Position += new Vector2(0, InvaderSpeed * 1.25f);
         }
 
         public static int dir = 1;
-        private static Random random = new Random();
         private static bool SpriteSwitch = false;
 
         private void DecideDir()
@@ -151,15 +180,10 @@ namespace GameWindow.Components.GameComponents
                     MoveInvadersDown();
             }
         }
-        private void Move()
+        private void MoveSide()
         {
-            transform.Position += new Vector2(InvaderSpeed* dir, 0);
+            transform.Position += new Vector2(InvaderSpeed * dir, 0);
             NextClip();
-
-            // 4% (arbitrary) Chance to shoot
-            int rand = random.Next(100 / 4) + 1;
-            if (rand == 1)
-                Shoot();
         }
         private void Shoot()
         {
@@ -195,23 +219,40 @@ namespace GameWindow.Components.GameComponents
         public void Death()
         {
             invaders.Remove(this);
-            Dispose();
 
-            SoundManager.PlaySound("InvaderDeath");
+            col.Dispose();
+
+            //SoundManager.PlaySound("InvaderDeath");
 
             // Invader Explosion
-            transform = new Transform(new Vector2(13, 8), transform.Position);
+            transform.Scale = new Vector2(13, 8);
+            sprite.ChangeImage(Sprite.BitmapFromPath(@"Resources\Images\Enemies\InvaderDeath.png"));
 
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Enemies\InvaderDeath.png"));
+            if (type == EnemyTypes.UFO)
+            {
+                int rand = random.Next(4);
+                switch (rand)
+                {
+                    case 0:
+                        pointsReward = 50;
+                        break;
+                    case 1:
+                        pointsReward = 100;
+                        break;
+                    case 2:
+                        pointsReward = 150;
+                        break;
+                    case 3:
+                        pointsReward = 300;
+                        break;
+                }
+                currentUFO = null;
+            }
+
 
             LocalGame.instance!.Score += pointsReward;
 
-            Task.Delay(500).ContinueWith((p) =>
-            {
-                transform.Dispose();
-                sprite.Dispose();
-            });
+            Task.Delay(500).ContinueWith((p) => Dispose());
         }
         public static void DisposeAll()
         {

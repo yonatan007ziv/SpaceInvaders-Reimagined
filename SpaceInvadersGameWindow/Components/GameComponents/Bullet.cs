@@ -4,6 +4,7 @@ using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -20,7 +21,7 @@ namespace GameWindow.Components.GameComponents
         }
         public static List<Bullet> AllBullets = new List<Bullet>();
 
-        public bool BulletHit = false;
+        //public bool BulletHit = false;
         public Transform transform;
         protected float bulletSpeed = 3;
         protected Sprite sprite;
@@ -77,29 +78,21 @@ namespace GameWindow.Components.GameComponents
         }
         public void BulletExplosion()
         {
-            BulletHit = true;
+            //BulletHit = true;
             AllBullets.Remove(this);
-            Dispose();
-
-            SoundManager.PlaySound("BulletExplosion");
+            col.Dispose();
 
             // Bullet Explosion
-            transform = new Transform(new Vector2(6, 8), transform.Position);
+            transform.Scale = new Vector2(6, 8);
+            sprite.ChangeImage(Sprite.BitmapFromPath(@"Resources\Images\Bullet\BulletExplosion.png"));
 
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Bullet\BulletExplosion.png"));
-
-            Task.Delay(500).ContinueWith((p) =>
-            {
-                transform.Dispose();
-                sprite.Dispose();
-            });
+            Task.Delay(500).ContinueWith((p) => Dispose());
         }
         private void Dispose()
         {
             sprite.Dispose();
             transform.Dispose();
-            col?.Dispose();
+            col.Dispose();
         }
     }
 }

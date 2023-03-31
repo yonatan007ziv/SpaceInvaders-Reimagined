@@ -1,4 +1,5 @@
-﻿using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Initializers;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Systems;
 using System;
@@ -17,7 +18,6 @@ namespace GameWindow.Components.GameComponents
             inputHandler = MainWindow.instance!.inputHandler;
             this.transform = transform;
             this.col = col;
-            inputHandler.AddInputLoop(InputLoop);
         }
 
         private void InputLoop()
@@ -26,7 +26,6 @@ namespace GameWindow.Components.GameComponents
 
             //Touching walls?
             int axis = inputHandler.GetAxis("Horizontal");
-
             Collider? col = this.col.TouchingCollider();
             if (axis == 1 && (col == null || col.parent != Wall.RightWall) ||
                 axis == -1 && (col == null || col.parent != Wall.LeftWall))
@@ -36,7 +35,11 @@ namespace GameWindow.Components.GameComponents
                 new PlayerBullet(transform.Position, -1);
         }
 
-        public void Dispose()
+        public void EnableInput()
+        {
+            inputHandler.AddInputLoop(InputLoop);
+        }
+        public void DisableInput()
         {
             inputHandler.RemoveInputLoop(InputLoop);
         }

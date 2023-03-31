@@ -67,7 +67,7 @@ namespace GameplayServer
                 lock (client.GetStream())
                     bytesRead = client.GetStream().EndRead(aR);
             }
-            catch (Exception ex)
+            catch
             {
                 players.Remove(this);
                 Broadcast($"{nickname}$LEFT:");

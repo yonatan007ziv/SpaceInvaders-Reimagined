@@ -56,7 +56,7 @@ namespace GameWindow.Components.GameComponents
         public async void OnlineBulletLoop()
         {
             Vector2 SpeedVector = new Vector2(0, bulletSpeed);
-            while (col.TouchingCollider() == null && !BulletHit)
+            while (col.TouchingCollider() == null /*&& !BulletHit*/)
             {
                 transform.Position += SpeedVector;
                 await Task.Delay(1000 / MainWindow.TARGET_FPS);

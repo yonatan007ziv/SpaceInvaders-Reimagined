@@ -36,8 +36,6 @@ namespace GameWindow.Components.UIElements
 
         Transform transform;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
         // Called within an STA thread
         public Sprite(Transform transform)
         {
@@ -53,8 +51,7 @@ namespace GameWindow.Components.UIElements
             image.Stretch = System.Windows.Media.Stretch.Fill;
             image.StretchDirection = StretchDirection.Both;
 
-            // UI Objects need to be changed in an STA thread
-            Application.Current.Dispatcher.Invoke(() => MainWindow.instance.CenteredCanvas.Children.Add(this));
+            MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
         // Called within an STA thread
@@ -75,8 +72,7 @@ namespace GameWindow.Components.UIElements
             // set source image
             image.Source = BitmapFromPath(imagePath);
 
-            // UI Objects need to be changed in an STA thread
-            Application.Current.Dispatcher.Invoke(() => MainWindow.instance.CenteredCanvas.Children.Add(this));
+            MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
         public void SetPosition()

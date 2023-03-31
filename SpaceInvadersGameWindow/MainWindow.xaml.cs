@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.GameComponents;
-using GameWindow.Components.Initializers;
+﻿using GameWindow.Components.Initializers;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems;
 using System;
@@ -12,10 +11,10 @@ namespace GameWindow
     public partial class MainWindow : Window
     {
         public static readonly int TARGET_FPS = 60;
-        public static MainWindow instance;
+        public static MainWindow? instance;
+        public static float ratio;
 
         public static readonly Vector2 referenceSize = new Vector2(256, 320);//new Vector2(384, 448);
-        public static float ratio;
 
         public InputHandler inputHandler;
         private Transform CenteredCanvasTransform;

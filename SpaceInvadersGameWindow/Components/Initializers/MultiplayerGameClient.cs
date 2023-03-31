@@ -15,12 +15,10 @@ namespace GameWindow.Components.Initializers
                 SendMessage(username);
                 BeginRead();
 
-                /*
                 Wall.Ceiling = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 0), @"Resources\Images\Pixels\Red.png");
                 Wall.Floor = new Wall(new Vector2(256, 5), new Vector2(256 / 2, 256), @"Resources\Images\Pixels\Green.png");
                 Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
                 Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256, 256 / 2));
-                */
             }
             else 
                 GameInitializers.StartGameMenu(GameInitializers.username);
