@@ -10,7 +10,6 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
     internal class NetworkedCharacterController
     {
         public bool disabled = false;
-        InputHandler inputHandler;
         Transform transform;
         Collider col;
         private ActionString sendMessage;
@@ -18,11 +17,10 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
         public NetworkedCharacterController(NetworkedPlayer player, Transform transform, Collider col, ActionString sendMessage)
         {
             this.player = player;
-            inputHandler = MainWindow.instance!.inputHandler;
             this.transform = transform;
             this.col = col;
             this.sendMessage = sendMessage;
-            inputHandler.AddInputLoop(InputLoop);
+            InputHandler.AddInputLoop(InputLoop);
         }
 
         private void InputLoop()
@@ -30,14 +28,14 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             if (disabled) return;
 
             //Touching walls?
-            int axis = inputHandler.GetAxis("Horizontal");
+            int axis = InputHandler.GetAxis("Horizontal");
             Collider? col = this.col.TouchingCollider();
             if (axis == 1 && (col == null || col.parent != Wall.RightWall) || axis == -1 && (col == null || col.parent != Wall.LeftWall))
             {
                 transform.Position += new Vector2(axis, 0);
                 sendMessage($"PLAYER POS:{transform.Position.X}");
             }
-            if (inputHandler.keysDown.Contains(Key.Space) && player.myBullet == null)
+            if (InputHandler.keysDown.Contains(Key.Space) && player.myBullet == null)
             {
                 player.myBullet = new NetworkedBullet(transform.Position, sendMessage, () => player.myBullet = null);
                 sendMessage($"INITIATE BULLET:");
@@ -46,7 +44,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
         public void Dispose()
         {
-            inputHandler.RemoveInputLoop(InputLoop);
+            InputHandler.RemoveInputLoop(InputLoop);
         }
     }
 }

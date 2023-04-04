@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.GameComponents.Bunker;
-using GameWindow.Components.PhysicsEngine.Collider;
+﻿using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -9,34 +8,39 @@ namespace GameWindow.Components.GameComponents
     internal class PlayerBullet : Bullet
     {
         public static PlayerBullet? instance;
-        public PlayerBullet(Vector2 pos, int dir) : base(pos, dir, BulletTypes.Normal, Collider.Layers.PlayerBullet)
+        public PlayerBullet(Vector2 pos, int speed) : base(pos, speed, BulletTypes.Normal, Collider.Layers.PlayerBullet)
         {
             instance = this;
-            bulletSpeed *= 2;
 
             SoundManager.PlaySound(SoundManager.Sounds.BulletInitiated);
 
             col.IgnoreLayer(Collider.Layers.Player);
             col.IgnoreLayer(Collider.Layers.PlayerBullet);
-            col.IgnoreLayer(Collider.Layers.InvaderBullet);
 
             BulletLoop();
         }
         private async void BulletLoop()
         {
-            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
-            while (col.TouchingCollider() == null)
+            while (col.TouchingCollider() == null && !bulletHit)
             {
-                NextClip();
-                transform.Position += SpeedVector;
+                transform.Position += new Vector2(0, bulletSpeed);
                 await Task.Delay(1000 / MainWindow.TARGET_FPS);
             }
+            if (bulletHit)
+            {
+                SoundManager.PlaySound(SoundManager.Sounds.BulletExplosion);
+                instance = null;
+                return;
+            }
+
 
             Collider touching = col.TouchingCollider()!;
             if (touching.parent is Invader inv)
-                inv.Death();
-            if (touching.parent is BunkerPart bunker)
+                inv.Kill();
+            else if (touching.parent is BunkerPart bunker)
                 bunker.Hit();
+            else if (touching.parent is InvaderBullet bullet)
+                bullet.BulletExplosion();
 
             SoundManager.PlaySound(SoundManager.Sounds.BulletExplosion);
             BulletExplosion();

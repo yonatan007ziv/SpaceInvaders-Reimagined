@@ -63,6 +63,10 @@ namespace GameWindow.Systems.Networking
         }
         private void ReceiveAES(IAsyncResult ar)
         {
+            int bytesRead = -1;
+            lock (client.GetStream())
+                bytesRead = client.GetStream().EndRead(ar);
+
             byte[] encryptedAesKey = new byte[256];
             byte[] encryptedAesIV = new byte[256];
 

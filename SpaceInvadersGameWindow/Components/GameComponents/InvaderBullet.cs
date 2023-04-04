@@ -1,39 +1,38 @@
 ﻿using GameWindow.Components.PhysicsEngine.Collider;
-using GameWindow;
-using GameWindow.Components.GameComponents;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
-using GameWindow.Components.GameComponents.Bunker;
 
 namespace GameWindow.Components.GameComponents
 {
     internal class InvaderBullet : Bullet
     {
         private static Random random = new Random();
-        public InvaderBullet(Vector2 pos, int dir) : base(pos, dir, (BulletTypes)random.Next(0, 3), Collider.Layers.InvaderBullet)
+        public InvaderBullet(Vector2 pos, int speed) : base(pos, speed, (BulletTypes)random.Next(0, 3), Collider.Layers.InvaderBullet)
         {
             col.IgnoreLayer(Collider.Layers.Invader);
-            col.IgnoreLayer(Collider.Layers.PlayerBullet);
             col.IgnoreLayer(Collider.Layers.InvaderBullet);
 
             BulletLoop();
         }
         private async void BulletLoop()
         {
-            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
-            while (col.TouchingCollider() == null)
+            while (col.TouchingCollider() == null && !bulletHit)
             {
                 NextClip();
-                transform.Position += SpeedVector;
+                transform.Position += new Vector2(0, bulletSpeed);
                 await Task.Delay(1000 / MainWindow.TARGET_FPS);
             }
+            if (bulletHit)
+                return;
 
             Collider touching = col.TouchingCollider()!;
             if (touching.parent is Player player)
                 player.Kill();
-            if (touching.parent is BunkerPart bunker)
+            else if (touching.parent is BunkerPart bunker)
                 bunker.Hit();
+            else if (touching.parent is PlayerBullet bullet)
+                bullet.BulletExplosion();
 
             BulletExplosion();
         }

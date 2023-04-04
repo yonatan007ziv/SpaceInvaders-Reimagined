@@ -40,5 +40,12 @@ namespace GameWindow.Components.GameComponents
             sprite.Dispose();
             col.Dispose();
         }
+        public static void DisposeAll()
+        {
+            Ceiling?.Dispose();
+            Floor?.Dispose();
+            RightWall?.Dispose();
+            LeftWall?.Dispose();
+        }
     }
 }

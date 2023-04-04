@@ -20,8 +20,8 @@ namespace GameWindow.Components.Initializers
                 Wall.LeftWall = new Wall(new Vector2(5, 256), new Vector2(0, 256 / 2));
                 Wall.RightWall = new Wall(new Vector2(5, 256), new Vector2(256, 256 / 2));
             }
-            else 
-                GameInitializers.StartGameMenu(GameInitializers.username);
+            else
+                GameInitializers.StartGameMenu(username);
         }
         protected override void DecodeMessage(string msg)
         {

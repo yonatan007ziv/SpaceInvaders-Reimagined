@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Resources;
 
 namespace GameWindow.Systems
 {
@@ -12,42 +13,44 @@ namespace GameWindow.Systems
         private static float currentVol = 0.1f;
         public enum Sounds
         {
-            MenuClick = 0,
-            PlayerDeath = 1,
-            BulletInitiated = 2,
-            BulletExplosion = 3,
-            UFO = 4,
+            MenuClick,
+            PlayerDeath,
+            InvaderDeath,
+            BulletInitiated,
+            BulletExplosion,
+            UFO,
         }
 
-        private static Uri[] sounds = new Uri[5];
+        private static Dictionary<Sounds, Uri> sounds = new Dictionary<Sounds, Uri>();
         static SoundManager()
         {
-            sounds[0] = new Uri($"pack://application:,,,/Resources/Sounds/MenuClick.wav");
-            sounds[1] = new Uri($"pack://application:,,,/Resources/Sounds/PlayerDeath.wav");
-            sounds[2] = new Uri($"pack://application:,,,/Resources/Sounds/BulletInitiated.wav");
-            sounds[3] = new Uri($"pack://application:,,,/Resources/Sounds/BulletExplosion.wav");
-            sounds[4] = new Uri($"pack://application:,,,/Resources/Sounds/UFO.wav");
+            sounds[Sounds.MenuClick] = new Uri($"pack://application:,,,/Resources/Sounds/MenuClick.wav");
+            sounds[Sounds.PlayerDeath] = new Uri($"pack://application:,,,/Resources/Sounds/PlayerDeath.wav");
+            sounds[Sounds.InvaderDeath] = new Uri($"pack://application:,,,/Resources/Sounds/InvaderDeath.wav");
+            sounds[Sounds.BulletInitiated] = new Uri($"pack://application:,,,/Resources/Sounds/BulletInitiated.wav");
+            sounds[Sounds.BulletExplosion] = new Uri($"pack://application:,,,/Resources/Sounds/BulletExplosion.wav");
+            sounds[Sounds.UFO] = new Uri($"pack://application:,,,/Resources/Sounds/UFO.wav");
         }
         public static void PlaySound(Sounds sound)
         {
-            var uri = sounds[(int)sound];
-            var uriString = uri.ToString();
-            var streamResourceInfo = Application.GetResourceStream(new Uri(uriString));
+            /*
+            Uri uri = sounds[sound];
+            string uriString = uri.ToString();
+            StreamResourceInfo streamResourceInfo = Application.GetResourceStream(new Uri(uriString));
 
-            var tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".wav");
+            string tempPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".wav");
             using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
-            {
                 streamResourceInfo.Stream.CopyTo(fileStream);
-            }
 
-            var wave = new AudioFileReader(tempPath);
-            var outputDevice = new WaveOutEvent();
+            AudioFileReader wave = new AudioFileReader(tempPath);
+            WaveOutEvent outputDevice = new WaveOutEvent();
             outputDevice.Init(wave);
             outputDevice.Play();
             outputDevice.Volume = currentVol;
             outputDevice.PlaybackStopped += (sender, args) => waveOutEvents.Remove(outputDevice);
 
             waveOutEvents.Add(outputDevice);
+            */
         }
         public static void ChangeVolume(float vol)
         {

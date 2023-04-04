@@ -39,7 +39,8 @@ namespace LoginRegistServer
             this.dbHandler = dbHandler;
             buffer = new Byte[client.ReceiveBufferSize];
 
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveRSA, null);
+            this.client.GetStream().Read(buffer, 0, buffer.Length);
+            ReceiveRSA();
         }
 
         #region Login Logic
@@ -135,7 +136,7 @@ namespace LoginRegistServer
             else
                 SendMessage("Invalid Message");
         }
-        private void ReceiveRSA(IAsyncResult aR)
+        private void ReceiveRSA()
         {
             rsa.ImportRSAPublicKey(buffer, out _);
 

@@ -9,11 +9,9 @@ namespace GameWindow.Components.Pages
 {
     internal class GameMultiplayerMenu
     {
-        private CustomLabel ipLabel;
-        private CustomLabel portLabel;
-        private CustomTextInput ipInput;
-        private CustomTextInput portInput;
-        private CustomButton connectButton;
+        private CustomLabel ipLabel, portLabel;
+        private CustomTextInput ipInput, portInput;
+        private CustomButton connectButton, backButton;
 
         public GameMultiplayerMenu()
         {
@@ -25,8 +23,16 @@ namespace GameWindow.Components.Pages
                 ipInput.Text = "127.0.0.1"; // temp
                 portInput = new CustomTextInput(new Transform(new Vector2(125, 50), new Vector2(100, 100)));
                 portInput.Text = "7778"; // temp
-                connectButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(100, 225)), OnConnect, "", "Connect");
+                connectButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(125, 225)), OnConnect, "", "Connect");
+                backButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(75, 225)), OnBack, "", "Back");
             });
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            ipLabel!.ToString();
+            portLabel!.ToString();
+            ipInput!.ToString();
+            portInput!.ToString();
+            connectButton!.ToString();
         }
         private void Dispose()
         {
@@ -35,6 +41,7 @@ namespace GameWindow.Components.Pages
             ipInput.Dispose();
             portInput.Dispose();
             connectButton.Dispose();
+            backButton.Dispose();
         }
         void OnConnect()
         {
@@ -42,7 +49,11 @@ namespace GameWindow.Components.Pages
                 return;
             Dispose();
             new MultiplayerGameClient(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
-            connectButton.Dispose();
+        }
+        void OnBack()
+        {
+            Dispose();
+            GameInitializers.StartGameMenu(GameInitializers.username);
         }
     }
 }

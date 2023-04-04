@@ -12,9 +12,9 @@ namespace GameWindow.Components.GameComponents
     internal class Player
     {
         public Transform transform;
+        public CharacterController controller;
         private Collider col;
         private Sprite sprite;
-        private CharacterController controller;
         private LocalGame currentGame;
         public Player(Vector2 pos, LocalGame currentGame)
         {
@@ -42,54 +42,52 @@ namespace GameWindow.Components.GameComponents
             }
 
             invincible = true;
-            controller.disabled = true;
+            CharacterController.Disabled = true;
 
             SoundManager.PlaySound(SoundManager.Sounds.PlayerDeath);
-
             transform.Scale = new Vector2(16, 8);
 
+            await DeathAnimation();
+            Respawn();
+            await RespawnAnimation();
+            invincible = false;
+        }
+        private async Task DeathAnimation()
+        {
+            sprite.Dispose();
             for (int i = 0; i < 12; i++)
             {
-                sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png"));
+                Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, $@"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png"));
                 await Task.Delay(1000 / (MainWindow.TARGET_FPS / 6));
+                sprite.Dispose();
             }
-
-            Respawn();
-            Invincibility();
         }
         private void Respawn()
         {
+            sprite.Dispose();
             transform.Scale = new Vector2(13, 8);
-
-            // UI Objects need to be changed in an STA thread
-            sprite.ChangeImage(Sprite.BitmapFromPath(@"Resources\Images\Player\Player.png"));
-
-            controller.disabled = false;
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Player\Player.png"));
+            CharacterController.Disabled = false;
         }
-        private async void Invincibility()
+        private async Task RespawnAnimation()
         {
             for (int i = 0; i < 13; i++)
             {
                 sprite.Visible(i % 2 == 0);
                 await Task.Delay(1000 / 10);
             }
-            invincible = false;
         }
-        public void EnableInput()
-        {
-            controller.EnableInput();
-        }
-        public void DisableInput()
-        {
-            controller.DisableInput();
-        }
-
         public void Dispose()
         {
-            controller?.DisableInput();
+            controller.Dispose();
             col.Dispose();
             sprite.Dispose();
             transform.Dispose();
+        }
+
+        public static void PauseUnpause(bool pause)
+        {
+            CharacterController.Disabled = pause;
         }
     }
 }

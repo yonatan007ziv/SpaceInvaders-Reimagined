@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace GameWindow.Components.GameComponents.Bunker
+namespace GameWindow.Components.GameComponents
 {
     internal class BunkerPart
     {
@@ -33,7 +33,7 @@ namespace GameWindow.Components.GameComponents.Bunker
             col = new Collider(transform, this, Collider.Layers.Bunker);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @""));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform));
 
             NextClip();
 
@@ -44,45 +44,45 @@ namespace GameWindow.Components.GameComponents.Bunker
         private int timesHit = 1;
         public void Hit()
         {
-            if (timesHit == 3)
+            if (timesHit == 4)
                 Dispose();
             timesHit++;
             NextClip();
         }
         public void NextClip()
         {
-            BitmapImage bunkerImage;
+            string bunkerImagePath;
             switch (part)
             {
                 case BunkerParts.TopLeft:
-                    bunkerImage = Sprite.BitmapFromPath(@$"Resources\Images\Bunker\TopLeft{timesHit}.png");
+                    bunkerImagePath = @$"Resources\Images\Bunker\TopLeft{timesHit}.png";
                     break;
                 case BunkerParts.BottomLeft:
-                    bunkerImage = Sprite.BitmapFromPath(@$"Resources\Images\Bunker\BottomLeft{timesHit}.png");
+                    bunkerImagePath = @$"Resources\Images\Bunker\BottomLeft{timesHit}.png";
                     break;
                 case BunkerParts.MiddleTopLeft:
-                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleTopLeft{timesHit}.png");
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopLeft{timesHit}.png";
                     break;
                 case BunkerParts.MiddleBottomLeft:
-                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleBottomLeft{timesHit}.png");
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomLeft{timesHit}.png";
                     break;
                 case BunkerParts.MiddleTopRight:
-                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleTopRight{timesHit}.png");
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopRight{timesHit}.png";
                     break;
                 case BunkerParts.MiddleBottomRight:
-                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\MiddleBottomRight{timesHit}.png");
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomRight{timesHit}.png";
                     break;
                 case BunkerParts.TopRight:
-                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\TopRight{timesHit}.png");
+                    bunkerImagePath = $@"Resources\Images\Bunker\TopRight{timesHit}.png";
                     break;
                 case BunkerParts.BottomRight:
-                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\BottomRight{timesHit}.png");
+                    bunkerImagePath = $@"Resources\Images\Bunker\BottomRight{timesHit}.png";
                     break;
                 default:
-                    bunkerImage = Sprite.BitmapFromPath($@"Resources\Images\Bunker\TopLeft{timesHit}.png");
+                    bunkerImagePath = $@"Resources\Images\Bunker\TopLeft{timesHit}.png";
                     break;
             }
-            sprite.ChangeImage(bunkerImage);
+            sprite.ChangeImage(Sprite.BitmapFromPath(bunkerImagePath));
         }
         public void Dispose()
         {

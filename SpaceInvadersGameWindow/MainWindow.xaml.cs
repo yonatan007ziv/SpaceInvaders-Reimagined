@@ -16,7 +16,6 @@ namespace GameWindow
 
         public static readonly Vector2 referenceSize = new Vector2(256, 320);//new Vector2(384, 448);
 
-        public InputHandler inputHandler;
         private Transform CenteredCanvasTransform;
         public MainWindow()
         {
@@ -48,8 +47,9 @@ namespace GameWindow
                 CenteredCanvas.Height = scale.Y;
             };
 
-            inputHandler = new InputHandler(this);
-            GameInitializers.StartLoginRegist();
+            new InputHandler(this);
+            //GameInitializers.StartLoginRegist();
+            GameInitializers.StartGameMenu("YonatanZiv");
         }
 
         public void CalculateRatio()

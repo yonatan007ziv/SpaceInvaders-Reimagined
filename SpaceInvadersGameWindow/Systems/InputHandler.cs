@@ -1,5 +1,4 @@
-﻿using GameWindow;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,7 +8,8 @@ namespace GameWindow.Systems
 {
     public class InputHandler
     {
-        public List<Key> keysDown = new List<Key>();
+        public static List<Key> keysDown = new List<Key>();
+        public static bool Disabled;
 
         public InputHandler(Window TargetInputWindow)
         {
@@ -20,51 +20,53 @@ namespace GameWindow.Systems
 
             InputUpdateLoop();
         }
-
-        Action? inputLoopDel;
-        public void AddInputLoop(Action del)
-        {
-            inputLoopDel += del;
-        }
-        public void RemoveInputLoop(Action del)
-        {
-            inputLoopDel -= del;
-        }
-        public async void InputUpdateLoop()
+        private async void InputUpdateLoop()
         {
             while (true)
             {
-                inputLoopDel?.Invoke();
+                if (!Disabled)
+                    inputLoopDel?.Invoke();
+
                 await Task.Delay(1000 / (MainWindow.TARGET_FPS * 2));
             }
         }
 
-        #region delegates
-        Action? keyUpDel;
-        Action? keyPressDel;
+        private static Action? inputLoopDel;
+        public static void AddInputLoop(Action del)
+        {
+            inputLoopDel += del;
+        }
+        public static void RemoveInputLoop(Action del)
+        {
+            inputLoopDel -= del;
+        }
 
-        public void AddKeyUpDel(Action del)
+        #region delegates
+        private static Action? keyUpDel;
+        private static Action? keyPressDel;
+
+        public static void AddKeyUpDel(Action del)
         {
             keyUpDel += del;
         }
-        public void AddKeyDownDel(Action del)
+        public static void AddKeyDownDel(Action del)
         {
             keyPressDel += del;
         }
         #endregion
         
-        public void KeyDown(KeyEventArgs e)
+        public static void KeyDown(KeyEventArgs e)
         {
             if (!keysDown.Contains(e.Key))
                 keysDown.Add(e.Key);
             keyPressDel?.Invoke();
         }
-        public void KeyUp(KeyEventArgs e)
+        public static void KeyUp(KeyEventArgs e)
         {
             keysDown.Remove(e.Key);
             keyUpDel?.Invoke();
         }
-        public int GetAxis(string axis)
+        public static int GetAxis(string axis)
         {
             if (axis == "Horizontal")
                 return GetHorizontalAxis();
@@ -72,7 +74,7 @@ namespace GameWindow.Systems
                 return GetVerticalAxis();
             throw new Exception("Invalid Parameters");
         }
-        private int GetHorizontalAxis()
+        private static int GetHorizontalAxis()
         {
             int xAxis = 0;
             if (keysDown.Contains(Key.A))
@@ -81,7 +83,7 @@ namespace GameWindow.Systems
                 xAxis += 1;
             return xAxis;
         }
-        private int GetVerticalAxis()
+        private static int GetVerticalAxis()
         {
             int yAxis = 0;
             if (keysDown.Contains(Key.S))

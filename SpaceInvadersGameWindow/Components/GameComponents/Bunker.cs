@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace GameWindow.Components.GameComponents.Bunker
+namespace GameWindow.Components.GameComponents
 {
     internal class Bunker
     {

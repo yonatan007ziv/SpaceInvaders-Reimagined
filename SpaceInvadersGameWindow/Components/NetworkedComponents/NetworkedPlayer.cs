@@ -1,10 +1,12 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
+using GameWindow.Systems;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using static GameWindow.Components.Miscellaneous.Delegates;
 
 namespace GameWindow.Components.GameComponents.NetworkedComponents
@@ -68,15 +70,18 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             controller!.disabled = true;
             invincible = true;
 
-            //SoundManager.PlaySound("PlayerDeath");
+            SoundManager.PlaySound(SoundManager.Sounds.PlayerDeath);
 
             transform.Scale = new Vector2(16, 8);
+            sprite.Dispose();
 
             for (int i = 0; i < 12; i++)
             {
-                //sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png"));
+                Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png"));
                 await Task.Delay(1000 / 10);
+                sprite.Dispose();
             }
+
             Respawn(isOpponent: false);
             Invincibility();
             controller!.disabled = false;
@@ -86,14 +91,17 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             if (invincible) return;
             invincible = true;
 
-            //SoundManager.PlaySound("PlayerDeath");
+            SoundManager.PlaySound(SoundManager.Sounds.PlayerDeath);
 
             transform.Scale = new Vector2(16, 8);
+            sprite.Dispose();
 
             for (int i = 0; i < 12; i++)
             {
-                //sprite.ChangeImage(Sprite.BitmapFromPath(@$"Resources\Images\Player\OpponentPlayerDeath{i % 2 + 1}.png"));
+                // UI Objects need to be changed in an STA thread
+                Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @$"Resources\Images\Player\OpponentPlayerDeath{i % 2 + 1}.png"));
                 await Task.Delay(1000 / 10);
+                sprite.Dispose();
             }
 
             Respawn(isOpponent: true);
@@ -102,8 +110,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
         private void Respawn(bool isOpponent)
         {
             transform.Scale = new Vector2(13, 8);
-
-            sprite.ChangeImage(Sprite.BitmapFromPath(@"Resources\Images\Player\" + (isOpponent ? "Opponent" : "") + "Player.png"));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Player\" + (isOpponent ? "Opponent" : "") + "Player.png"));
         }
         private async void Invincibility()
         {
@@ -114,7 +121,6 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             }
             invincible = false;
         }
-
         public void Dispose()
         {
             controller?.Dispose();

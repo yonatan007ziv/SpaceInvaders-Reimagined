@@ -27,8 +27,12 @@ namespace GameWindow.Components.Pages
             });
 
             // Suppressing the "Null When Leaving a Constructor" warning
-            usernameInput!.ToString();
-            passwordInput!.ToString();
+            usernameInput!.box.AcceptsReturn = false;
+            usernameInput.box.AcceptsTab = false;
+
+            passwordInput!.box.AcceptsReturn = false;
+            passwordInput.box.AcceptsTab = false;
+
             LoginRegistFlipper!.ToString();
             LoginRegistButton!.ToString();
             resultLabel!.ToString();
@@ -42,9 +46,9 @@ namespace GameWindow.Components.Pages
         private void loginRegist()
         {
             if (loginRegistFlip)
-                new RegistValidator(usernameInput.box.Text, passwordInput.box.Text, resultLabel);
+                new RegistValidator(usernameInput.box.Text.ToLower(), passwordInput.box.Text.ToLower(), resultLabel);
             else
-                new LoginValidator(usernameInput.box.Text, passwordInput.box.Text, resultLabel, Dispose);
+                new LoginValidator(usernameInput.box.Text.ToLower(), passwordInput.box.Text.ToLower(), resultLabel, Dispose);
         }
         private void Dispose()
         {

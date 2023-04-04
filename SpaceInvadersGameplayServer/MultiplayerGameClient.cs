@@ -25,13 +25,14 @@ namespace GameplayServer
             this.client = client;
             buffer = new Byte[client.ReceiveBufferSize];
 
-            this.client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveRSA, null);
+            this.client.GetStream().Read(buffer, 0, buffer.Length);
+            ReceiveRSA();
 
             foreach (MultiplayerGameClient p in players)
                 if (p != this)
                     SendMessage($"{p.nickname}$INITIATE PLAYER:");
         }
-        private void ReceiveRSA(IAsyncResult aR)
+        private void ReceiveRSA()
         {
             rsa.ImportRSAPublicKey(buffer, out _);
 

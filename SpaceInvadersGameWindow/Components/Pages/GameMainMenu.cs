@@ -3,6 +3,7 @@ using GameWindow.Components.Initializers;
 using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Windows;
+using GameWindow.Components.GameComponents;
 
 namespace GameWindow.Components.Pages
 {
@@ -17,6 +18,11 @@ namespace GameWindow.Components.Pages
                 MultiplayerButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)), OnMultiplayer, "", "Multiplayer");
                 OptionsButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2 + 100, MainWindow.referenceSize.Y / 2)), OnOptions, "", "Options");
             });
+
+            // Suppressing the "Null When Leaving a Constructor" warning
+            SingleplayerButton!.ToString();
+            MultiplayerButton!.ToString();
+            OptionsButton!.ToString();
         }
         public void Dispose()
         {
