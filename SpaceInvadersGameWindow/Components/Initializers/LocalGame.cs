@@ -14,8 +14,6 @@ namespace GameWindow.Components.Initializers
         public static LocalGame? instance;
 
         private Player player;
-        public bool didQuit;
-        public bool isLost;
         private int score = 0;
         public int Score
         {
@@ -53,9 +51,10 @@ namespace GameWindow.Components.Initializers
         }
 
         #region Game Preparation
-        private async void StartGame()
+        public async void StartGame()
         {
-            isLost = false;
+            InputHandler.Disabled = true;
+            Player.PauseUnpause(true);
             MakeWall();
             MakeBunkers();
 
@@ -68,7 +67,6 @@ namespace GameWindow.Components.Initializers
             LivesLeft = 3;
 
             InputHandler.AddInputLoop(InputLoop);
-            Player.PauseUnpause(true);
             player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.735f), this);
             await Invader.PlotInvaders();
             Invader.PauseUnpauseInvaders(false);
@@ -92,22 +90,37 @@ namespace GameWindow.Components.Initializers
         #endregion
 
         #region Pause Menu
+        public static bool Paused;
+        private static bool HeldRestart;
         private static bool HeldEscape;
-        private static bool paused;
         private static PauseMenu? pauseMenu;
         private void InputLoop()
         {
             if (InputHandler.keysDown.Contains(Key.Escape))
             {
                 if (!HeldEscape)
-                    PauseUnpause(!paused);
+                    PauseUnpause(!Paused);
                 HeldEscape = true;
             }
             else
                 HeldEscape = false;
+
+            if (InputHandler.keysDown.Contains(Key.R))
+            {
+                if (!HeldRestart)
+                {
+                    Invader.PauseUnpauseInvaders(true);
+                    Dispose();
+                    StartGame();
+                }
+                HeldRestart = true;
+            }
+            else
+                HeldRestart = false;
         }
         public static void PauseUnpause(bool pause)
         {
+            Paused = pause;
             if (pause)
             {
                 Bullet.PauseUnpauseBullets(true);
@@ -122,24 +135,12 @@ namespace GameWindow.Components.Initializers
                 Player.PauseUnpause(false);
                 pauseMenu?.Dispose();
             }
-            paused = pause;
         }
         #endregion
 
         public void Lost()
         {
-            isLost = true;
-            PlayerBullet.instance = null;
-            Wall.Ceiling!.Dispose();
-            Wall.Floor!.Dispose();
-            Wall.LeftWall!.Dispose();
-            Wall.RightWall!.Dispose();
-            player.Dispose();
-            CreditsLabel.Dispose();
-            LivesLabel.Dispose();
-            Invader.DisposeAll();
-            Bullet.DisposeAll();
-            Bunker.DisposeAll();
+            Dispose();
 
             // UI Objects need to be created in an STA thread
             Application.Current.Dispatcher.Invoke(() =>

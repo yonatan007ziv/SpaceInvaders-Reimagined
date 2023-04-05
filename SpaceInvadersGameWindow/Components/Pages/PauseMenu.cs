@@ -13,6 +13,8 @@ namespace GameWindow.Components.Pages
         CustomButton newGameButton, mainMenuButton;
         public PauseMenu()
         {
+            LocalGame.Paused = true;
+
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
                 pauseLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(50, 25)), "Game Paused", System.Windows.Media.Colors.Black);
@@ -27,13 +29,17 @@ namespace GameWindow.Components.Pages
         }
         private void NewGame()
         {
-            
+            Dispose();
+            LocalGame.instance!.Dispose();
+            LocalGame.instance.StartGame();
+            LocalGame.Paused = false;
         }
         private void MainMenu()
         {
             Dispose();
             LocalGame.instance!.Dispose();
             GameInitializers.StartGameMenu(GameInitializers.username);
+            LocalGame.Paused = false;
         }
         public void Dispose()
         {

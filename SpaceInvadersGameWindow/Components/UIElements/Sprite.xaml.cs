@@ -1,6 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,25 +14,21 @@ namespace GameWindow.Components.UIElements
             try
             {
                 BitmapImage myBitmapImage = new BitmapImage();
-
                 myBitmapImage.BeginInit();
                 myBitmapImage.UriSource = new Uri("pack://application:,,,/" + path);
                 myBitmapImage.EndInit();
-
                 return myBitmapImage;
             }
             catch
             {
                 BitmapImage myBitmapImage = new BitmapImage();
-
                 myBitmapImage.BeginInit();
                 myBitmapImage.UriSource = new Uri(@"pack://application:,,,/Resources\Images\MissingSprite.png");
                 myBitmapImage.EndInit();
-
                 return myBitmapImage;
             }
-        }
 
+        }
         Transform transform;
 
         // Called within an STA thread
@@ -97,10 +92,12 @@ namespace GameWindow.Components.UIElements
             // UI Objects need to be changed in an STA thread
             Application.Current.Dispatcher.Invoke(() => Visibility = visible ? Visibility.Visible : Visibility.Hidden);
         }
-        public void ChangeImage(BitmapImage image)
+        public void ChangeImage(string imagePath)
         {
+            var bitmap = BitmapFromPath(imagePath);
+
             // UI Objects need to be changed in an STA thread
-            Application.Current.Dispatcher.Invoke(() => this.image.Source = image);
+            image.Dispatcher.Invoke(() => image.Source = bitmap);
         }
         public void Dispose()
         {

@@ -77,9 +77,9 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
             for (int i = 0; i < 12; i++)
             {
-                Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png"));
+
+                sprite.ChangeImage(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png\");
                 await Task.Delay(1000 / 10);
-                sprite.Dispose();
             }
 
             Respawn(isOpponent: false);
@@ -98,10 +98,8 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
             for (int i = 0; i < 12; i++)
             {
-                // UI Objects need to be changed in an STA thread
-                Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @$"Resources\Images\Player\OpponentPlayerDeath{i % 2 + 1}.png"));
+                sprite.ChangeImage(@$"Resources\Images\Player\OpponentPlayerDeath{i % 2 + 1}.png");
                 await Task.Delay(1000 / 10);
-                sprite.Dispose();
             }
 
             Respawn(isOpponent: true);

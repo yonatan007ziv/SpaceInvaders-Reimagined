@@ -32,20 +32,27 @@ namespace GameWindow.Components.GameComponents
         {
             for (int i = 0; i < AllBullets.Count; i++)
             {
+                if (AllBullets[i] == null) continue;
+
                 AllBullets[i].bulletHit = true;
-                AllBullets[i].col.Dispose();
-                AllBullets[i].sprite.Dispose();
-                AllBullets[i].transform.Dispose();
+                AllBullets[i]?.col.Dispose();
+                AllBullets[i]?.sprite.Dispose();
+                AllBullets[i]?.transform.Dispose();
             }
+            PlayerBullet.instance = null;
             AllBullets.Clear();
         }
         public static void PauseUnpauseBullets(bool pause)
         {
             for (int i = 0; i < AllBullets.Count; i++)
+            {
+                if (AllBullets[i] == null) continue;
+
                 if (pause)
                     AllBullets[i].bulletSpeed = 0;
                 else
                     AllBullets[i].bulletSpeed = AllBullets[i].originalBulletSpeed;
+            }
         }
         public Bullet(Vector2 pos,int speed, BulletTypes bulletType, Collider.Layers colliderLayer)
         {

@@ -82,7 +82,9 @@ namespace GameWindow.Components.GameComponents
                     bunkerImagePath = $@"Resources\Images\Bunker\TopLeft{timesHit}.png";
                     break;
             }
-            sprite.ChangeImage(Sprite.BitmapFromPath(bunkerImagePath));
+
+            sprite.ChangeImage(bunkerImagePath);
+            //Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, bunkerImagePath));
         }
         public void Dispose()
         {

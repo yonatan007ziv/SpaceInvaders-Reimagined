@@ -27,7 +27,7 @@ namespace GameWindow.Components.Initializers
         {
             string gotNick = msg.Split('$')[0];
 
-            if (msg.Contains("INITIATE PLAYER:"))
+            if (msg.Contains("INITIATE PLAYER"))
             {
                 if (gotNick == GameInitializers.username) // if local player
                     new NetworkedPlayer(new Vector2(100, 200), gotNick, SendMessage);
@@ -37,21 +37,25 @@ namespace GameWindow.Components.Initializers
 
             if (gotNick == GameInitializers.username) return; // prevent message loopback
 
-            if (msg.Contains("PLAYER POS:"))
+            if (msg.Contains("LEFT"))
+            {
+                NetworkedPlayer.currentPlayers[gotNick].Dispose();
+            }
+            else if (msg.Contains("PLAYER POS"))
             {
                 int.TryParse(msg.Split(':')[1], out int x);
                 Transform t = NetworkedPlayer.currentPlayers[gotNick].transform;
                 t.Position = new Vector2(x, t.Position.Y);
             }
-            else if (msg.Contains("INITIATE BULLET:"))
+            else if (msg.Contains("INITIATE BULLET"))
             {
                 new NetworkedBullet(gotNick);
             }
-            else if (msg.Contains("BULLET EXPLOSION:"))
+            else if (msg.Contains("BULLET EXPLOSION"))
             {
                 NetworkedPlayer.currentPlayers[gotNick].myBullet?.BulletExplosion();
             }
-            else if (msg.Contains("BULLET HIT:"))
+            else if (msg.Contains("BULLET HIT"))
             {
                 string hitName = msg.Split(":")[1];
                 if (hitName == GameInitializers.username)

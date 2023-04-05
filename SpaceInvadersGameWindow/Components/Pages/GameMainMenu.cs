@@ -1,9 +1,8 @@
-﻿using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.Initializers;
+﻿using GameWindow.Components.Initializers;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Windows;
-using GameWindow.Components.GameComponents;
 
 namespace GameWindow.Components.Pages
 {

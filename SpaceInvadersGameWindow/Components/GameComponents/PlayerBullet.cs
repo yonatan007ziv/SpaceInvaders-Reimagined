@@ -10,7 +10,7 @@ namespace GameWindow.Components.GameComponents
         public static PlayerBullet? instance;
         public PlayerBullet(Vector2 pos, int speed) : base(pos, speed, BulletTypes.Normal, Collider.Layers.PlayerBullet)
         {
-            instance = this;
+            //instance = this;
 
             SoundManager.PlaySound(SoundManager.Sounds.BulletInitiated);
 
@@ -24,7 +24,7 @@ namespace GameWindow.Components.GameComponents
             while (col.TouchingCollider() == null && !bulletHit)
             {
                 transform.Position += new Vector2(0, bulletSpeed);
-                await Task.Delay(1000 / MainWindow.TARGET_FPS);
+                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 8));
             }
             if (bulletHit)
             {

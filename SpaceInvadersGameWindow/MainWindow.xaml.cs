@@ -10,7 +10,7 @@ namespace GameWindow
 {
     public partial class MainWindow : Window
     {
-        public static readonly int TARGET_FPS = 60;
+        public const int TARGET_FPS = 60;
         public static MainWindow? instance;
         public static float ratio;
 
@@ -48,8 +48,7 @@ namespace GameWindow
             };
 
             new InputHandler(this);
-            //GameInitializers.StartLoginRegist();
-            GameInitializers.StartGameMenu("YonatanZiv");
+            GameInitializers.StartLoginRegist();
         }
 
         public void CalculateRatio()

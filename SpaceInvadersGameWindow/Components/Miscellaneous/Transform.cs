@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace GameWindow.Components.Miscellaneous
 {
-    public class Transform
+    public class Transform : IDisposable
     {
         private Action? positionChanged;
         private Action? scaleChanged;
