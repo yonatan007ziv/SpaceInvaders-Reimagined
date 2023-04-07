@@ -1,6 +1,6 @@
 ﻿using GameWindow.Components.GameComponents.NetworkedComponents;
 using GameWindow.Components.Initializers;
-using GameWindow.Components.PhysicsEngine.Collider;
+using GameWindow.Components.Miscellaneous;
 using System.Numerics;
 using System.Threading.Tasks;
 using static GameWindow.Components.Miscellaneous.Delegates;
@@ -14,7 +14,7 @@ namespace GameWindow.Components.GameComponents
         private string shooter;
 
         public NetworkedBullet(Vector2 pos, ActionString sendMessage, Action killBullet) :
-            base(pos, 1, BulletTypes.Normal, Collider.Layers.PlayerBullet)
+            base(pos, -6, BulletTypes.Normal, Collider.Layers.PlayerBullet)
         {
             this.shooter = GameInitializers.username!;
             this.sendMessage = sendMessage;
@@ -24,7 +24,7 @@ namespace GameWindow.Components.GameComponents
             LocalBulletLoop();
         }
         public NetworkedBullet(string shooter) :
-            base(NetworkedPlayer.currentPlayers[shooter].transform.Position, 1, BulletTypes.Normal, Collider.Layers.OnlinePlayerBullet)
+            base(NetworkedPlayer.currentPlayers[shooter].transform.Position, 6, BulletTypes.Normal, Collider.Layers.OnlinePlayerBullet)
         {
             this.shooter = shooter;
             NetworkedPlayer.currentPlayers[shooter].myBullet = this;
@@ -35,7 +35,7 @@ namespace GameWindow.Components.GameComponents
 
         public async void LocalBulletLoop()
         {
-            Vector2 SpeedVector = new Vector2(0, -bulletSpeed);
+            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
             while (col.TouchingCollider() == null)
             {
                 transform.Position += SpeedVector;

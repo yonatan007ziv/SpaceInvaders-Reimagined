@@ -40,6 +40,7 @@ namespace GameWindow.Components.Initializers
             if (msg.Contains("LEFT"))
             {
                 NetworkedPlayer.currentPlayers[gotNick].Dispose();
+                NetworkedPlayer.currentPlayers.Remove(gotNick);
             }
             else if (msg.Contains("PLAYER POS"))
             {

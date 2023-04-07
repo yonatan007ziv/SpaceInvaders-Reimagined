@@ -39,8 +39,7 @@ namespace LoginRegistServer
             this.dbHandler = dbHandler;
             buffer = new Byte[client.ReceiveBufferSize];
 
-            this.client.GetStream().Read(buffer, 0, buffer.Length);
-            ReceiveRSA();
+            this.client.GetStream().BeginRead(buffer, 0, buffer.Length, (ar) => { ReceiveRSA(); WriteEncryptedAes(); BeginRead(); }, null);
         }
 
         #region Login Logic
@@ -139,7 +138,9 @@ namespace LoginRegistServer
         private void ReceiveRSA()
         {
             rsa.ImportRSAPublicKey(buffer, out _);
-
+        }
+        private void WriteEncryptedAes()
+        {
             byte[] aesKey = aes.Key;
             byte[] aesIV = aes.IV;
 
@@ -148,7 +149,9 @@ namespace LoginRegistServer
 
             byte[] encryptedAesKeyIV = encryptedAesKey.Concat(encryptedAesIV).ToArray();
             client.GetStream().Write(encryptedAesKeyIV, 0, encryptedAesKeyIV.Length);
-
+        }
+        private void BeginRead()
+        {
             client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
         }
         private void ReceiveMessage(IAsyncResult aR)
@@ -169,8 +172,29 @@ namespace LoginRegistServer
 
             byte[] encrypted = new byte[bytesRead];
             Array.Copy(buffer, encrypted, bytesRead);
-            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
+            EncryptedSeperator(encrypted);
+        }
+        private void EncryptedSeperator(byte[] encryptedWithPrefix)
+        {
+            List<byte[]> encryptedMessages = new List<byte[]>();
+            int pos = 0;
 
+            while (pos < encryptedWithPrefix.Length)
+            {
+                int currentLength = BitConverter.ToInt32(encryptedWithPrefix, pos);
+                pos += sizeof(int);
+                byte[] encryptedMessage = new byte[currentLength];
+                Array.Copy(encryptedWithPrefix, pos, encryptedMessage, 0, currentLength);
+                encryptedMessages.Add(encryptedMessage);
+                pos += currentLength;
+            }
+
+            foreach (byte[] encryptedMessage in encryptedMessages)
+                DecodeEncryptedMessage(encryptedMessage);
+        }
+        private void DecodeEncryptedMessage(byte[] encrypted)
+        {
+            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
             string msg = Encoding.UTF8.GetString(decrypted);
             DecodeMessage(msg);
         }
@@ -178,7 +202,18 @@ namespace LoginRegistServer
         {
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
             byte[] encrypted = aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length);
-            client.GetStream().Write(encrypted, 0, encrypted.Length);
+
+            byte[] encryptedWithPrefix = new byte[encrypted.Length + sizeof(int)];
+            byte[] length = BitConverter.GetBytes(encrypted.Length);
+
+            int pos;
+            // Add the encrypted message's length as a prefix
+            for (pos = 0; pos < length.Length; pos++)
+                encryptedWithPrefix[pos] = length[pos];
+
+            Array.Copy(encrypted, 0, encryptedWithPrefix, pos, encrypted.Length);
+
+            client.GetStream().Write(encryptedWithPrefix, 0, encryptedWithPrefix.Length);
         }
     }
 }

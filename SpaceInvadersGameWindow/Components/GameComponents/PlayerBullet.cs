@@ -1,4 +1,4 @@
-﻿using GameWindow.Components.PhysicsEngine.Collider;
+﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -7,12 +7,13 @@ namespace GameWindow.Components.GameComponents
 {
     internal class PlayerBullet : Bullet
     {
+        public const int PLAYER_BULLET_SPEED = 5;
         public static PlayerBullet? instance;
-        public PlayerBullet(Vector2 pos, int speed) : base(pos, speed, BulletTypes.Normal, Collider.Layers.PlayerBullet)
+        public PlayerBullet(Vector2 pos) : base(pos, -PLAYER_BULLET_SPEED, BulletTypes.Normal, Collider.Layers.PlayerBullet)
         {
-            //instance = this;
+            instance = this;
 
-            SoundManager.PlaySound(SoundManager.Sounds.BulletInitiated);
+            SoundManager.PlaySound(Sounds.BulletInitiated);
 
             col.IgnoreLayer(Collider.Layers.Player);
             col.IgnoreLayer(Collider.Layers.PlayerBullet);
@@ -28,7 +29,6 @@ namespace GameWindow.Components.GameComponents
             }
             if (bulletHit)
             {
-                SoundManager.PlaySound(SoundManager.Sounds.BulletExplosion);
                 instance = null;
                 return;
             }
@@ -42,7 +42,6 @@ namespace GameWindow.Components.GameComponents
             else if (touching.parent is InvaderBullet bullet)
                 bullet.BulletExplosion();
 
-            SoundManager.PlaySound(SoundManager.Sounds.BulletExplosion);
             BulletExplosion();
             instance = null;
         }

@@ -27,7 +27,7 @@ namespace GameWindow.Systems
                 if (!Disabled)
                     inputLoopDel?.Invoke();
 
-                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 2));
+                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 4));
             }
         }
 

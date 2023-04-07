@@ -1,4 +1,4 @@
-﻿using GameWindow.Components.PhysicsEngine.Collider;
+﻿using GameWindow.Components.Miscellaneous;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -7,8 +7,9 @@ namespace GameWindow.Components.GameComponents
 {
     internal class InvaderBullet : Bullet
     {
+        public const int INVADER_BULLET_SPEED = 3;
         private static Random random = new Random();
-        public InvaderBullet(Vector2 pos, int speed) : base(pos, speed, (BulletTypes)random.Next(0, 3), Collider.Layers.InvaderBullet)
+        public InvaderBullet(Vector2 pos) : base(pos, INVADER_BULLET_SPEED, (BulletTypes)random.Next(0, 3), Collider.Layers.InvaderBullet)
         {
             col.IgnoreLayer(Collider.Layers.Invader);
             col.IgnoreLayer(Collider.Layers.InvaderBullet);

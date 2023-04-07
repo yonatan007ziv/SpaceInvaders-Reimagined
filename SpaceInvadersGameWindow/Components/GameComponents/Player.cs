@@ -1,6 +1,5 @@
 ﻿using GameWindow.Components.Initializers;
 using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Numerics;
@@ -12,8 +11,8 @@ namespace GameWindow.Components.GameComponents
     internal class Player
     {
         public Transform transform;
-        public CharacterController controller;
-        private Collider col;
+        public Collider col;
+        private PlayerController controller;
         private Sprite sprite;
         private LocalGame currentGame;
         public Player(Vector2 pos, LocalGame currentGame)
@@ -26,7 +25,7 @@ namespace GameWindow.Components.GameComponents
             // UI Objects need to be created in an STA thread
             Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Player\Player.png"));
 
-            controller = new CharacterController(transform, col);
+            controller = new PlayerController(this);
 
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
@@ -42,9 +41,10 @@ namespace GameWindow.Components.GameComponents
             }
 
             invincible = true;
-            CharacterController.Disabled = true;
+            PlayerController.Disabled = true;
 
-            SoundManager.PlaySound(SoundManager.Sounds.PlayerDeath);
+            SoundManager.StopAllSounds();
+            SoundManager.PlaySound(Sounds.PlayerDeath);
             transform.Scale = new Vector2(16, 8);
 
             await DeathAnimation();
@@ -54,20 +54,17 @@ namespace GameWindow.Components.GameComponents
         }
         private async Task DeathAnimation()
         {
-            sprite.Dispose();
             for (int i = 0; i < 12; i++)
             {
-                Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, $@"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png"));
+                sprite.ChangeImage($@"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png");
                 await Task.Delay(1000 / (MainWindow.TARGET_FPS / 6));
-                sprite.Dispose();
             }
         }
         private void Respawn()
         {
-            sprite.Dispose();
             transform.Scale = new Vector2(13, 8);
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Player\Player.png"));
-            CharacterController.Disabled = false;
+            sprite.ChangeImage(@"Resources\Images\Player\Player.png");
+            PlayerController.Disabled = false;
         }
         private async Task RespawnAnimation()
         {
@@ -84,10 +81,6 @@ namespace GameWindow.Components.GameComponents
             sprite.Dispose();
             transform.Dispose();
         }
-
-        public static void PauseUnpause(bool pause)
-        {
-            CharacterController.Disabled = pause;
-        }
+        public static void PauseUnpause(bool pause) => PlayerController.Disabled = pause;
     }
 }

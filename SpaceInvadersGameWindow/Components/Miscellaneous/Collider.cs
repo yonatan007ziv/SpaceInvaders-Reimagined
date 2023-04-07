@@ -1,9 +1,8 @@
-﻿using GameWindow.Components.Miscellaneous;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace GameWindow.Components.PhysicsEngine.Collider
+namespace GameWindow.Components.Miscellaneous
 {
     internal class Collider
     {
@@ -34,8 +33,9 @@ namespace GameWindow.Components.PhysicsEngine.Collider
         }
         public Collider? TouchingCollider()
         {
-            foreach (Collider c in AllColliders)
+            for (int i = 0; i < AllColliders.Count; i++)
             {
+                Collider c = AllColliders[i];
                 if (c == this || IgnoredLayers.Contains(c.layer)) continue;
 
                 // check collision

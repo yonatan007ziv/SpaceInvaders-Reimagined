@@ -5,7 +5,6 @@ using System;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
-
 namespace GameWindow
 {
     public partial class MainWindow : Window
@@ -20,6 +19,7 @@ namespace GameWindow
         public MainWindow()
         {
             InitializeComponent();
+
             instance = this;
 
             Height = referenceSize.Y * 2;

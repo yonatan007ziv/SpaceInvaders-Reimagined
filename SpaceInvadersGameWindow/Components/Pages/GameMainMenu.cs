@@ -23,12 +23,6 @@ namespace GameWindow.Components.Pages
             MultiplayerButton!.ToString();
             OptionsButton!.ToString();
         }
-        public void Dispose()
-        {
-            SingleplayerButton.Dispose();
-            MultiplayerButton.Dispose();
-            OptionsButton.Dispose();
-        }
         private void OnSingleplayer()
         {
             Dispose();
@@ -43,6 +37,12 @@ namespace GameWindow.Components.Pages
         {
             Dispose();
             throw new System.Exception();
+        }
+        public void Dispose()
+        {
+            SingleplayerButton.Dispose();
+            MultiplayerButton.Dispose();
+            OptionsButton.Dispose();
         }
     }
 }

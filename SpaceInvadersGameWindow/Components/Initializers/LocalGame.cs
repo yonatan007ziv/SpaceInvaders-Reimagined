@@ -67,6 +67,7 @@ namespace GameWindow.Components.Initializers
             LivesLeft = 3;
 
             InputHandler.AddInputLoop(InputLoop);
+
             player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.735f), this);
             await Invader.PlotInvaders();
             Invader.PauseUnpauseInvaders(false);
@@ -152,6 +153,7 @@ namespace GameWindow.Components.Initializers
                     () =>
                     {
                         DisposeLostMenu();
+                        Dispose();
                         StartGame();
                     }, "", "Play Again");
 
@@ -160,9 +162,9 @@ namespace GameWindow.Components.Initializers
                     () =>
                     {
                         DisposeLostMenu();
+                        Dispose();
                         GameInitializers.StartGameMenu(GameInitializers.username);
                     }, "", "Main Menu");
-                // ...
             });
         }
         private void DisposeLostMenu()
@@ -173,6 +175,7 @@ namespace GameWindow.Components.Initializers
         }
         public void Dispose()
         {
+            InputHandler.RemoveInputLoop(InputLoop);
             Wall.DisposeAll();
             Bunker.DisposeAll();
             Bullet.DisposeAll();

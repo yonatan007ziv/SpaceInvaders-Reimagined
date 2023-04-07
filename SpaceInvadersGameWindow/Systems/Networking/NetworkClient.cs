@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace GameWindow.Systems.Networking
 {
     abstract class NetworkClient
     {
-        private static readonly char messageSeperator = '+';
-
         private TcpClient client;
         private Byte[] buffer;
 
@@ -57,9 +55,21 @@ namespace GameWindow.Systems.Networking
         protected async void SendMessage(string msg)
         {
             await EncryptionReady.Task;
+
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
             byte[] encrypted = aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length);
-            client.GetStream().Write(encrypted, 0, encrypted.Length);
+
+            byte[] encryptedWithPrefix = new byte[encrypted.Length + sizeof(int)];
+            byte[] length = BitConverter.GetBytes(encrypted.Length);
+
+            int pos;
+            // Add the encrypted message's length as a prefix
+            for (pos = 0; pos < length.Length; pos++)
+                encryptedWithPrefix[pos] = length[pos];
+
+            Array.Copy(encrypted, 0, encryptedWithPrefix, pos, encrypted.Length);
+
+            client.GetStream().Write(encryptedWithPrefix, 0, encryptedWithPrefix.Length);
         }
         private void ReceiveAES(IAsyncResult ar)
         {
@@ -89,24 +99,35 @@ namespace GameWindow.Systems.Networking
 
             byte[] encrypted = new byte[bytesRead];
             Array.Copy(buffer, encrypted, bytesRead);
-            byte[] decrypted = aes.CreateDecryptor().TransformFinalBlock(encrypted, 0, encrypted.Length);
 
-            string msg = Encoding.UTF8.GetString(decrypted);
-            MessageSeperator(msg);
+            EncryptedSeperator(encrypted);
+
             if (loop)
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, true), null);
         }
-        private void MessageSeperator(string msg)
+        private void EncryptedSeperator(byte[] encryptedWithPrefix)
         {
-            if (msg == "") return;
+            List<byte[]> encryptedMessages = new List<byte[]>();
+            int pos = 0;
 
-            if (msg.Contains(messageSeperator))
+            while (pos < encryptedWithPrefix.Length)
             {
-                MessageSeperator(msg.Split(messageSeperator)[0]);
-                MessageSeperator(msg.Split(messageSeperator)[1]);
+                int currentLength = BitConverter.ToInt32(encryptedWithPrefix, pos);
+                pos += sizeof(int);
+                byte[] encryptedMessage = new byte[currentLength];
+                Array.Copy(encryptedWithPrefix, pos, encryptedMessage, 0, currentLength);
+                encryptedMessages.Add(encryptedMessage);
+                pos += currentLength;
             }
-            else
-                DecodeMessage(msg);
+
+            foreach (byte[] encryptedMessage in encryptedMessages)
+                DecodeEncryptedMessage(encryptedMessage);
+        }
+        private void DecodeEncryptedMessage(byte[] encrypted)
+        {
+            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
+            string msg = Encoding.UTF8.GetString(decrypted);
+            DecodeMessage(msg);
         }
         public void StopClient()
         {

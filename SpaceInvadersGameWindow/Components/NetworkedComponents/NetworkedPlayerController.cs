@@ -1,5 +1,4 @@
 ﻿using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Windows.Input;
@@ -7,14 +6,14 @@ using static GameWindow.Components.Miscellaneous.Delegates;
 
 namespace GameWindow.Components.GameComponents.NetworkedComponents
 {
-    internal class NetworkedCharacterController
+    internal class NetworkedPlayerController
     {
         public bool disabled = false;
         Transform transform;
         Collider col;
         private ActionString sendMessage;
         private NetworkedPlayer player;
-        public NetworkedCharacterController(NetworkedPlayer player, Transform transform, Collider col, ActionString sendMessage)
+        public NetworkedPlayerController(NetworkedPlayer player, Transform transform, Collider col, ActionString sendMessage)
         {
             this.player = player;
             this.transform = transform;

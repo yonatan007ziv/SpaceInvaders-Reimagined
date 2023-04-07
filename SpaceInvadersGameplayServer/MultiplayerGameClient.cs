@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Linq;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -6,7 +7,6 @@ namespace GameplayServer
 {
     class MultiplayerGameClient
     {
-        private static readonly char messageSeperator = '+';
         private static List<MultiplayerGameClient> players = new List<MultiplayerGameClient>();
 
         private TcpClient client;
@@ -25,17 +25,14 @@ namespace GameplayServer
             this.client = client;
             buffer = new Byte[client.ReceiveBufferSize];
 
-            this.client.GetStream().Read(buffer, 0, buffer.Length);
-            ReceiveRSA();
-
-            foreach (MultiplayerGameClient p in players)
-                if (p != this)
-                    SendMessage($"{p.nickname}$INITIATE PLAYER:");
+            this.client.GetStream().BeginRead(buffer, 0, buffer.Length, (ar) => { ReceiveRSA(); WriteEncryptedAes(); GetPlayers();BeginRead(); }, null);
         }
         private void ReceiveRSA()
         {
             rsa.ImportRSAPublicKey(buffer, out _);
-
+        }
+        private void WriteEncryptedAes()
+        {
             byte[] aesKey = aes.Key;
             byte[] aesIV = aes.IV;
 
@@ -44,10 +41,17 @@ namespace GameplayServer
 
             byte[] encryptedAesKeyIV = encryptedAesKey.Concat(encryptedAesIV).ToArray();
             client.GetStream().Write(encryptedAesKeyIV, 0, encryptedAesKeyIV.Length);
-
+        }
+        private void GetPlayers()
+        {
+            foreach (MultiplayerGameClient p in players)
+                if (p != this)
+                    SendMessage($"{p.nickname}$INITIATE PLAYER:");
+        }
+        private void BeginRead()
+        {
             client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
         }
-
         private void Broadcast(string msg)
         {
             Console.WriteLine($"BROADCASTING:{msg}");
@@ -58,7 +62,18 @@ namespace GameplayServer
         {
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
             byte[] encrypted = aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length);
-            client.GetStream().Write(encrypted, 0, encrypted.Length);
+
+            byte[] encryptedWithPrefix = new byte[encrypted.Length + sizeof(int)];
+            byte[] length = BitConverter.GetBytes(encrypted.Length);
+
+            int pos;
+            // Add the encrypted message's length as a prefix
+            for (pos = 0; pos < length.Length; pos++)
+                encryptedWithPrefix[pos] = length[pos];
+
+            Array.Copy(encrypted, 0, encryptedWithPrefix, pos, encrypted.Length);
+
+            client.GetStream().Write(encryptedWithPrefix, 0, encryptedWithPrefix.Length);
         }
         private void ReceiveMessage(IAsyncResult aR)
         {
@@ -77,23 +92,33 @@ namespace GameplayServer
 
             byte[] encrypted = new byte[bytesRead];
             Array.Copy(buffer, encrypted, bytesRead);
-            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
+            EncryptedSeperator(encrypted);
 
-            string msg = Encoding.UTF8.GetString(decrypted);
-            DecodeSeperator(msg);
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+            BeginRead();
         }
-        private void DecodeSeperator(string msg)
+        private void EncryptedSeperator(byte[] encryptedWithPrefix)
         {
-            if (msg == "") return;
+            List<byte[]> encryptedMessages = new List<byte[]>();
+            int pos = 0;
 
-            if (msg.Contains(messageSeperator))
+            while (pos < encryptedWithPrefix.Length)
             {
-                DecodeSeperator(msg.Split(messageSeperator)[0]);
-                DecodeSeperator(msg.Split(messageSeperator)[1]);
+                int currentLength = BitConverter.ToInt32(encryptedWithPrefix, pos);
+                pos += sizeof(int);
+                byte[] encryptedMessage = new byte[currentLength];
+                Array.Copy(encryptedWithPrefix, pos, encryptedMessage, 0, currentLength);
+                encryptedMessages.Add(encryptedMessage);
+                pos += currentLength;
             }
-            else
-                DecodeMessage(msg);
+
+            foreach (byte[] encryptedMessage in encryptedMessages)
+                DecodeEncryptedMessage(encryptedMessage);
+        }
+        private void DecodeEncryptedMessage(byte[] encrypted)
+        {
+            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
+            string msg = Encoding.UTF8.GetString(decrypted);
+            DecodeMessage(msg);
         }
         private void DecodeMessage(string msg)
         {

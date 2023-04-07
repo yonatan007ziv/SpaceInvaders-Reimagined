@@ -1,5 +1,4 @@
 ﻿using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Windows;
@@ -84,7 +83,6 @@ namespace GameWindow.Components.GameComponents
             }
 
             sprite.ChangeImage(bunkerImagePath);
-            //Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, bunkerImagePath));
         }
         public void Dispose()
         {

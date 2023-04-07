@@ -1,5 +1,4 @@
 ﻿using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Components.UIElements;
 using System.Collections.Generic;
 using System.Numerics;
@@ -81,7 +80,6 @@ namespace GameWindow.Components.GameComponents
 
             times %= 4;
 
-            sprite.Dispose();
             string imagePath;
             switch (bulletType)
             {
@@ -98,19 +96,16 @@ namespace GameWindow.Components.GameComponents
                     imagePath = @$"Resources\Images\Bullet\ZigZag\ZigZag{times + 1}.png";
                     break;
             }
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, imagePath));
+            sprite.ChangeImage(imagePath);
         }
         public void BulletExplosion()
         {
             bulletHit = true;
             col.Dispose();
-            sprite.Dispose();
 
             // Bullet Explosion
             transform.Scale = new Vector2(6, 8);
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Bullet\BulletExplosion.png"));
+            sprite.ChangeImage(@"Resources\Images\Bullet\BulletExplosion.png");
 
             Task.Delay(500).ContinueWith((p) => Dispose());
         }

@@ -1,10 +1,6 @@
 ﻿using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.Renderer;
 using GameWindow.Systems;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -31,7 +27,9 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => { SoundManager.PlaySound(SoundManager.Sounds.MenuClick); onClick(); };
+            button.Click += (s, e) => { SoundManager.PlaySound(Sounds.MenuClick); onClick(); };
+
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(buttonImage, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
@@ -46,7 +44,9 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => { SoundManager.PlaySound(SoundManager.Sounds.MenuClick); onClick(); };
+            button.Click += (s, e) => { SoundManager.PlaySound(Sounds.MenuClick); onClick(); };
+
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(buttonImage, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }

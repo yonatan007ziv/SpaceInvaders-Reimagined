@@ -22,7 +22,10 @@ namespace GameWindow.Components.Initializers
 
         public static void StartSingleplayerGame()
         {
-            new LocalGame();
+            if (LocalGame.instance == null)
+                new LocalGame();
+            else
+                LocalGame.instance?.StartGame();
         }
 
         public static void StartMultiplayerGameMenu()

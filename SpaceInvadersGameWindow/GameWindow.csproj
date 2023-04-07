@@ -33,13 +33,37 @@
     <None Remove="Resources\Images\Bullet\ZigZag\ZigZag3.png" />
     <None Remove="Resources\Images\Bullet\ZigZag\ZigZag4.png" />
     <None Remove="Resources\Images\Bunker\BottomLeft1.png" />
+    <None Remove="Resources\Images\Bunker\BottomLeft2.png" />
+    <None Remove="Resources\Images\Bunker\BottomLeft3.png" />
+    <None Remove="Resources\Images\Bunker\BottomLeft4.png" />
     <None Remove="Resources\Images\Bunker\BottomRight1.png" />
+    <None Remove="Resources\Images\Bunker\BottomRight2.png" />
+    <None Remove="Resources\Images\Bunker\BottomRight3.png" />
+    <None Remove="Resources\Images\Bunker\BottomRight4.png" />
     <None Remove="Resources\Images\Bunker\MiddleBottomLeft1.png" />
+    <None Remove="Resources\Images\Bunker\MiddleBottomLeft2.png" />
+    <None Remove="Resources\Images\Bunker\MiddleBottomLeft3.png" />
+    <None Remove="Resources\Images\Bunker\MiddleBottomLeft4.png" />
     <None Remove="Resources\Images\Bunker\MiddleBottomRight1.png" />
+    <None Remove="Resources\Images\Bunker\MiddleBottomRight2.png" />
+    <None Remove="Resources\Images\Bunker\MiddleBottomRight3.png" />
+    <None Remove="Resources\Images\Bunker\MiddleBottomRight4.png" />
     <None Remove="Resources\Images\Bunker\MiddleTopLeft1.png" />
+    <None Remove="Resources\Images\Bunker\MiddleTopLeft2.png" />
+    <None Remove="Resources\Images\Bunker\MiddleTopLeft3.png" />
+    <None Remove="Resources\Images\Bunker\MiddleTopLeft4.png" />
     <None Remove="Resources\Images\Bunker\MiddleTopRight1.png" />
+    <None Remove="Resources\Images\Bunker\MiddleTopRight2.png" />
+    <None Remove="Resources\Images\Bunker\MiddleTopRight3.png" />
+    <None Remove="Resources\Images\Bunker\MiddleTopRight4.png" />
     <None Remove="Resources\Images\Bunker\TopLeft1.png" />
+    <None Remove="Resources\Images\Bunker\TopLeft2.png" />
+    <None Remove="Resources\Images\Bunker\TopLeft3.png" />
+    <None Remove="Resources\Images\Bunker\TopLeft4.png" />
     <None Remove="Resources\Images\Bunker\TopRight1.png" />
+    <None Remove="Resources\Images\Bunker\TopRight2.png" />
+    <None Remove="Resources\Images\Bunker\TopRight3.png" />
+    <None Remove="Resources\Images\Bunker\TopRight4.png" />
     <None Remove="Resources\Images\Enemies\Crab1.png" />
     <None Remove="Resources\Images\Enemies\Crab2.png" />
     <None Remove="Resources\Images\Enemies\InvaderDeath.png" />
@@ -64,10 +88,12 @@
     <None Remove="Resources\Sounds\MenuClick.wav" />
     <None Remove="Resources\Sounds\PlayerDeath.wav" />
     <None Remove="Resources\Sounds\Shoot - Copy.wav" />
+    <None Remove="Resources\Sounds\UFO.wav" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="SharpDX" Version="4.2.0" />
+    <PackageReference Include="SharpDX.XAudio2" Version="4.2.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
@@ -88,13 +114,37 @@
     <Resource Include="Resources\Images\Bullet\ZigZag\ZigZag3.png" />
     <Resource Include="Resources\Images\Bullet\ZigZag\ZigZag4.png" />
     <Resource Include="Resources\Images\Bunker\BottomLeft1.png" />
+    <Resource Include="Resources\Images\Bunker\BottomLeft2.png" />
+    <Resource Include="Resources\Images\Bunker\BottomLeft3.png" />
+    <Resource Include="Resources\Images\Bunker\BottomLeft4.png" />
     <Resource Include="Resources\Images\Bunker\BottomRight1.png" />
+    <Resource Include="Resources\Images\Bunker\BottomRight2.png" />
+    <Resource Include="Resources\Images\Bunker\BottomRight3.png" />
+    <Resource Include="Resources\Images\Bunker\BottomRight4.png" />
     <Resource Include="Resources\Images\Bunker\MiddleBottomLeft1.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleBottomLeft2.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleBottomLeft3.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleBottomLeft4.png" />
     <Resource Include="Resources\Images\Bunker\MiddleBottomRight1.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleBottomRight2.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleBottomRight3.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleBottomRight4.png" />
     <Resource Include="Resources\Images\Bunker\MiddleTopLeft1.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleTopLeft2.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleTopLeft3.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleTopLeft4.png" />
     <Resource Include="Resources\Images\Bunker\MiddleTopRight1.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleTopRight2.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleTopRight3.png" />
+    <Resource Include="Resources\Images\Bunker\MiddleTopRight4.png" />
     <Resource Include="Resources\Images\Bunker\TopLeft1.png" />
+    <Resource Include="Resources\Images\Bunker\TopLeft2.png" />
+    <Resource Include="Resources\Images\Bunker\TopLeft3.png" />
+    <Resource Include="Resources\Images\Bunker\TopLeft4.png" />
     <Resource Include="Resources\Images\Bunker\TopRight1.png" />
+    <Resource Include="Resources\Images\Bunker\TopRight2.png" />
+    <Resource Include="Resources\Images\Bunker\TopRight3.png" />
+    <Resource Include="Resources\Images\Bunker\TopRight4.png" />
     <Resource Include="Resources\Images\Enemies\Crab1.png" />
     <Resource Include="Resources\Images\Enemies\Crab2.png" />
     <Resource Include="Resources\Images\Enemies\InvaderDeath.png" />
@@ -113,9 +163,6 @@
     <Resource Include="Resources\Images\Player\Player.png" />
     <Resource Include="Resources\Images\Player\PlayerDeath1.png" />
     <Resource Include="Resources\Images\Player\PlayerDeath2.png" />
-    <Resource Include="Resources\Sounds\BulletExplosion.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Resources\Sounds\InvaderDeath.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -126,6 +173,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Sounds\BulletInitiated.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Sounds\UFO.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

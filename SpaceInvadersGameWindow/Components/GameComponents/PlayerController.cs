@@ -1,20 +1,19 @@
 ﻿using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.PhysicsEngine.Collider;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Windows.Input;
 
 namespace GameWindow.Components.GameComponents
 {
-    internal class CharacterController
+    internal class PlayerController
     {
         public static bool Disabled = false;
-        private Transform transform;
-        private Collider col;
-        public CharacterController(Transform transform, Collider col)
+        private Transform playerTransform;
+        private Collider playerCol;
+        public PlayerController(Player player)
         {
-            this.transform = transform;
-            this.col = col;
+            playerTransform = player.transform;
+            playerCol = player.col;
             InputHandler.AddInputLoop(InputLoop);
         }
 
@@ -24,18 +23,15 @@ namespace GameWindow.Components.GameComponents
 
             //Touching walls?
             int axis = InputHandler.GetAxis("Horizontal");
-            Collider? col = this.col.TouchingCollider();
+            Collider? col = playerCol.TouchingCollider();
             if (axis == 1 && (col == null || col.parent != Wall.RightWall) ||
                 axis == -1 && (col == null || col.parent != Wall.LeftWall))
-                transform.Position += new Vector2(axis, 0);
+                playerTransform.Position += new Vector2(axis, 0);
 
             if (InputHandler.keysDown.Contains(Key.Space) && PlayerBullet.instance == null)
-                new PlayerBullet(transform.Position, -6);
+                new PlayerBullet(playerTransform.Position);
         }
 
-        public void Dispose()
-        {
-            InputHandler.RemoveInputLoop(InputLoop);
-        }
+        public void Dispose() => InputHandler.RemoveInputLoop(InputLoop);
     }
 }
