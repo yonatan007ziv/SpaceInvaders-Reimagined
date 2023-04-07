@@ -171,15 +171,10 @@ namespace GameWindow.Components.GameComponents
             while (true)
             {
                 int toWait = (int)CycleTimeCurveMilliseconds(invaderCount);                
-                FinishedCycle = false;
-
                 try { await Task.Delay(toWait, token); }
                 catch { token.ThrowIfCancellationRequested(); }
 
                 CycleInvaders(/*token*/);
-
-                FinishedCycle = true;
-
 
                 if (invaderCount == 0 && LocalGame.instance!.LivesLeft > 0)
                 {
@@ -198,6 +193,7 @@ namespace GameWindow.Components.GameComponents
             if (random.Next(50) < invaders.Length && FinishedCycle)
                 invaders[random.Next(invaders.Length)]?.Shoot();
 
+            FinishedCycle = false;
 
             for (int i = 0; i < invaders.Length; i++)
                 if (invaders[i]?.DecideDir() ?? false)
@@ -222,6 +218,7 @@ namespace GameWindow.Components.GameComponents
             LastInvaderDown = 0;
             LastInvaderSide = 0;
             SpriteSwitch = !SpriteSwitch;
+            FinishedCycle = true;
             CycleCount++;
         }
         private static void CycleBeatSound()

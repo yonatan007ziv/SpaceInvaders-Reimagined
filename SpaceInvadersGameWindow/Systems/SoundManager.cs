@@ -21,12 +21,12 @@ public static class SoundManager
 {
     private static float currentVol = 1;
     private static readonly XAudio2 _xaudio= new XAudio2();
-    private static readonly MasteringVoice _masterVoice = new MasteringVoice(_xaudio);
     private static readonly Dictionary<Sounds, AudioBuffer> _audioBuffers = new Dictionary<Sounds, AudioBuffer>();
     private static readonly Dictionary<Sounds, List<SourceVoice>> currentSounds = new Dictionary<Sounds, List<SourceVoice>>();
 
     static SoundManager()
     {
+        new MasteringVoice(_xaudio);
         LoadSound(Sounds.MenuClick, "pack://application:,,,/Resources/Sounds/MenuClick.wav");
         LoadSound(Sounds.PlayerDeath, "pack://application:,,,/Resources/Sounds/PlayerDeath.wav");
         LoadSound(Sounds.InvaderDeath, "pack://application:,,,/Resources/Sounds/InvaderDeath.wav");
