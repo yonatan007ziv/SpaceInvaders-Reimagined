@@ -19,7 +19,6 @@ namespace GameWindow
         public MainWindow()
         {
             InitializeComponent();
-
             instance = this;
 
             Height = referenceSize.Y * 2;
@@ -46,7 +45,7 @@ namespace GameWindow
                 CenteredCanvas.Width = scale.X;
                 CenteredCanvas.Height = scale.Y;
             };
-
+            
             new InputHandler(this);
             GameInitializers.StartLoginRegist();
         }
