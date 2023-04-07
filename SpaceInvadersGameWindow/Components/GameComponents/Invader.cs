@@ -3,6 +3,7 @@ using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -83,10 +84,26 @@ namespace GameWindow.Components.GameComponents
             sprite!.ToString();
         }
 
+        private static void ResetInfo()
+        {
+            dir = 1;
+            SpriteSwitch = false;
+
+            invaderCount = 0;
+
+            CycleCount = 0;
+            FinishedCycle = true;
+            GoingDown = false;
+            LastInvaderSide = 0;
+            LastInvaderDown = 0;
+        }
+
         // Plots the invaders
         public static async Task PlotInvaders()
         {
-            invaderCount = 0;
+            ResetInfo();
+            UFOPaused = true;
+
             int startX = (int)(MainWindow.referenceSize.X / 6);
             int startY = (int)(MainWindow.referenceSize.Y / 10);
             for (int i = 4; i >= 0; i--)
@@ -103,6 +120,7 @@ namespace GameWindow.Components.GameComponents
                     await Task.Delay(25);
                 }
             await Task.Delay(500);
+            UFOPaused = false;
         }
 
         // Disposes all invaders
@@ -111,14 +129,10 @@ namespace GameWindow.Components.GameComponents
             if (!DisposedCts)
                 cts.Cancel();
 
-            invaderCount = 0;
             for (int i = 0; i < invaders.Length; i++)
                 invaders[i]?.Dispose();
-            invaders = new Invader[55];
-            currentUFO?.Dispose();
-            currentUFO = null;
-            LastInvaderDown = 0;
-            LastInvaderSide = 0;
+
+            ResetInfo();
         }
 
         #region Pause Unpause
@@ -127,13 +141,19 @@ namespace GameWindow.Components.GameComponents
         public static async void PauseUnpauseInvaders(bool pause)
         {
             if (pause)
-                cts.Cancel();
+            {
+                if (!DisposedCts)
+                    cts.Cancel();
+                UFOPaused = true;
+            }
             else
             {
                 cts = new CancellationTokenSource();
                 DisposedCts = false;
 
+                UFOPaused = false;
                 UFOMovementLoop();
+
                 try { await MovingInvadersLoop(cts.Token); }
                 catch (OperationCanceledException) { cts.Dispose(); DisposedCts = true; }
             }
@@ -141,6 +161,7 @@ namespace GameWindow.Components.GameComponents
         #endregion
 
         #region Invaders Cycle
+        private static int CycleCount = 0;
         private static bool FinishedCycle = true;
         private static bool GoingDown = false;
         private static int LastInvaderSide = 0;
@@ -149,7 +170,16 @@ namespace GameWindow.Components.GameComponents
         {
             while (true)
             {
+                int toWait = (int)CycleTimeCurveMilliseconds(invaderCount);                
+                FinishedCycle = false;
+
+                try { await Task.Delay(toWait, token); }
+                catch { token.ThrowIfCancellationRequested(); }
+
                 CycleInvaders(/*token*/);
+
+                FinishedCycle = true;
+
 
                 if (invaderCount == 0 && LocalGame.instance!.LivesLeft > 0)
                 {
@@ -160,19 +190,14 @@ namespace GameWindow.Components.GameComponents
                     PauseUnpauseInvaders(false);
                     return;
                 }
-
-                int toWait = (int)CycleTimeMilliseconds(invaderCount);
-                try { await Task.Delay(toWait, token); }
-                catch { token.ThrowIfCancellationRequested(); }
             }
         }
-        private static double CycleTimeMilliseconds(int x) { return -(x * x) * (x - 110) / 150; }
+        private static double CycleTimeCurveMilliseconds(int x) { return -(x * x) * (x - 110) / 150 + 10; }
         public static void CycleInvaders(/*CancellationToken token*/)
         {
             if (random.Next(50) < invaders.Length && FinishedCycle)
                 invaders[random.Next(invaders.Length)]?.Shoot();
 
-            FinishedCycle = false;
 
             for (int i = 0; i < invaders.Length; i++)
                 if (invaders[i]?.DecideDir() ?? false)
@@ -182,6 +207,8 @@ namespace GameWindow.Components.GameComponents
                 MoveInvadersDown(/*token*/);
             else
                 MoveInvadersSide(/*token*/);
+
+            CycleBeatSound();
 
             for (int i = 0; i < invaders.Length; i++)
                 if (invaders[i]?.CheckLose() ?? false)
@@ -195,9 +222,20 @@ namespace GameWindow.Components.GameComponents
             LastInvaderDown = 0;
             LastInvaderSide = 0;
             SpriteSwitch = !SpriteSwitch;
-            FinishedCycle = true;
+            CycleCount++;
         }
-
+        private static void CycleBeatSound()
+        {
+            switch (CycleCount % 2)
+            {
+                case 0:
+                    SoundManager.PlaySound(Sounds.CycleBeat1, 1);
+                    break;
+                case 1:
+                    SoundManager.PlaySound(Sounds.CycleBeat2, 1);
+                    break;
+            }
+        }
         private static void MoveInvadersSide(/*CancellationToken token*/)
         {
             for (int i = LastInvaderSide; i < invaders.Length; LastInvaderSide = ++i)
@@ -243,9 +281,10 @@ namespace GameWindow.Components.GameComponents
         #endregion
 
         #region UFO
+        private static bool UFOPaused = false;
         private static void GenerateUFO()
         {
-            if (random.Next(50) == 0 && invaders.Length >= 8 && currentUFO == null)
+            if (random.Next(50) == 0 && invaderCount >= 8 && currentUFO == null)
             {
                 new Invader(EnemyTypes.UFO, new Vector2(-25, 15));
                 UFOMovementLoop();
@@ -254,7 +293,7 @@ namespace GameWindow.Components.GameComponents
         private static async void UFOMovementLoop()
         {
             bool playingSound = false;
-            while (!(currentUFO == null || LocalGame.Paused))
+            while (!(currentUFO == null || UFOPaused))
             {
                 if (!playingSound)
                 {
@@ -274,6 +313,39 @@ namespace GameWindow.Components.GameComponents
 
                 await Task.Delay(1000 / (MainWindow.TARGET_FPS * 16));
             }
+        }
+        private void UFODeath()
+        {
+            currentUFO = null;
+            col.Dispose();
+
+            SoundManager.StopSound(Sounds.UFO);
+            SoundManager.PlaySound(Sounds.InvaderDeath);
+
+            // Invader Explosion
+            transform.Scale = new Vector2(13, 8);
+            sprite.ChangeImage(@"Resources\Images\Enemies\InvaderDeath.png");
+
+
+            LocalGame.instance!.Score += pointsReward;
+
+
+            Task.Delay(250).ContinueWith((p) => { Dispose(); UFOCreditsBlink(); });
+
+        }
+        private async void UFOCreditsBlink()
+        {
+            CustomLabel credits = null!;
+
+            // UI Objects need to be created in an STA thread
+            Application.Current.Dispatcher.Invoke(() => credits = new CustomLabel(new Transform(new Vector2(32, 16), transform.Position), pointsReward.ToString(), System.Windows.Media.Colors.White));
+
+            for (int i = 0; i < 5; i++)
+            {
+                credits.Visible(i % 2 == 0);
+                await Task.Delay(250);
+            }
+            credits.Dispose();
         }
         #endregion
 
@@ -339,10 +411,6 @@ namespace GameWindow.Components.GameComponents
                     imagePath = $@"Resources\Images\Enemies\Squid{clipNum}.png";
                     pointsReward = 30;
                     break;
-                case EnemyTypes.UFO:
-                    imagePath = $@"Resources\Images\Enemies\UFO.png";
-                    pointsReward = 100;
-                    break;
             }
 
             sprite.ChangeImage(imagePath);
@@ -353,20 +421,7 @@ namespace GameWindow.Components.GameComponents
         {
             if (type == EnemyTypes.UFO)
             {
-                currentUFO = null;
-                col.Dispose();
-
-                SoundManager.StopSound(Sounds.UFO);
-                SoundManager.PlaySound(Sounds.InvaderDeath);
-
-                // Invader Explosion
-                transform.Scale = new Vector2(13, 8);
-                sprite.ChangeImage(@"Resources\Images\Enemies\InvaderDeath.png");
-
-
-                LocalGame.instance!.Score += pointsReward;
-
-                Task.Delay(500).ContinueWith((p) => Dispose());
+                UFODeath();
                 return;
             }
 

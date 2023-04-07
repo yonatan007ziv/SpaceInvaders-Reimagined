@@ -13,7 +13,9 @@ public enum Sounds
     PlayerDeath,
     InvaderDeath,
     BulletInitiated,
-    UFO
+    UFO,
+    CycleBeat1,
+    CycleBeat2
 }
 public static class SoundManager
 {
@@ -30,6 +32,8 @@ public static class SoundManager
         LoadSound(Sounds.InvaderDeath, "pack://application:,,,/Resources/Sounds/InvaderDeath.wav");
         LoadSound(Sounds.BulletInitiated, "pack://application:,,,/Resources/Sounds/BulletInitiated.wav");
         LoadSound(Sounds.UFO, "pack://application:,,,/Resources/Sounds/UFO.wav");
+        LoadSound(Sounds.CycleBeat1, "pack://application:,,,/Resources/Sounds/CycleBeat1.wav");
+        LoadSound(Sounds.CycleBeat2, "pack://application:,,,/Resources/Sounds/CycleBeat2.wav");
     }
 
     public static void SetVolume(float vol)
@@ -39,13 +43,16 @@ public static class SoundManager
             foreach (SourceVoice s in ss)
                 s.SetVolume(vol);
     }
-    public static void PlaySound(Sounds sound)
+    public static void PlaySound(Sounds sound, float speed = 1)
     {
         if (_audioBuffers.ContainsKey(sound))
         {
             var sourceVoice = new SourceVoice(_xaudio, new WaveFormat());
-            sourceVoice.SubmitSourceBuffer(_audioBuffers[sound], null);
+
             sourceVoice.SetVolume(currentVol);
+            sourceVoice.SetFrequencyRatio(speed);
+
+            sourceVoice.SubmitSourceBuffer(_audioBuffers[sound], null);
             sourceVoice.Start();
 
             if (!currentSounds.ContainsKey(sound))

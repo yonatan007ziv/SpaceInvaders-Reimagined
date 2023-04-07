@@ -84,6 +84,8 @@
     <None Remove="Resources\Images\Player\PlayerDeath2.png" />
     <None Remove="Resources\Sounds\BulletExplosion.wav" />
     <None Remove="Resources\Sounds\BulletInitiated.wav" />
+    <None Remove="Resources\Sounds\CycleBeat1.wav" />
+    <None Remove="Resources\Sounds\CycleBeat2.wav" />
     <None Remove="Resources\Sounds\InvaderDeath.wav" />
     <None Remove="Resources\Sounds\MenuClick.wav" />
     <None Remove="Resources\Sounds\PlayerDeath.wav" />
@@ -163,6 +165,12 @@
     <Resource Include="Resources\Images\Player\Player.png" />
     <Resource Include="Resources\Images\Player\PlayerDeath1.png" />
     <Resource Include="Resources\Images\Player\PlayerDeath2.png" />
+    <Resource Include="Resources\Sounds\CycleBeat1.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Sounds\CycleBeat2.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Sounds\InvaderDeath.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

@@ -15,10 +15,11 @@ namespace GameWindow.Components.Initializers
 
         private Player player;
         private int score = 0;
+        private bool GaveExtraLife = false;
         public int Score
         {
             get { return score; }
-            set { score = value; CreditsLabel.Text = "CREDIT " + score; }
+            set { score = value; CreditsLabel.Text = "CREDIT " + score; if (score >= 1500 && !GaveExtraLife) { LivesLeft++; GaveExtraLife = true; } }
         }
         private int livesLeft = 3;
         public int LivesLeft
@@ -63,6 +64,8 @@ namespace GameWindow.Components.Initializers
                 CreditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
                 LivesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
             });
+
+            GaveExtraLife = false;
             Score = 0;
             LivesLeft = 3;
 
@@ -112,6 +115,7 @@ namespace GameWindow.Components.Initializers
                 {
                     Invader.PauseUnpauseInvaders(true);
                     Dispose();
+                    pauseMenu?.Dispose();
                     StartGame();
                 }
                 HeldRestart = true;
@@ -124,6 +128,7 @@ namespace GameWindow.Components.Initializers
             Paused = pause;
             if (pause)
             {
+                SoundManager.StopAllSounds();
                 Bullet.PauseUnpauseBullets(true);
                 Invader.PauseUnpauseInvaders(true);
                 Player.PauseUnpause(true);
@@ -135,6 +140,24 @@ namespace GameWindow.Components.Initializers
                 Invader.PauseUnpauseInvaders(false);
                 Player.PauseUnpause(false);
                 pauseMenu?.Dispose();
+            }
+        }
+        public static void FreezeUnfreeze(bool freeze)
+        {
+            if (freeze)
+            {
+                InputHandler.RemoveInputLoop(instance!.InputLoop);
+                SoundManager.StopAllSounds();
+                Bullet.PauseUnpauseBullets(true);
+                Invader.PauseUnpauseInvaders(true);
+                Player.PauseUnpause(true);
+            }
+            else
+            {
+                InputHandler.AddInputLoop(instance!.InputLoop);
+                Bullet.PauseUnpauseBullets(false);
+                Invader.PauseUnpauseInvaders(false);
+                Player.PauseUnpause(false);
             }
         }
         #endregion
@@ -175,6 +198,7 @@ namespace GameWindow.Components.Initializers
         }
         public void Dispose()
         {
+            SoundManager.StopAllSounds();
             InputHandler.RemoveInputLoop(InputLoop);
             Wall.DisposeAll();
             Bunker.DisposeAll();

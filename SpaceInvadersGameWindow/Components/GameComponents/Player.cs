@@ -47,7 +47,10 @@ namespace GameWindow.Components.GameComponents
             SoundManager.PlaySound(Sounds.PlayerDeath);
             transform.Scale = new Vector2(16, 8);
 
+            LocalGame.FreezeUnfreeze(true);
             await DeathAnimation();
+            LocalGame.FreezeUnfreeze(false);
+
             Respawn();
             await RespawnAnimation();
             invincible = false;

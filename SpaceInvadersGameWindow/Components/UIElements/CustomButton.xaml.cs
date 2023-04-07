@@ -68,7 +68,11 @@ namespace GameWindow.Components.UIElements
                 Height = transform.ActualScale.Y;
             });
         }
-
+        public void Visible(bool visible)
+        {
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => Visibility = visible ? Visibility.Visible : Visibility.Hidden);
+        }
         public void Dispose()
         {
             // UI Objects need to be changed in an STA thread
