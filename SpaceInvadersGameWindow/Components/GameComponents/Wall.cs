@@ -14,7 +14,7 @@ namespace GameWindow.Components.GameComponents
         public Wall(Vector2 scale, Vector2 pos)
         {
             transform = new Transform(scale, pos);
-            col = new Collider(transform, this, Collider.Layers.Wall);
+            col = new Collider(transform, this, CollisionLayer.Wall);
 
             // UI Objects need to be created in an STA thread
             Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform));
@@ -25,7 +25,7 @@ namespace GameWindow.Components.GameComponents
         public Wall(Vector2 scale, Vector2 pos, string image)
         {
             transform = new Transform(scale, pos);
-            col = new Collider(transform, this, Collider.Layers.Wall);
+            col = new Collider(transform, this, CollisionLayer.Wall);
 
             // UI Objects need to be created in an STA thread
             Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, image));

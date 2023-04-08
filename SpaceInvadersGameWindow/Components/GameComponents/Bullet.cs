@@ -7,15 +7,16 @@ using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
+    public enum BulletType
+    {
+        Charge,
+        Imperfect,
+        ZigZag,
+        Normal
+    }
+
     class Bullet
     {
-        public enum BulletTypes
-        {
-            Charge,
-            Imperfect,
-            ZigZag,
-            Normal
-        }
         public static List<Bullet> AllBullets = new List<Bullet>();
 
         public Transform transform;
@@ -24,8 +25,7 @@ namespace GameWindow.Components.GameComponents
         protected Sprite sprite;
         protected Collider col;
         protected bool bulletHit;
-        private float times;
-        private BulletTypes bulletType;
+        protected BulletType bulletType;
 
         public static void DisposeAll()
         {
@@ -53,7 +53,7 @@ namespace GameWindow.Components.GameComponents
                     AllBullets[i].bulletSpeed = AllBullets[i].originalBulletSpeed;
             }
         }
-        public Bullet(Vector2 pos,int speed, BulletTypes bulletType, Collider.Layers colliderLayer)
+        public Bullet(Vector2 pos,int speed, BulletType bulletType, CollisionLayer colliderLayer)
         {
             AllBullets.Add(this);
             this.bulletType = bulletType;
@@ -67,36 +67,6 @@ namespace GameWindow.Components.GameComponents
 
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
-        }
-        int timesCounter = 0;
-        public void NextClip()
-        {
-            timesCounter++;
-            if (timesCounter == 4)
-            {
-                times++;
-                timesCounter = 0;
-            }
-
-            times %= 4;
-
-            string imagePath;
-            switch (bulletType)
-            {
-                default:
-                    imagePath = @$"Resources\Images\Bullet\Bullet.png";
-                    break;
-                case BulletTypes.Charge:
-                    imagePath = @$"Resources\Images\Bullet\Charge\Charge{times + 1}.png";
-                    break;
-                case BulletTypes.Imperfect:
-                    imagePath = @$"Resources\Images\Bullet\Imperfect\Imperfect{times + 1}.png";
-                    break;
-                case BulletTypes.ZigZag:
-                    imagePath = @$"Resources\Images\Bullet\ZigZag\ZigZag{times + 1}.png";
-                    break;
-            }
-            sprite.ChangeImage(imagePath);
         }
         public void BulletExplosion()
         {

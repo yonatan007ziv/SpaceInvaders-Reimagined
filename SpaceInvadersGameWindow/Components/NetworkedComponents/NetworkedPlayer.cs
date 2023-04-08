@@ -29,7 +29,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             this.username = username;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this, Collider.Layers.Player);
+            col = new Collider(transform, this, CollisionLayer.Player);
             controller = new NetworkedPlayerController(this, transform, col, sendMessage);
 
             Application.Current.Dispatcher.Invoke(() =>
@@ -49,7 +49,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             this.username = username;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this, Collider.Layers.OnlinePlayer);
+            col = new Collider(transform, this, CollisionLayer.OnlinePlayer);
 
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
@@ -68,7 +68,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             controller!.disabled = true;
             invincible = true;
 
-            SoundManager.PlaySound(Sounds.PlayerDeath);
+            SoundManager.PlaySound(Sound.PlayerDeath);
 
             transform.Scale = new Vector2(16, 8);
 
@@ -88,7 +88,7 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             if (invincible) return;
             invincible = true;
 
-            SoundManager.PlaySound(Sounds.PlayerDeath);
+            SoundManager.PlaySound(Sound.PlayerDeath);
 
             transform.Scale = new Vector2(16, 8);
 

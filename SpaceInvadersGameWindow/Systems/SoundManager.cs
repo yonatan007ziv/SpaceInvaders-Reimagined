@@ -1,5 +1,4 @@
-﻿using SharpDX;
-using SharpDX.Multimedia;
+﻿using SharpDX.Multimedia;
 using SharpDX.XAudio2;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 
-public enum Sounds
+public enum Sound
 {
     MenuClick,
     PlayerDeath,
@@ -21,19 +20,19 @@ public static class SoundManager
 {
     private static float currentVol = 1;
     private static readonly XAudio2 _xaudio= new XAudio2();
-    private static readonly Dictionary<Sounds, AudioBuffer> _audioBuffers = new Dictionary<Sounds, AudioBuffer>();
-    private static readonly Dictionary<Sounds, List<SourceVoice>> currentSounds = new Dictionary<Sounds, List<SourceVoice>>();
+    private static readonly Dictionary<Sound, AudioBuffer> _audioBuffers = new Dictionary<Sound, AudioBuffer>();
+    private static readonly Dictionary<Sound, List<SourceVoice>> currentSounds = new Dictionary<Sound, List<SourceVoice>>();
 
     static SoundManager()
     {
         new MasteringVoice(_xaudio);
-        LoadSound(Sounds.MenuClick, "pack://application:,,,/Resources/Sounds/MenuClick.wav");
-        LoadSound(Sounds.PlayerDeath, "pack://application:,,,/Resources/Sounds/PlayerDeath.wav");
-        LoadSound(Sounds.InvaderDeath, "pack://application:,,,/Resources/Sounds/InvaderDeath.wav");
-        LoadSound(Sounds.BulletInitiated, "pack://application:,,,/Resources/Sounds/BulletInitiated.wav");
-        LoadSound(Sounds.UFO, "pack://application:,,,/Resources/Sounds/UFO.wav");
-        LoadSound(Sounds.CycleBeat1, "pack://application:,,,/Resources/Sounds/CycleBeat1.wav");
-        LoadSound(Sounds.CycleBeat2, "pack://application:,,,/Resources/Sounds/CycleBeat2.wav");
+        LoadSound(Sound.MenuClick, "pack://application:,,,/Resources/Sounds/MenuClick.wav");
+        LoadSound(Sound.PlayerDeath, "pack://application:,,,/Resources/Sounds/PlayerDeath.wav");
+        LoadSound(Sound.InvaderDeath, "pack://application:,,,/Resources/Sounds/InvaderDeath.wav");
+        LoadSound(Sound.BulletInitiated, "pack://application:,,,/Resources/Sounds/BulletInitiated.wav");
+        LoadSound(Sound.UFO, "pack://application:,,,/Resources/Sounds/UFO.wav");
+        LoadSound(Sound.CycleBeat1, "pack://application:,,,/Resources/Sounds/CycleBeat1.wav");
+        LoadSound(Sound.CycleBeat2, "pack://application:,,,/Resources/Sounds/CycleBeat2.wav");
     }
 
     public static void SetVolume(float vol)
@@ -43,7 +42,7 @@ public static class SoundManager
             foreach (SourceVoice s in ss)
                 s.SetVolume(vol);
     }
-    public static void PlaySound(Sounds sound, float speed = 1)
+    public static void PlaySound(Sound sound, float speed = 1)
     {
         if (_audioBuffers.ContainsKey(sound))
         {
@@ -66,12 +65,12 @@ public static class SoundManager
             foreach (SourceVoice s in ss)
                 s.Stop();
     }
-    public static void StopSound(Sounds sound)
+    public static void StopSound(Sound sound)
     {
         foreach (SourceVoice c in currentSounds[sound])
             c.Stop();
     }
-    private static void LoadSound(Sounds sound, string uri)
+    private static void LoadSound(Sound sound, string uri)
     {
         var ms = new MemoryStream();
         using (var stream = Application.GetResourceStream(new Uri(uri)).Stream)

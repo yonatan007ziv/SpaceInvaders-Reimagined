@@ -27,7 +27,7 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => { SoundManager.PlaySound(Sounds.MenuClick); onClick(); };
+            button.Click += (s, e) => { SoundManager.PlaySound(Sound.MenuClick); onClick(); };
 
             System.Windows.Media.RenderOptions.SetBitmapScalingMode(buttonImage, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
 
@@ -44,7 +44,7 @@ namespace GameWindow.Components.UIElements
             transform.ScaleChanged += () => SetScale();
             buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => { SoundManager.PlaySound(Sounds.MenuClick); onClick(); };
+            button.Click += (s, e) => { SoundManager.PlaySound(Sound.MenuClick); onClick(); };
 
             System.Windows.Media.RenderOptions.SetBitmapScalingMode(buttonImage, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
 

@@ -20,7 +20,7 @@ namespace GameWindow.Components.GameComponents
             this.currentGame = currentGame;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this, Collider.Layers.Player);
+            col = new Collider(transform, this, CollisionLayer.Player);
 
             // UI Objects need to be created in an STA thread
             Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Player\Player.png"));
@@ -44,7 +44,7 @@ namespace GameWindow.Components.GameComponents
             PlayerController.Disabled = true;
 
             SoundManager.StopAllSounds();
-            SoundManager.PlaySound(Sounds.PlayerDeath);
+            SoundManager.PlaySound(Sound.PlayerDeath);
             transform.Scale = new Vector2(16, 8);
 
             LocalGame.FreezeUnfreeze(true);

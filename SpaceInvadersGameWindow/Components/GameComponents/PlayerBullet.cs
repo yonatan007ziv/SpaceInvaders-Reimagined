@@ -9,14 +9,14 @@ namespace GameWindow.Components.GameComponents
     {
         public const int PLAYER_BULLET_SPEED = 5;
         public static PlayerBullet? instance;
-        public PlayerBullet(Vector2 pos) : base(pos, -PLAYER_BULLET_SPEED, BulletTypes.Normal, Collider.Layers.PlayerBullet)
+        public PlayerBullet(Vector2 pos) : base(pos, -PLAYER_BULLET_SPEED, BulletType.Normal, CollisionLayer.PlayerBullet)
         {
             instance = this;
 
-            SoundManager.PlaySound(Sounds.BulletInitiated);
+            SoundManager.PlaySound(Sound.BulletInitiated);
 
-            col.IgnoreLayer(Collider.Layers.Player);
-            col.IgnoreLayer(Collider.Layers.PlayerBullet);
+            col.IgnoreLayer(CollisionLayer.Player);
+            col.IgnoreLayer(CollisionLayer.PlayerBullet);
 
             BulletLoop();
         }

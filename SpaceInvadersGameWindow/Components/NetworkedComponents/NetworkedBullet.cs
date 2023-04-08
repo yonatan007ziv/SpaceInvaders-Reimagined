@@ -14,22 +14,22 @@ namespace GameWindow.Components.GameComponents
         private string shooter;
 
         public NetworkedBullet(Vector2 pos, ActionString sendMessage, Action killBullet) :
-            base(pos, -6, BulletTypes.Normal, Collider.Layers.PlayerBullet)
+            base(pos, -6, BulletType.Normal, CollisionLayer.PlayerBullet)
         {
             this.shooter = GameInitializers.username!;
             this.sendMessage = sendMessage;
             this.killBullet = killBullet;
-            col.IgnoreLayer(Collider.Layers.Player);
-            col.IgnoreLayer(Collider.Layers.OnlinePlayerBullet);
+            col.IgnoreLayer(CollisionLayer.Player);
+            col.IgnoreLayer(CollisionLayer.OnlinePlayerBullet);
             LocalBulletLoop();
         }
         public NetworkedBullet(string shooter) :
-            base(NetworkedPlayer.currentPlayers[shooter].transform.Position, 6, BulletTypes.Normal, Collider.Layers.OnlinePlayerBullet)
+            base(NetworkedPlayer.currentPlayers[shooter].transform.Position, 6, BulletType.Normal, CollisionLayer.OnlinePlayerBullet)
         {
             this.shooter = shooter;
             NetworkedPlayer.currentPlayers[shooter].myBullet = this;
-            col.IgnoreLayer(Collider.Layers.OnlinePlayer);
-            col.IgnoreLayer(Collider.Layers.PlayerBullet);
+            col.IgnoreLayer(CollisionLayer.OnlinePlayer);
+            col.IgnoreLayer(CollisionLayer.PlayerBullet);
             OnlineBulletLoop();
         }
 

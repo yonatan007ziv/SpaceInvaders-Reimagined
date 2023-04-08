@@ -13,19 +13,19 @@ namespace GameWindow.Components.GameComponents
 {
     internal class Invader
     {
-        public enum EnemyTypes
+        /// <summary>
+        /// Represents the types of available invaders in the game
+        /// </summary>
+        private enum InvaderType
         {
             Octopus, Crab, Squid, UFO,
         }
 
         // Constants
-        private const float InvaderSpeedDown = 8;
-        private const float InvaderSpeedSide = 2;
-        private const float UFOSpeed = 1;
-
-        // Global Settings
-        private static int dir = 1;
-        private static bool SpriteSwitch = false;
+        private const int INVADER_SPEED_DOWN = 8;
+        private const int INVADER_SPEED_SIDE = 2;
+        private const int UFO_SPEED = 1;
+        private const int MIN_TIME_BETWEEN_UFOS = 10;
 
         // Global variables
         private static Invader?[] invaders = new Invader[55];
@@ -33,7 +33,17 @@ namespace GameWindow.Components.GameComponents
         private static Random random = new Random();
         private static int invaderCount = 0;
 
-        public Invader(EnemyTypes type, Vector2 pos)
+        // Uniform Invader Settings
+        private static int invaderDir = 1;
+        private static bool SpriteSwitch = false;
+
+        /// <summary>
+        /// Builds an <see cref="Invader"/> opponent
+        /// </summary>
+        /// <param name="type"> The <see cref="InvaderType"/> of the invader </param>
+        /// <param name="pos"> A <see cref="Vector2"/> representing the position of the invader on the screen </param>
+        /// <exception cref="ArgumentException"> Thrown if <paramref name="type"/> is not valid </exception>
+        private Invader(InvaderType type, Vector2 pos)
         {
             this.type = type;
 
@@ -42,26 +52,23 @@ namespace GameWindow.Components.GameComponents
             switch (type)
             {
                 default:
-                    imgPath = "";
-                    pointsReward = -1;
-                    scale = new Vector2(0, 0);
-                    throw new Exception();
-                case EnemyTypes.Octopus:
+                    throw new ArgumentException($"InvaderType {type} isn't Valid");
+                case InvaderType.Octopus:
                     imgPath = @$"Resources\Images\Enemies\Octopus1.png";
                     pointsReward = 10;
                     scale = new Vector2(12, 8);
                     break;
-                case EnemyTypes.Crab:
+                case InvaderType.Crab:
                     imgPath = @$"Resources\Images\Enemies\Crab1.png";
                     pointsReward = 20;
                     scale = new Vector2(11, 8);
                     break;
-                case EnemyTypes.Squid:
+                case InvaderType.Squid:
                     imgPath = @$"Resources\Images\Enemies\Squid1.png";
                     pointsReward = 30;
                     scale = new Vector2(8, 8);
                     break;
-                case EnemyTypes.UFO:
+                case InvaderType.UFO:
                     imgPath = @$"Resources\Images\Enemies\UFO.png";
                     int rand = random.Next(4);
                     pointsReward = rand == 3 ? 300 : (rand == 2 ? 150 : (rand == 1 ? 100 : 50)); // Random 300, 150, 100 or 50
@@ -70,12 +77,12 @@ namespace GameWindow.Components.GameComponents
             }
 
             transform = new Transform(scale, pos);
-            col = new Collider(transform, this, Collider.Layers.Invader);
+            col = new Collider(transform, this, CollisionLayer.Invader);
 
             // UI Objects need to be created in an STA thread
             Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, imgPath));
 
-            if (type == EnemyTypes.UFO)
+            if (type == InvaderType.UFO)
                 currentUFO = this;
             else
                 invaders[arrPos = invaderCount++] = this;
@@ -84,21 +91,24 @@ namespace GameWindow.Components.GameComponents
             sprite!.ToString();
         }
 
+        /// <summary>
+        /// Resets the current invaders' info stored in the class' global scope
+        /// </summary>
         private static void ResetInfo()
         {
-            dir = 1;
+            invaderDir = 1;
             SpriteSwitch = false;
 
             invaderCount = 0;
-
             CycleCount = 0;
-            FinishedCycle = true;
-            GoingDown = false;
-            LastInvaderSide = 0;
-            LastInvaderDown = 0;
+
+            stopwatchUFO.Restart();
         }
 
-        // Plots the invaders
+        /// <summary>
+        /// Plots the invaders on the screen
+        /// </summary>
+        /// <returns> A <see cref="Task"/> representing the async state of plotting </returns>
         public static async Task PlotInvaders()
         {
             ResetInfo();
@@ -109,25 +119,30 @@ namespace GameWindow.Components.GameComponents
             for (int i = 4; i >= 0; i--)
                 for (int j = 10; j >= 0; j--)
                 {
-                    EnemyTypes type;
+                    InvaderType type;
                     if (i < 1)
-                        type = EnemyTypes.Squid;
+                        type = InvaderType.Squid;
                     else if (i < 3)
-                        type = EnemyTypes.Crab;
+                        type = InvaderType.Crab;
                     else
-                        type = EnemyTypes.Octopus;
+                        type = InvaderType.Octopus;
                     new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
                     await Task.Delay(25);
                 }
-            await Task.Delay(500);
+            await Task.Delay(250);
             UFOPaused = false;
         }
 
-        // Disposes all invaders
+        /// <summary>
+        /// Disposes all invaders and resets the current state for the next game
+        /// </summary>
         public static void DisposeAll()
         {
             if (!DisposedCts)
+            {
                 cts.Cancel();
+                cts.Dispose();
+            }
 
             for (int i = 0; i < invaders.Length; i++)
                 invaders[i]?.Dispose();
@@ -138,6 +153,11 @@ namespace GameWindow.Components.GameComponents
         #region Pause Unpause
         private static bool DisposedCts;
         private static CancellationTokenSource cts = new CancellationTokenSource();
+
+        /// <summary>
+        /// Pauses or unpauses the UFO and invader movement loops
+        /// </summary>
+        /// <param name="pause"> If true, pauses the loops; otherwise, unpauses them </param>
         public static async void PauseUnpauseInvaders(bool pause)
         {
             if (pause)
@@ -162,21 +182,24 @@ namespace GameWindow.Components.GameComponents
 
         #region Invaders Cycle
         private static int CycleCount = 0;
-        private static bool FinishedCycle = true;
-        private static bool GoingDown = false;
-        private static int LastInvaderSide = 0;
-        private static int LastInvaderDown = 0;
+
+        /// <summary>
+        /// Executes the game loop for moving the invaders and checking win/lose conditions
+        /// </summary>
+        /// <param name="token"> The cancellation token used to stop the game loop </param>
+        /// <returns> A <see cref="Task"/> representing the async state of the loop </returns>
+        /// <exception cref="OperationCanceledException"> Thrown when the game loop is canceled via the cancellation token </exception>
         private static async Task MovingInvadersLoop(CancellationToken token)
         {
             while (true)
             {
-                int toWait = (int)CycleTimeCurveMilliseconds(invaderCount);                
+                int toWait = (int)CycleTimeCurveMilliseconds();                
                 try { await Task.Delay(toWait, token); }
                 catch { token.ThrowIfCancellationRequested(); }
 
-                CycleInvaders(/*token*/);
+                CycleInvaders();
 
-                if (invaderCount == 0 && LocalGame.instance!.LivesLeft > 0)
+                if (invaderCount == 0 && LocalGame.instance!.LivesLeft > 0 && !cts.IsCancellationRequested)
                 {
                     Bullet.DisposeAll();
                     InputHandler.Disabled = true;
@@ -187,22 +210,35 @@ namespace GameWindow.Components.GameComponents
                 }
             }
         }
-        private static double CycleTimeCurveMilliseconds(int x) { return -(x * x) * (x - 110) / 150 + 10; }
-        public static void CycleInvaders(/*CancellationToken token*/)
+
+        /// <summary>
+        /// Runs through the entire 'Space Invaders' movement cycle.
+        /// </summary>
+        /// <remarks>
+        /// The cycle includes the following steps:
+        /// <list type="bullet">
+        ///     <item> Decides if one of the invaders should shoot (random) .</item>
+        ///     <item> Decides the direction of the invaders (left or right) and whether they should go down. </item>
+        ///     <item> If the invaders need to move down, they move down. Otherwise, they move to the direction determined previously. </item>
+        ///     <item> Plays the classic 'Space Invaders' "Boop" sound. </item>
+        ///     <item> Checks if any of the invaders have reached the bottom of the screen. </item>
+        ///     <item> Generates a UFO (by chance). </item>
+        /// </list>
+        /// </remarks>
+        public static void CycleInvaders()
         {
-            if (random.Next(50) < invaders.Length && FinishedCycle)
+            if (random.Next(50) < invaders.Length)
                 invaders[random.Next(invaders.Length)]?.Shoot();
 
-            FinishedCycle = false;
-
+            bool shouldGoDown = false;
             for (int i = 0; i < invaders.Length; i++)
                 if (invaders[i]?.DecideDir() ?? false)
-                    GoingDown = true;
+                    shouldGoDown = true;
 
-            if (GoingDown)
-                MoveInvadersDown(/*token*/);
+            if (shouldGoDown)
+                MoveInvadersDown();
             else
-                MoveInvadersSide(/*token*/);
+                MoveInvadersSide();
 
             CycleBeatSound();
 
@@ -215,78 +251,134 @@ namespace GameWindow.Components.GameComponents
 
             GenerateUFO();
 
-            LastInvaderDown = 0;
-            LastInvaderSide = 0;
             SpriteSwitch = !SpriteSwitch;
-            FinishedCycle = true;
             CycleCount++;
         }
+
+        /// <summary>
+        /// Plays the classic 'Space Invaders' "Boop" sound each new invader movement cycle
+        /// </summary>
         private static void CycleBeatSound()
         {
             switch (CycleCount % 2)
             {
                 case 0:
-                    SoundManager.PlaySound(Sounds.CycleBeat1, 1);
+                    SoundManager.PlaySound(Sound.CycleBeat1, 1);
                     break;
                 case 1:
-                    SoundManager.PlaySound(Sounds.CycleBeat2, 1);
+                    SoundManager.PlaySound(Sound.CycleBeat2, 1);
                     break;
             }
         }
-        private static void MoveInvadersSide(/*CancellationToken token*/)
+
+        /// <summary>
+        /// Moves all invaders to the side at speed <see cref="INVADER_SPEED_SIDE"/>. Direction determined by <see cref="invaderDir"/>
+        /// </summary>
+        private static void MoveInvadersSide()
         {
-            for (int i = LastInvaderSide; i < invaders.Length; LastInvaderSide = ++i)
+            for (int i = 0; i < invaders.Length; i++)
             {
                 if (invaders[i] == null) continue;
 
                 using (Transform t = new Transform(new Vector2(0, 0), new Vector2(0, 0)))
-                    (invaders[i]?.transform ?? t).Position += new Vector2(InvaderSpeedSide * dir, 0);
+                    (invaders[i]?.transform ?? t).Position += new Vector2(INVADER_SPEED_SIDE * invaderDir, 0);
                 invaders[i]?.NextClip();
-
-                /*
-                try { await Task.Delay(1, token); }
-                catch
-                {
-                    LastInvaderSide++;
-                    token.ThrowIfCancellationRequested();
-                }
-                */
             }
         }
-        private static void MoveInvadersDown(/*CancellationToken token*/)
+
+        /// <summary>
+        /// Moves all invaders down at speed <see cref="INVADER_SPEED_DOWN"/>
+        /// </summary>
+        private static void MoveInvadersDown()
         {
-            GoingDown = true;
-            for (int i = LastInvaderDown; i < invaders.Length; LastInvaderDown = ++i)
+            for (int i = 0; i < invaders.Length; i++)
             {
                 if (invaders[i] == null) continue;
 
                 using (Transform t = new Transform(new Vector2(0, 0), new Vector2(0, 0)))
-                    (invaders[i]?.transform ?? t).Position += new Vector2(0, InvaderSpeedDown);
+                    (invaders[i]?.transform ?? t).Position += new Vector2(0, INVADER_SPEED_DOWN);
                 invaders[i]?.NextClip();
-
-                /*
-                try { await Task.Delay(1, token); }
-                catch
-                {
-                    LastInvaderDown++;
-                    token.ThrowIfCancellationRequested();
-                }
-                */
             }
-            GoingDown = false;
         }
+
+        /// <summary>
+        /// Implements y = mx + b<br/>
+        /// Where:<br/>
+        /// y = Time Between Cycles<br/>
+        /// x = Number of Alive Invaders<br/>
+        /// m = Current Slope (5 Different Stages)<br/>
+        /// b = Current 'y' Intercept (5 Different Stages)
+        /// </summary>
+        /// <returns> The Time Between Invader Movement Cycles In Milliseconds </returns>
+        /// <exception cref="ArgumentOutOfRangeException"> Thrown if the number of invaders is outside the valid range of (0 &lt;= <see cref="invaderCount"/> &lt;= 55) </exception>
+        private static double CycleTimeCurveMilliseconds()
+        {
+            if (0 <= invaderCount && invaderCount <= 11)
+                return Am * invaderCount + Ab;
+            else if (11 <= invaderCount && invaderCount <= 22)
+                return Bm * invaderCount + Bb;
+            else if (22 <= invaderCount && invaderCount <= 33)
+                return Cm * invaderCount + Cb;
+            else if (33 <= invaderCount && invaderCount <= 44)
+                return Dm * invaderCount + Db;
+            else if (44 <= invaderCount && invaderCount <= 55)
+                return Em * invaderCount + Eb;
+            throw new ArgumentOutOfRangeException($"Number of Invaders Outside Bounds: (0 <= {invaderCount} <= 55)");
+        }
+
+        #region curve
+        /// <summary>
+        /// The Following Points are Implemented:
+        /// (1, 3) (11, 25) (22, 75) (33, 250) (44, 500) (55, 1250)
+        /// </summary>
+        private const double Ax1 = 1, Ay1 = 3, Ax2 = 11, Ay2 = 25;
+        private const double Bx1 = 11, By1 = 25, Bx2 = 22, By2 = 75;
+        private const double Cx1 = 22, Cy1 = 75, Cx2 = 33, Cy2 = 250;
+        private const double Dx1 = 33, Dy1 = 250, Dx2 = 44, Dy2 = 500;
+        private const double Ex1 = 44, Ey1 = 500, Ex2 = 55, Ey2 = 1250;
+
+        // Calculating slopes and 'y' intercepts at compile time
+        private const double Am = (Ay2 - Ay1) / (Ax2 - Ax1);
+        private const double Bm = (By2 - By1) / (Bx2 - Bx1);
+        private const double Cm = (Cy2 - Cy1) / (Cx2 - Cx1);
+        private const double Dm = (Dy2 - Dy1) / (Dx2 - Dx1);
+        private const double Em = (Ey2 - Ey1) / (Ex2 - Ex1);
+        private const double Ab = Ay1 - Am * Ax1;
+        private const double Bb = By1 - Bm * Bx1;
+        private const double Cb = Cy1 - Cm * Cx1;
+        private const double Db = Dy1 - Dm * Dx1;
+        private const double Eb = Ey1 - Em * Ex1;
+        #endregion
         #endregion
 
         #region UFO
         private static bool UFOPaused = false;
+        private static Stopwatch stopwatchUFO = new Stopwatch();
+
+        /// <summary>
+        /// Generates a new UFO randomly, if the following conditions are met:
+        /// <list type="bullet">
+        ///     <item> Elapsed at least <see cref="MIN_TIME_BETWEEN_UFOS"/> seconds from last UFO </item>
+        ///     <item> <see cref="invaderCount"/> larger or equal to 8 </item>
+        ///     <item> <see cref="currentUFO"/> is null </item>
+        /// </list>
+        /// </summary>
         private static void GenerateUFO()
         {
-            if (random.Next(50) == 0 && invaderCount >= 8 && currentUFO == null)
+            if (random.Next(50) == 0 && stopwatchUFO.Elapsed.Seconds >= MIN_TIME_BETWEEN_UFOS && invaderCount >= 8 && currentUFO == null)
             {
-                new Invader(EnemyTypes.UFO, new Vector2(-25, 15));
+                new Invader(InvaderType.UFO, new Vector2(-25, 15));
                 UFOMovementLoop();
             }
         }
+
+        /// <summary>
+        /// Handles the UFO movement
+        /// </summary>
+        /// <remarks>
+        /// The UFO is moved towards the right side of the screen at a constant speed <see cref="UFO_SPEED"/><br/>
+        /// When the UFO leaves the screen, it is disposed
+        /// </remarks>
         private static async void UFOMovementLoop()
         {
             bool playingSound = false;
@@ -294,42 +386,49 @@ namespace GameWindow.Components.GameComponents
             {
                 if (!playingSound)
                 {
-                    SoundManager.PlaySound(Sounds.UFO);
+                    SoundManager.PlaySound(Sound.UFO);
                     playingSound = true;
                 }
 
 
-                currentUFO.transform.Position += new Vector2(UFOSpeed, 0);
+                currentUFO.transform.Position += new Vector2(UFO_SPEED, 0);
 
                 if (currentUFO.transform.Position.X > MainWindow.referenceSize.X)
                 {
-                    SoundManager.StopSound(Sounds.UFO);
+                    stopwatchUFO.Restart();
+                    SoundManager.StopSound(Sound.UFO);
                     currentUFO.Dispose();
                     currentUFO = null;
                 }
 
-                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 16));
+                await Task.Delay(1000 / (MainWindow.TARGET_FPS * MainWindow.SMOOTH_MULTIPLIER));
             }
         }
+
+        /// <summary>
+        /// Handles the death of a UFO, updating the game score accordingly
+        /// </summary>
         private void UFODeath()
         {
+            stopwatchUFO.Restart();
             currentUFO = null;
             col.Dispose();
 
-            SoundManager.StopSound(Sounds.UFO);
-            SoundManager.PlaySound(Sounds.InvaderDeath);
+            SoundManager.StopSound(Sound.UFO);
+            SoundManager.PlaySound(Sound.InvaderDeath);
 
             // Invader Explosion
             transform.Scale = new Vector2(13, 8);
             sprite.ChangeImage(@"Resources\Images\Enemies\InvaderDeath.png");
 
-
             LocalGame.instance!.Score += pointsReward;
 
-
             Task.Delay(250).ContinueWith((p) => { Dispose(); UFOCreditsBlink(); });
-
         }
+
+        /// <summary>
+        /// Blinks the score of the destroyed UFO at the UFO's position
+        /// </summary>
         private async void UFOCreditsBlink()
         {
             CustomLabel credits = null!;
@@ -353,15 +452,20 @@ namespace GameWindow.Components.GameComponents
 
         private int arrPos;
         private int pointsReward;
-        private EnemyTypes type;
+        private InvaderType type;
 
-        // Checks wheter the invaders have reached the bottom
+        /// <summary>
+        /// Checks whether the invader have reached the bottom
+        /// </summary>
+        /// <returns> Whether the invader have reached the bottom </returns>
         private bool CheckLose()
         {
             return transform.Position.Y > 2 * MainWindow.referenceSize.Y / 3.25;
         }
 
-        /// Updates <see cref="dir"/>
+        /// <summary>
+        /// Updates <see cref="invaderDir"/> according to the wall collisions
+        /// </summary>
         /// <returns> Whether the invaders should move down </returns>
         private bool DecideDir()
         {
@@ -369,24 +473,28 @@ namespace GameWindow.Components.GameComponents
             Collider? col = this.col.TouchingCollider();
             if (col != null)
             {
-                int prevDir = dir;
+                int prevDir = invaderDir;
                 if (col.parent == Wall.RightWall)
-                    dir = -1;
+                    invaderDir = -1;
                 else if (col.parent == Wall.LeftWall)
-                    dir = 1;
-                if (dir != prevDir)
+                    invaderDir = 1;
+                if (invaderDir != prevDir)
                     return true;
             }
             return false;
         }
 
-        // Shoots from the invader
+        /// <summary>
+        /// Instantiates a new <see cref="InvaderBullet"/> instance at the invader's position
+        /// </summary>
         private void Shoot()
         {
             new InvaderBullet(transform.Position);
         }
 
-        // Updates the invader's sprite
+        /// <summary>
+        /// Updates the sprite of the Invader to the next frame of its animation
+        /// </summary>
         private void NextClip()
         {
             int clipNum = SpriteSwitch ? 2 : 1;
@@ -396,15 +504,15 @@ namespace GameWindow.Components.GameComponents
                 default:
                     imagePath = $@"Resources\Images\MissingSprite.png";
                     break;
-                case EnemyTypes.Octopus:
+                case InvaderType.Octopus:
                     imagePath = @$"Resources\Images\Enemies\Octopus{clipNum}.png";
                     pointsReward = 10;
                     break;
-                case EnemyTypes.Crab:
+                case InvaderType.Crab:
                     imagePath = $@"Resources\Images\Enemies\Crab{clipNum}.png";
                     pointsReward = 20;
                     break;
-                case EnemyTypes.Squid:
+                case InvaderType.Squid:
                     imagePath = $@"Resources\Images\Enemies\Squid{clipNum}.png";
                     pointsReward = 30;
                     break;
@@ -413,10 +521,12 @@ namespace GameWindow.Components.GameComponents
             sprite.ChangeImage(imagePath);
         }
 
-        // Kills the invader
+        /// <summary>
+        /// Kills the invader, plays death sound, adds points to the score, and disposes the explosion after a delay
+        /// </summary>
         public void Kill()
         {
-            if (type == EnemyTypes.UFO)
+            if (type == InvaderType.UFO)
             {
                 UFODeath();
                 return;
@@ -426,19 +536,20 @@ namespace GameWindow.Components.GameComponents
             invaders[arrPos] = null;
             col.Dispose();
 
-            SoundManager.PlaySound(Sounds.InvaderDeath);
+            SoundManager.PlaySound(Sound.InvaderDeath);
 
             // Invader Explosion
             transform.Scale = new Vector2(13, 8);
             sprite.ChangeImage(@"Resources\Images\Enemies\InvaderDeath.png");
-
 
             LocalGame.instance!.Score += pointsReward;
 
             Task.Delay(500).ContinueWith((p) => Dispose());
         }
 
-        // Disposes the invader
+        /// <summary>
+        /// Disposes the current <see cref="Invader"/> object
+        /// </summary>
         private void Dispose()
         {
             sprite.Dispose();

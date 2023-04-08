@@ -4,27 +4,28 @@ using System.Linq;
 
 namespace GameWindow.Components.Miscellaneous
 {
+    public enum CollisionLayer
+    {
+        Wall = 1,
+        Bunker,
+        Player,
+        OnlinePlayer,
+        Invader,
+        PlayerBullet,
+        OnlinePlayerBullet,
+        InvaderBullet,
+    }
+
     internal class Collider
     {
-        public enum Layers
-        {
-            Wall = 1,
-            Bunker,
-            Player,
-            OnlinePlayer,
-            Invader,
-            PlayerBullet,
-            OnlinePlayerBullet,
-            InvaderBullet,
-        }
         private static List<Collider> AllColliders = new List<Collider>();
 
-        private Layers layer;
-        private Layers[] IgnoredLayers = new Layers[8];
-        private Transform transform;
         public object parent;
+        private CollisionLayer layer;
+        private CollisionLayer[] ignoredLayers = new CollisionLayer[8];
+        private Transform transform;
 
-        public Collider(Transform transform, object parent, Layers layer)
+        public Collider(Transform transform, object parent, CollisionLayer layer)
         {
             AllColliders.Add(this);
             this.layer = layer;
@@ -36,7 +37,7 @@ namespace GameWindow.Components.Miscellaneous
             for (int i = 0; i < AllColliders.Count; i++)
             {
                 Collider c = AllColliders[i];
-                if (c == this || IgnoredLayers.Contains(c.layer)) continue;
+                if (c == this || ignoredLayers.Contains(c.layer)) continue;
 
                 // check collision
                 Rectangle thisRect = new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y, (int)transform.ActualScale.X, (int)transform.ActualScale.Y);
@@ -50,9 +51,9 @@ namespace GameWindow.Components.Miscellaneous
         }
 
         private int currentLayerIndex = 0;
-        public void IgnoreLayer(Layers layer)
+        public void IgnoreLayer(CollisionLayer layer)
         {
-            IgnoredLayers[currentLayerIndex++] = layer;
+            ignoredLayers[currentLayerIndex++] = layer;
         }
         public void Dispose()
         {
