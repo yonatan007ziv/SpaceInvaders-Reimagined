@@ -4,6 +4,7 @@ using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Security.Principal;
 using System.Windows;
+using GameWindow.Components.NetworkedComponents;
 
 namespace GameWindow.Components.Pages
 {
@@ -55,7 +56,7 @@ namespace GameWindow.Components.Pages
             if (ipInput.Text == "" && portInput.Text == "")
                 return;
             Dispose();
-            new MultiplayerGameClient(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
+            new MultiplayerGameClientInitializer(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
         }
         void OnBack()
         {

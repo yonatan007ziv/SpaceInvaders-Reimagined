@@ -7,7 +7,8 @@ namespace LoginRegistServer
     {
         private static TcpListener listener = new TcpListener(IPAddress.Any, 7777);
         private static DatabaseHandler dbHandler= new DatabaseHandler();
-        public static void Main()
+
+        public static void Main(string[] args)
         {
             listener.Start();
             while (true)

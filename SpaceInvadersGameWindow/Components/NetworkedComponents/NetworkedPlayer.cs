@@ -1,17 +1,17 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
-using GameWindow.Systems;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
 using static GameWindow.Components.Miscellaneous.Delegates;
 
-namespace GameWindow.Components.GameComponents.NetworkedComponents
+namespace GameWindow.Components.NetworkedComponents
 {
     internal class NetworkedPlayer
     {
         public static Dictionary<string, NetworkedPlayer> currentPlayers = new Dictionary<string, NetworkedPlayer>();
+        public static NetworkedPlayer localPlayer = null!;
 
         public bool invincible = false;
         public NetworkedBullet? myBullet = null;
@@ -21,15 +21,22 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
         public NetworkedPlayerController? controller;
         private CustomLabel nameTag;
         public string username;
+        public char team;
 
-        public NetworkedPlayer(Vector2 pos, string username, ActionString sendMessage) // local
+        public NetworkedPlayer(Vector2 pos, string username, char team, ActionString sendMessage) // local
         {
             currentPlayers.Add(username, this);
 
+            localPlayer = this;
             this.username = username;
+            this.team = team;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this, CollisionLayer.Player);
+
+            CollisionLayer myLayer = team == 'A' ? CollisionLayer.TeamA : CollisionLayer.TeamB;
+            col = new Collider(transform, this, myLayer);
+            col.IgnoreLayer(myLayer);
+
             controller = new NetworkedPlayerController(this, transform, col, sendMessage);
 
             Application.Current.Dispatcher.Invoke(() =>
@@ -43,17 +50,23 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             nameTag!.ToString();
         }
 
-        public NetworkedPlayer(Vector2 pos, string username) // online
+        public NetworkedPlayer(Vector2 pos, string username, char team) // online
         {
             currentPlayers.Add(username, this);
             this.username = username;
+            this.team = team;
 
             transform = new Transform(new Vector2(13, 8), pos);
-            col = new Collider(transform, this, CollisionLayer.OnlinePlayer);
 
+            CollisionLayer myLayer = team == 'A' ? CollisionLayer.TeamA : CollisionLayer.TeamB;
+            col = new Collider(transform, this, myLayer);
+            col.IgnoreLayer(myLayer);
+
+            string path = localPlayer.team == team ? @"Resources\Images\Player\Player.png" : @"Resources\Images\Player\OpponentPlayer.png";
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
-                sprite = new Sprite(transform, @"Resources\Images\Player\OpponentPlayer.png");
+
+                sprite = new Sprite(transform, path);
                 nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Purple);
             });
 
@@ -92,13 +105,15 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
 
             transform.Scale = new Vector2(16, 8);
 
+            string path = localPlayer.team == team ? @"Resources\Images\Player\PlayerDeath" : @"Resources\Images\Player\OpponentPlayerDeath";
+
             for (int i = 0; i < 12; i++)
             {
-                sprite.ChangeImage(@$"Resources\Images\Player\OpponentPlayerDeath{i % 2 + 1}.png");
+                sprite.ChangeImage($"{path + (i % 2 + 1)}.png");
                 await Task.Delay(1000 / 10);
             }
 
-            Respawn(isOpponent: true);
+            Respawn(isOpponent: localPlayer.team != team);
             Invincibility();
         }
         private void Respawn(bool isOpponent)
@@ -122,6 +137,11 @@ namespace GameWindow.Components.GameComponents.NetworkedComponents
             col.Dispose();
             sprite.Dispose();
             nameTag.Dispose();
+        }
+        public static void DisposeAll()
+        {
+            foreach (NetworkedPlayer p in currentPlayers.Values)
+                p.Dispose();
         }
     }
 }

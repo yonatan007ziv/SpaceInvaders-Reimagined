@@ -15,24 +15,24 @@ namespace GameWindow.Components.Initializers
 
         private Player player;
         private int score = 0;
-        private bool GaveExtraLife = false;
+        private bool gaveExtraLife = false;
         public int Score
         {
             get { return score; }
-            set { score = value; CreditsLabel.Text = "CREDIT " + score; if (score >= 1500 && !GaveExtraLife) { LivesLeft++; GaveExtraLife = true; } }
+            set { score = value; creditsLabel.Text = "CREDIT " + score; if (score >= 1500 && !gaveExtraLife) { LivesLeft++; gaveExtraLife = true; } }
         }
         private int livesLeft = 3;
         public int LivesLeft
         {
             get { return livesLeft; }
-            set { livesLeft = value; LivesLabel.Text = "LIVES: " + livesLeft; }
+            set { livesLeft = value; livesLabel.Text = "LIVES: " + livesLeft; }
         }
 
-        private CustomLabel CreditsLabel;
-        private CustomLabel LivesLabel;
-        private CustomLabel? LostLabel;
-        private CustomButton? PlayAgainBtn;
-        private CustomButton? MainMenuBtn;
+        private CustomLabel creditsLabel;
+        private CustomLabel livesLabel;
+        private CustomLabel? lostLabel;
+        private CustomButton? playAgainButton;
+        private CustomButton? mainMenuButton;
 
         public LocalGame()
         {
@@ -46,8 +46,8 @@ namespace GameWindow.Components.Initializers
             StartGame();
 
             // Suppressing the "Null When Leaving a Constructor" warning
-            CreditsLabel!.ToString();
-            LivesLabel!.ToString();
+            creditsLabel!.ToString();
+            livesLabel!.ToString();
             player!.ToString();
         }
 
@@ -61,11 +61,11 @@ namespace GameWindow.Components.Initializers
 
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
-                CreditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
-                LivesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+                creditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+                livesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
             });
 
-            GaveExtraLife = false;
+            gaveExtraLife = false;
             Score = 0;
             LivesLeft = 3;
 
@@ -86,28 +86,28 @@ namespace GameWindow.Components.Initializers
         }
         private void MakeBunkers()
         {
-            new Bunker(new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
-            new Bunker(new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
-            new Bunker(new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
-            new Bunker(new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
+            Bunker.AllBunkers[0] = new Bunker(new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
+            Bunker.AllBunkers[1] = new Bunker(new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
+            Bunker.AllBunkers[2] = new Bunker(new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
+            Bunker.AllBunkers[3] = new Bunker(new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
         }
         #endregion
 
         #region Pause Menu
         public static bool Paused;
         private static bool HeldRestart;
-        private static bool HeldEscape;
-        private static PauseMenu? pauseMenu;
+        private static bool heldEscape;
+        private static LocalPauseMenu? pauseMenu;
         private void InputLoop()
         {
             if (InputHandler.keysDown.Contains(Key.Escape))
             {
-                if (!HeldEscape)
+                if (!heldEscape)
                     PauseUnpause(!Paused);
-                HeldEscape = true;
+                heldEscape = true;
             }
             else
-                HeldEscape = false;
+                heldEscape = false;
 
             if (InputHandler.keysDown.Contains(Key.R))
             {
@@ -132,7 +132,7 @@ namespace GameWindow.Components.Initializers
                 Bullet.PauseUnpauseBullets(true);
                 Invader.PauseUnpauseInvaders(true);
                 Player.PauseUnpause(true);
-                pauseMenu = new PauseMenu();
+                pauseMenu = new LocalPauseMenu();
             }
             else
             {
@@ -169,10 +169,10 @@ namespace GameWindow.Components.Initializers
             // UI Objects need to be created in an STA thread
             Application.Current.Dispatcher.Invoke(() =>
             {
-                LostLabel = new CustomLabel(new Transform(new Vector2(MainWindow.referenceSize.X, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)),
+                lostLabel = new CustomLabel(new Transform(new Vector2(MainWindow.referenceSize.X, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)),
                     $"You Lost\nCredits: {Score}", System.Windows.Media.Colors.White);
 
-                PlayAgainBtn = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X * 3 / 4, MainWindow.referenceSize.Y * 5 / 6)),
+                playAgainButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X * 3 / 4, MainWindow.referenceSize.Y * 5 / 6)),
                     () =>
                     {
                         DisposeLostMenu();
@@ -180,7 +180,7 @@ namespace GameWindow.Components.Initializers
                         StartGame();
                     }, "", "Play Again");
 
-                MainMenuBtn = new CustomButton(
+                mainMenuButton = new CustomButton(
                     new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X / 4, MainWindow.referenceSize.Y * 5 / 6)),
                     () =>
                     {
@@ -192,9 +192,9 @@ namespace GameWindow.Components.Initializers
         }
         private void DisposeLostMenu()
         {
-            LostLabel?.Dispose();
-            PlayAgainBtn?.Dispose();
-            MainMenuBtn?.Dispose();
+            lostLabel?.Dispose();
+            playAgainButton?.Dispose();
+            mainMenuButton?.Dispose();
         }
         public void Dispose()
         {
@@ -205,8 +205,8 @@ namespace GameWindow.Components.Initializers
             Bullet.DisposeAll();
             Invader.DisposeAll();
             player.Dispose();
-            LivesLabel.Dispose();
-            CreditsLabel.Dispose();
+            livesLabel.Dispose();
+            creditsLabel.Dispose();
         }
     }
 }

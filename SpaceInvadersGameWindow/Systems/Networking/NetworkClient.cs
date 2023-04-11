@@ -93,9 +93,16 @@ namespace GameWindow.Systems.Networking
         }
         private void ReceiveMessage(IAsyncResult ar, bool loop)
         {
-            int bytesRead = -1;
-            lock (client.GetStream())
-                bytesRead = client.GetStream().EndRead(ar);
+            int bytesRead = 0;
+
+            try
+            {
+                lock (client.GetStream())
+                    bytesRead = client.GetStream().EndRead(ar);
+            }
+            catch { }
+
+            if (bytesRead == 0) return;
 
             byte[] encrypted = new byte[bytesRead];
             Array.Copy(buffer, encrypted, bytesRead);
@@ -131,7 +138,9 @@ namespace GameWindow.Systems.Networking
         }
         public void StopClient()
         {
+            client.GetStream().Close();
             client.Close();
+            client = new TcpClient();
         }
     }
 }

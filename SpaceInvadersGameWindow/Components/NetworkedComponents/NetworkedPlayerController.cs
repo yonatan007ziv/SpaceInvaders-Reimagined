@@ -1,10 +1,11 @@
-﻿using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.GameComponents;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Windows.Input;
 using static GameWindow.Components.Miscellaneous.Delegates;
 
-namespace GameWindow.Components.GameComponents.NetworkedComponents
+namespace GameWindow.Components.NetworkedComponents
 {
     internal class NetworkedPlayerController
     {

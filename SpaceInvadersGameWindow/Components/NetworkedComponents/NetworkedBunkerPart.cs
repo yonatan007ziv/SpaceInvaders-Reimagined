@@ -1,21 +1,27 @@
-﻿using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.GameComponents;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Windows;
 
-namespace GameWindow.Components.GameComponents
+namespace GameWindow.Components.NetworkedComponents
 {
-    internal class BunkerPart
+    internal class NetworkedBunkerPart
     {
-        private PieceTypes part;
+        public int BunkerID;
+        public int imagePathIndex = 0;
+        public PieceTypes part;
+        public bool flipped;
         private Transform transform;
-        private Sprite sprite;
         private Collider col;
-        private int imagePathIndex = 1;
+        private Sprite sprite;
 
-        public BunkerPart(PieceTypes part, Vector2 pos)
+        public NetworkedBunkerPart(PieceTypes part, Vector2 pos, int bunkerId, bool flipped)
         {
             this.part = part;
+            this.flipped = flipped;
+            BunkerID = bunkerId;
+
             transform = new Transform(new Vector2(6, 8), pos);
             col = new Collider(transform, this, CollisionLayer.Bunker);
 
@@ -27,7 +33,6 @@ namespace GameWindow.Components.GameComponents
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
         }
-
         public void Hit()
         {
             if (imagePathIndex == 4)
@@ -35,7 +40,7 @@ namespace GameWindow.Components.GameComponents
             imagePathIndex++;
             NextClip();
         }
-        public void NextClip()
+        private void NextClip()
         {
             string bunkerImagePath;
             switch (part)
@@ -44,28 +49,28 @@ namespace GameWindow.Components.GameComponents
                     bunkerImagePath = "";
                     break;
                 case PieceTypes.TopLeft:
-                    bunkerImagePath = @$"Resources\Images\Bunker\TopLeft{imagePathIndex}.png";
+                    bunkerImagePath = @$"Resources\Images\Bunker\TopLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
                 case PieceTypes.BottomLeft:
-                    bunkerImagePath = @$"Resources\Images\Bunker\BottomLeft{imagePathIndex}.png";
+                    bunkerImagePath = @$"Resources\Images\Bunker\BottomLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
                 case PieceTypes.MiddleTopLeft:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopLeft{imagePathIndex}.png";
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
                 case PieceTypes.MiddleBottomLeft:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomLeft{imagePathIndex}.png";
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
                 case PieceTypes.MiddleTopRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopRight{imagePathIndex}.png";
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
                 case PieceTypes.MiddleBottomRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomRight{imagePathIndex}.png";
+                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
                 case PieceTypes.TopRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\TopRight{imagePathIndex}.png";
+                    bunkerImagePath = $@"Resources\Images\Bunker\TopRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
                 case PieceTypes.BottomRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\BottomRight{imagePathIndex}.png";
+                    bunkerImagePath = $@"Resources\Images\Bunker\BottomRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
             }
             sprite.ChangeImage(bunkerImagePath);

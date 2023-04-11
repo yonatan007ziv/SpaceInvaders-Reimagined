@@ -12,8 +12,9 @@ namespace GameWindow.Components.Miscellaneous
         OnlinePlayer,
         Invader,
         PlayerBullet,
-        OnlinePlayerBullet,
         InvaderBullet,
+        TeamA,
+        TeamB,
     }
 
     internal class Collider

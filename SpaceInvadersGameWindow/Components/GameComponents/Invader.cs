@@ -5,6 +5,7 @@ using GameWindow.Systems;
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,7 +35,7 @@ namespace GameWindow.Components.GameComponents
         private static int invaderCount = 0;
 
         // Uniform Invader Settings
-        private static int invaderDir = 1;
+        private static int InvaderDir = 1;
         private static bool SpriteSwitch = false;
 
         /// <summary>
@@ -96,7 +97,7 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         private static void ResetInfo()
         {
-            invaderDir = 1;
+            InvaderDir = 1;
             SpriteSwitch = false;
 
             invaderCount = 0;
@@ -212,17 +213,17 @@ namespace GameWindow.Components.GameComponents
         }
 
         /// <summary>
-        /// Runs through the entire 'Space Invaders' movement cycle.
+        /// Runs through the entire 'Space Invaders' movement cycle
         /// </summary>
         /// <remarks>
         /// The cycle includes the following steps:
-        /// <list type="bullet">
-        ///     <item> Decides if one of the invaders should shoot (random) .</item>
-        ///     <item> Decides the direction of the invaders (left or right) and whether they should go down. </item>
-        ///     <item> If the invaders need to move down, they move down. Otherwise, they move to the direction determined previously. </item>
-        ///     <item> Plays the classic 'Space Invaders' "Boop" sound. </item>
-        ///     <item> Checks if any of the invaders have reached the bottom of the screen. </item>
-        ///     <item> Generates a UFO (by chance). </item>
+        /// <list type="number">
+        ///     <item> Decides if one of the invaders should shoot (random) </item>
+        ///     <item> Decides the direction of the invaders (left or right) and whether they should go down </item>
+        ///     <item> If the invaders need to move down, they move down. Otherwise, they move to the direction determined previously </item>
+        ///     <item> Plays the classic 'Space Invaders' "Boop" sound </item>
+        ///     <item> Checks if any of the invaders have reached the bottom of the screen </item>
+        ///     <item> Generates a UFO (by chance) </item>
         /// </list>
         /// </remarks>
         public static void CycleInvaders()
@@ -272,7 +273,7 @@ namespace GameWindow.Components.GameComponents
         }
 
         /// <summary>
-        /// Moves all invaders to the side at speed <see cref="INVADER_SPEED_SIDE"/>. Direction determined by <see cref="invaderDir"/>
+        /// Moves all invaders to the side at speed <see cref="INVADER_SPEED_SIDE"/>. Direction determined by <see cref="InvaderDir"/>
         /// </summary>
         private static void MoveInvadersSide()
         {
@@ -281,7 +282,7 @@ namespace GameWindow.Components.GameComponents
                 if (invaders[i] == null) continue;
 
                 using (Transform t = new Transform(new Vector2(0, 0), new Vector2(0, 0)))
-                    (invaders[i]?.transform ?? t).Position += new Vector2(INVADER_SPEED_SIDE * invaderDir, 0);
+                    (invaders[i]?.transform ?? t).Position += new Vector2(INVADER_SPEED_SIDE * InvaderDir, 0);
                 invaders[i]?.NextClip();
             }
         }
@@ -464,7 +465,7 @@ namespace GameWindow.Components.GameComponents
         }
 
         /// <summary>
-        /// Updates <see cref="invaderDir"/> according to the wall collisions
+        /// Updates <see cref="InvaderDir"/> according to the wall collisions
         /// </summary>
         /// <returns> Whether the invaders should move down </returns>
         private bool DecideDir()
@@ -473,12 +474,12 @@ namespace GameWindow.Components.GameComponents
             Collider? col = this.col.TouchingCollider();
             if (col != null)
             {
-                int prevDir = invaderDir;
+                int prevDir = InvaderDir;
                 if (col.parent == Wall.RightWall)
-                    invaderDir = -1;
+                    InvaderDir = -1;
                 else if (col.parent == Wall.LeftWall)
-                    invaderDir = 1;
-                if (invaderDir != prevDir)
+                    InvaderDir = 1;
+                if (InvaderDir != prevDir)
                     return true;
             }
             return false;
