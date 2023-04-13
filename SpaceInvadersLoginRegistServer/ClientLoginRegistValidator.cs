@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -11,30 +12,37 @@ namespace LoginRegistServer
             Success,
             NoSuchUsername,
             WrongPassword,
-            failed
+            AlreadyConnected,
+            Failed
         }
         private enum RegisterResult
         {
             Success,
+            Need2FA,
+            Wrong2FA,
             UsernameExists,
+            EmailExists,
+            InvalidUsername,
             InvalidPassword,
-            failed
+            InvalidEmail,
+            Failed
         }
+
+        private string username = "", password = "", email = "";
+        private int generated2FACode;
 
         private Byte[] buffer;
         private TcpClient client;
-        private DatabaseHandler dbHandler;
 
         // Encryption related fields
         private RSA rsa = RSA.Create();
         private Aes aes = Aes.Create();
 
-        public ClientLoginRegistValidator(TcpClient client, DatabaseHandler dbHandler)
+        public ClientLoginRegistValidator(TcpClient client)
         {
             Console.WriteLine("New client accepted.");
 
             this.client = client;
-            this.dbHandler = dbHandler;
             buffer = new Byte[client.ReceiveBufferSize];
 
             this.client.GetStream().BeginRead(buffer, 0, buffer.Length, (ar) => { ReceiveRSA(); WriteEncryptedAes(); BeginRead(); }, null);
@@ -43,39 +51,29 @@ namespace LoginRegistServer
         #region Login Logic
         private void Login(string loginData)
         {
-            string username = loginData.Split('/')[0];
-            string password = loginData.Split('/')[1];
-            LoginResult loginResult = ValidateLogin(username, password);
+            username = loginData.Split('/')[0];
+            password = loginData.Split('/')[1];
+            LoginResult loginResult = ValidateLogin();
 
-            switch (loginResult)
-            {
-                case LoginResult.Success:
-                    SendMessage("SUCCESS");
-                    return;
-                case LoginResult.NoSuchUsername:
-                    SendMessage("NO SUCH USERNAME");
-                    return;
-                case LoginResult.WrongPassword:
-                    SendMessage("WRONG PASSWORD");
-                    return;
-                case LoginResult.failed:
-                    SendMessage("FAILED");
-                    return;
-            }
+            SendMessage(loginResult.ToString());
         }
-        private LoginResult ValidateLogin(string username, string password)
+        private LoginResult ValidateLogin()
         {
+            Console.WriteLine($"VALIDATING LOGIN: ({username}, {password})");
             try
             {
-                if (!dbHandler.UsernameExists(username))
+                if (!DatabaseHandler.UsernameExists(username))
                     return LoginResult.NoSuchUsername;
-                if (!dbHandler.PasswordCorrect(username, password))
+                else if (!DatabaseHandler.PasswordCorrect(username, password))
                     return LoginResult.WrongPassword;
+                else if (DatabaseHandler.IsConnected(username))
+                    return LoginResult.AlreadyConnected;
+
                 return LoginResult.Success;
             }
             catch
             {
-                return LoginResult.failed;
+                return LoginResult.Failed;
             }
         }
         #endregion
@@ -83,54 +81,65 @@ namespace LoginRegistServer
         #region Register Logic
         private void Register(string registerData)
         {
-            string username = registerData.Split('/')[0];
-            string password = registerData.Split('/')[1];
-            RegisterResult registerResult = ValidateRegister(username, password);
+            username = registerData.Split('/')[0];
+            password = registerData.Split('/')[1];
+            email = registerData.Split('/')[2];
+            RegisterResult registerResult = ValidateRegister();
 
-            switch (registerResult)
-            {
-                case RegisterResult.Success:
-                    SendMessage("SUCCESS");
-                    return;
-                case RegisterResult.UsernameExists:
-                    SendMessage("USERNAME EXISTS");
-                    return;
-                case RegisterResult.InvalidPassword:
-                    SendMessage("INVALID PASSWORD");
-                    return;
-                case RegisterResult.failed:
-                    SendMessage("FAILED");
-                    return;
-            }
+            SendMessage(registerResult.ToString());
         }
-        private RegisterResult ValidateRegister(string username, string password)
+        private RegisterResult ValidateRegister()
         {
+            Console.WriteLine($"VALIDATING REGISTER: ({username}, {password}, {email})");
             try
             {
-                if (dbHandler.UsernameExists(username))
+                if (DatabaseHandler.UsernameExists(username))
                     return RegisterResult.UsernameExists;
-                else if (password.Length == 0)
+                else if (DatabaseHandler.EmailExists(username))
+                    return RegisterResult.EmailExists;
+                else if (username.Length == 0 || username.Contains('/'))
+                    return RegisterResult.InvalidUsername;
+                else if (password.Length == 0 || password.Contains('/'))
                     return RegisterResult.InvalidPassword;
-                Console.WriteLine($"INSERTING {username} {password}");
-                dbHandler.InsertUser(username, password);
-                return RegisterResult.Success;
+                else if (email.Length == 0 || email.Contains('/'))
+                    return RegisterResult.InvalidEmail;
+
+                generated2FACode = new Random().Next(10000, 100000);
+                SMTPHandler.SendEmail(email, "Space Invaders - Reimagined", $"Your 2FA code is: {generated2FACode}");
+                BeginRead();
+                return RegisterResult.Need2FA;
             }
             catch
             {
-                return RegisterResult.failed;
+                return RegisterResult.Failed;
             }
+        }
+        private void Check2FA(string code)
+        {
+            if (int.TryParse(code, out int codeReceived))
+            {
+                if (codeReceived == generated2FACode)
+                {
+                    Console.WriteLine($"INSERTING USER: ({username}, {password}, {email})");
+                    DatabaseHandler.InsertUser(username, password, email);
+                    SendMessage(RegisterResult.Success.ToString());
+                }
+                else
+                    SendMessage(RegisterResult.Wrong2FA.ToString());
+            }
+            else
+                SendMessage(RegisterResult.Wrong2FA.ToString());
         }
         #endregion
 
         private void DecodeMessage(string msg)
         {
-            Console.WriteLine("GOT: " + msg);
-            if (msg.Contains("LOGIN"))
+            if (msg.Contains("Login"))
                 Login(msg.Split(':')[1]);
-            else if (msg.Contains("REGISTER"))
+            else if (msg.Contains("Register"))
                 Register(msg.Split(':')[1]);
-            else
-                SendMessage("Invalid Message");
+            else if (msg.Contains("2FACode"))
+                Check2FA(msg.Split(':')[1]);
         }
         private void ReceiveRSA()
         {

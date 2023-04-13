@@ -16,7 +16,7 @@ namespace GameWindow.Components.UIElements
             set { label.Dispatcher.Invoke(() => label.Content = value); }
         }
 
-        Transform transform;
+        public Transform transform;
         public CustomLabel(Transform transform, string text, System.Windows.Media.Color TextColor)
         {
             InitializeComponent();

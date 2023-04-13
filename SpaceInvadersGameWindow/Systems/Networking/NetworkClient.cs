@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace GameWindow.Systems.Networking
 {
-    abstract class NetworkClient
+    public abstract class NetworkClient
     {
+        // Client related fieles
         private TcpClient client;
         private Byte[] buffer;
 
@@ -18,18 +19,33 @@ namespace GameWindow.Systems.Networking
         private RSA rsa = RSA.Create();
         private Aes aes = Aes.Create();
 
+        /// <summary>
+        /// Builds the <see cref="client"/> and <see cref="buffer"/> objects
+        /// </summary>
         public NetworkClient()
         {
             client = new TcpClient();
             buffer = new Byte[client.ReceiveBufferSize];
         }
 
-        protected abstract void DecodeMessage(string msg);
-        protected bool ConnectToAddress(string ip, int port)
+        /// <summary>
+        /// Abstract method for interpreting the received message
+        /// </summary>
+        /// <param name="message"> Message to interpret </param>
+        protected abstract void InterpretMessage(string message);
+
+        /// <summary>
+        /// Establishes and initializes a safe transport to the desired endpoint by connecting and writing the public key
+        /// </summary>
+        /// <param name="ip"> Endpoint's IP </param>
+        /// <param name="port"> Endpoint's port </param>
+        /// <returns> <c>true</c> if the connection was established successfully; otherwise, <c>false</c> </returns>
+        protected bool Connect(string ip, int port)
         {
+
             try
             {
-                client.Connect(IPEndPoint.Parse($"{ip}:{port}"));
+                client.Connect(IPAddress.Parse(ip), port);
 
                 byte[] publicKey = rsa.ExportRSAPublicKey();
                 client.GetStream().Write(publicKey, 0, publicKey.Length);
@@ -42,16 +58,31 @@ namespace GameWindow.Systems.Networking
                 return false;
             }
         }
-        protected async void BeginSingleRead()
+
+        /// <summary>
+        /// Awaits until the encryption is ready, and then starts reading from the stream
+        /// </summary>
+        /// <param name="loop"> Whether the read is looped or not </param>
+        protected async void BeginRead(bool loop)
         {
             await EncryptionReady.Task;
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, false), null);
+            client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, loop), null);
         }
-        protected async void BeginRead()
-        {
-            await EncryptionReady.Task;
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, true), null);
-        }
+
+        /// <summary>
+        /// Writes a message to the endpoint in the following steps:
+        /// <list type="number">
+        ///     <item> Awaits until the encryption is ready </item>
+        ///     <item> Encrypts the message </item>
+        ///     <item> Attaches 4 bytes representing the messages length to the Encrypted message </item>
+        ///     <item> Writes to the recipient 's stream </item>
+        /// </list>
+        /// </summary>
+        /// <remarks>
+        /// Remark:
+        /// Important to prefix the length of the message because sometimes messages get written too fast and get joined up
+        /// </remarks>
+        /// <param name="msg"> The message to write </param>
         protected async void SendMessage(string msg)
         {
             await EncryptionReady.Task;
@@ -71,9 +102,14 @@ namespace GameWindow.Systems.Networking
 
             client.GetStream().Write(encryptedWithPrefix, 0, encryptedWithPrefix.Length);
         }
+
+        /// <summary>
+        /// The first read of the stream: Reads the AES Key and IV and raises <see cref="EncryptionReady"/> to true
+        /// </summary>
+        /// <param name="ar"> A <see cref="IAsyncResult"/> representing the async state of the read operation </param>
         private void ReceiveAES(IAsyncResult ar)
         {
-            int bytesRead = -1;
+            int bytesRead;
             lock (client.GetStream())
                 bytesRead = client.GetStream().EndRead(ar);
 
@@ -91,6 +127,13 @@ namespace GameWindow.Systems.Networking
 
             EncryptionReady.SetResult(true);
         }
+
+        /// <summary>
+        /// Receives encrypted message(s), and separates them
+        /// </summary>
+        /// <param name="ar"> A <see cref="IAsyncResult"/> representing the async state of the read operation </param>
+        /// <param name="loop"> Whether the read is looped or not </param>
+        /// <exception cref="Exception"> Thrown if an exception is thrown when getting the network stream or ending read has failed </exception>
         private void ReceiveMessage(IAsyncResult ar, bool loop)
         {
             int bytesRead = 0;
@@ -100,9 +143,9 @@ namespace GameWindow.Systems.Networking
                 lock (client.GetStream())
                     bytesRead = client.GetStream().EndRead(ar);
             }
-            catch { }
+            catch { StopClient(); }
 
-            if (bytesRead == 0) return;
+            if (bytesRead == 0) { StopClient(); return; }
 
             byte[] encrypted = new byte[bytesRead];
             Array.Copy(buffer, encrypted, bytesRead);
@@ -112,6 +155,11 @@ namespace GameWindow.Systems.Networking
             if (loop)
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, true), null);
         }
+
+        /// <summary>
+        /// Separates the encrypted messages (if got more than one) and decrypts and interprets them
+        /// </summary>
+        /// <param name="encryptedWithPrefix"> A byte array containing the received encrypted message(s), with the first 4 bytes representing the length </param>
         private void EncryptedSeperator(byte[] encryptedWithPrefix)
         {
             List<byte[]> encryptedMessages = new List<byte[]>();
@@ -128,18 +176,42 @@ namespace GameWindow.Systems.Networking
             }
 
             foreach (byte[] encryptedMessage in encryptedMessages)
-                DecodeEncryptedMessage(encryptedMessage);
+                DecryptMessage(encryptedMessage);
         }
-        private void DecodeEncryptedMessage(byte[] encrypted)
+
+        /// <summary>
+        /// Decrypts the AES bytes and interprets the gotten message
+        /// </summary>
+        /// <param name="encrypted"> A byte array containing the Encrypted message </param>
+        private void DecryptMessage(byte[] encrypted)
         {
-            byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
-            string msg = Encoding.UTF8.GetString(decrypted);
-            DecodeMessage(msg);
+            byte[] decrypted = DecryptAES(encrypted);
+            InterpretMessage(Encoding.UTF8.GetString(decrypted));
         }
+
+        /// <summary>
+        /// Decrypts the gotten AES bytes
+        /// </summary>
+        /// <param name="encrypted"> A byte array containing the Encrypted message </param>
+        /// <returns> A byte array containing the decrypted message </returns>
+        private byte[] DecryptAES(byte[] encrypted)
+        {
+            return aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
+        }
+
+        /// <summary>
+        /// <list type="bullet">
+        ///     <item> Disconnects the current client and releases its resources </item>
+        ///     <item> Constructs a new <see cref="TcpClient"/> ready for use </item>
+        /// </list>
+        /// </summary>
         public void StopClient()
         {
-            client.GetStream().Close();
-            client.Close();
+            if (client.Connected)
+            {
+                client.GetStream().Close();
+                client.Close();
+            }
             client = new TcpClient();
         }
     }

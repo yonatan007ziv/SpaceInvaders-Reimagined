@@ -6,6 +6,9 @@ using System.Windows;
 
 namespace GameWindow.Components.Pages
 {
+    /// <summary>
+    /// A page representing the main menu of the game
+    /// </summary>
     internal class GameMainMenu
     {
         CustomButton SingleplayerButton, MultiplayerButton, OptionsButton;
@@ -36,7 +39,7 @@ namespace GameWindow.Components.Pages
         private void OnOptions()
         {
             Dispose();
-            throw new System.Exception();
+            GameInitializers.StartOptionsMenu();
         }
         public void Dispose()
         {

@@ -5,17 +5,26 @@ using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
+    /// <summary>
+    /// Class for representing a <see cref="BunkerPart"/>
+    /// </summary>
     internal class BunkerPart
     {
-        private PieceTypes part;
         private Transform transform;
         private Sprite sprite;
         private Collider col;
+
+        private BunkerPartType partType;
         private int imagePathIndex = 1;
 
-        public BunkerPart(PieceTypes part, Vector2 pos)
+        /// <summary>
+        /// Initializes a new BunkerPart
+        /// </summary>
+        /// <param name="partType"> The type of the bunker part </param>
+        /// <param name="pos"> The position of the bunker part </param>
+        public BunkerPart(BunkerPartType partType, Vector2 pos)
         {
-            this.part = part;
+            this.partType = partType;
             transform = new Transform(new Vector2(6, 8), pos);
             col = new Collider(transform, this, CollisionLayer.Bunker);
 
@@ -28,6 +37,9 @@ namespace GameWindow.Components.GameComponents
             sprite!.ToString();
         }
 
+        /// <summary>
+        /// On bullet-hit 
+        /// </summary>
         public void Hit()
         {
             if (imagePathIndex == 4)
@@ -35,41 +47,56 @@ namespace GameWindow.Components.GameComponents
             imagePathIndex++;
             NextClip();
         }
+
+        /// <summary>
+        /// Next clip in the 4-stage animation
+        /// </summary>
+        /// <remarks>
+        /// Stage 1 - Completely Intact
+        /// Stage 2 - Slightly Damaged
+        /// Stage 3 - Moderately Damaged
+        /// Stage 4 - Severely Damaged
+        /// Stage 5 - Completely Broken
+        /// </remarks>
         public void NextClip()
         {
             string bunkerImagePath;
-            switch (part)
+            switch (partType)
             {
                 default:
                     bunkerImagePath = "";
                     break;
-                case PieceTypes.TopLeft:
+                case BunkerPartType.TopLeft:
                     bunkerImagePath = @$"Resources\Images\Bunker\TopLeft{imagePathIndex}.png";
                     break;
-                case PieceTypes.BottomLeft:
+                case BunkerPartType.BottomLeft:
                     bunkerImagePath = @$"Resources\Images\Bunker\BottomLeft{imagePathIndex}.png";
                     break;
-                case PieceTypes.MiddleTopLeft:
+                case BunkerPartType.MiddleTopLeft:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopLeft{imagePathIndex}.png";
                     break;
-                case PieceTypes.MiddleBottomLeft:
+                case BunkerPartType.MiddleBottomLeft:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomLeft{imagePathIndex}.png";
                     break;
-                case PieceTypes.MiddleTopRight:
+                case BunkerPartType.MiddleTopRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopRight{imagePathIndex}.png";
                     break;
-                case PieceTypes.MiddleBottomRight:
+                case BunkerPartType.MiddleBottomRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomRight{imagePathIndex}.png";
                     break;
-                case PieceTypes.TopRight:
+                case BunkerPartType.TopRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\TopRight{imagePathIndex}.png";
                     break;
-                case PieceTypes.BottomRight:
+                case BunkerPartType.BottomRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\BottomRight{imagePathIndex}.png";
                     break;
             }
             sprite.ChangeImage(bunkerImagePath);
         }
+
+        /// <summary>
+        /// Disposes the current <see cref="BunkerPart"/> object
+        /// </summary>
         public void Dispose()
         {
             sprite.Dispose();

@@ -17,7 +17,7 @@ namespace GameWindow.Components.UIElements
             set { buttonText.Text = value; }
         }
 
-        Transform transform;
+        public Transform transform;
         public CustomButton(Transform transform, Action onClick, string imagePath)
         {
             InitializeComponent();
@@ -51,7 +51,7 @@ namespace GameWindow.Components.UIElements
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
-        public void SetPosition()
+        private void SetPosition()
         {
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be changed in an STA thread
@@ -60,7 +60,7 @@ namespace GameWindow.Components.UIElements
             });
         }
 
-        public void SetScale()
+        private void SetScale()
         {
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be changed in an STA thread

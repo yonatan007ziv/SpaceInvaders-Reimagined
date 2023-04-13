@@ -5,13 +5,15 @@ using GameWindow.Systems;
 using System;
 using System.Diagnostics;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
+    /// <summary>
+    /// Represents an enemy from the classic arcade game Space Invaders (1978)
+    /// </summary>
     internal class Invader
     {
         /// <summary>
@@ -25,7 +27,7 @@ namespace GameWindow.Components.GameComponents
         // Constants
         private const int INVADER_SPEED_DOWN = 8;
         private const int INVADER_SPEED_SIDE = 2;
-        private const int UFO_SPEED = 1;
+        private const int UFO_SPEED = 2;
         private const int MIN_TIME_BETWEEN_UFOS = 10;
 
         // Global variables
@@ -281,9 +283,8 @@ namespace GameWindow.Components.GameComponents
             {
                 if (invaders[i] == null) continue;
 
-                using (Transform t = new Transform(new Vector2(0, 0), new Vector2(0, 0)))
-                    (invaders[i]?.transform ?? t).Position += new Vector2(INVADER_SPEED_SIDE * InvaderDir, 0);
-                invaders[i]?.NextClip();
+                invaders[i].transform.Position += new Vector2(INVADER_SPEED_SIDE * InvaderDir, 0);
+                invaders[i].NextClip();
             }
         }
 
@@ -296,9 +297,8 @@ namespace GameWindow.Components.GameComponents
             {
                 if (invaders[i] == null) continue;
 
-                using (Transform t = new Transform(new Vector2(0, 0), new Vector2(0, 0)))
-                    (invaders[i]?.transform ?? t).Position += new Vector2(0, INVADER_SPEED_DOWN);
-                invaders[i]?.NextClip();
+                invaders[i].transform.Position += new Vector2(0, INVADER_SPEED_DOWN);
+                invaders[i].NextClip();
             }
         }
 
@@ -391,10 +391,9 @@ namespace GameWindow.Components.GameComponents
                     playingSound = true;
                 }
 
-
                 currentUFO.transform.Position += new Vector2(UFO_SPEED, 0);
 
-                if (currentUFO.transform.Position.X > MainWindow.referenceSize.X)
+                if (currentUFO.transform.Position.X > MainWindow.referenceSize.X + 16)
                 {
                     stopwatchUFO.Restart();
                     SoundManager.StopSound(Sound.UFO);
@@ -402,7 +401,7 @@ namespace GameWindow.Components.GameComponents
                     currentUFO = null;
                 }
 
-                await Task.Delay(1000 / (MainWindow.TARGET_FPS * MainWindow.SMOOTH_MULTIPLIER));
+                await Task.Delay(1000 / MainWindow.TARGET_FPS);
             }
         }
 

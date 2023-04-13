@@ -76,6 +76,14 @@ namespace GameWindow.Components.UIElements
             Dispatcher.Invoke(() => Source = bitmap);
         }
 
+        public void ChangeImage(BitmapImage bitmap)
+        {
+            bitmap.Freeze();
+
+            // UI Objects need to be changed in an STA thread
+            Dispatcher.Invoke((Delegate)(() => Source = bitmap));
+        }
+
         public void Dispose()
         {
             // UI Objects need to be changed in an STA thread

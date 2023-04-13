@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.UIElements;
 using System;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -15,17 +16,35 @@ namespace GameWindow.Components.GameComponents
             col.IgnoreLayer(CollisionLayer.Invader);
             col.IgnoreLayer(CollisionLayer.InvaderBullet);
 
-            BulletLoop();
+            switch (bulletType)
+            {
+                case BulletType.Charge:
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge1.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge2.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge3.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge4.png"));
+                    break;
+                case BulletType.Imperfect:
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect1.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect2.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect3.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect4.png"));
+                    break;
+                case BulletType.ZigZag:
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag1.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag2.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag3.png"));
+                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag4.png"));
+                    break;
+            }
+
+            _ = BulletLoop();
         }
 
-        private async void BulletLoop()
+        protected override async Task BulletLoop()
         {
-            while (col.TouchingCollider() == null && !bulletHit)
-            {
-                NextClip();
-                transform.Position += new Vector2(0, bulletSpeed);
-                await Task.Delay(1000 / MainWindow.TARGET_FPS);
-            }
+            await base.BulletLoop();
+
             if (bulletHit)
                 return;
 
@@ -38,38 +57,6 @@ namespace GameWindow.Components.GameComponents
                 bullet.BulletExplosion();
 
             BulletExplosion();
-        }
-
-        private float times;
-        int timesCounter = 0;
-
-        public void NextClip()
-        {
-            timesCounter++;
-            if (timesCounter == 4)
-            {
-                times++;
-                timesCounter = 0;
-            }
-
-            times %= 4;
-            string imagePath;
-            switch (bulletType)
-            {
-                default:
-                    imagePath = @$"Resources\Images\Bullet\Bullet.png";
-                    break;
-                case BulletType.Charge:
-                    imagePath = @$"Resources\Images\Bullet\Charge\Charge{times + 1}.png";
-                    break;
-                case BulletType.Imperfect:
-                    imagePath = @$"Resources\Images\Bullet\Imperfect\Imperfect{times + 1}.png";
-                    break;
-                case BulletType.ZigZag:
-                    imagePath = @$"Resources\Images\Bullet\ZigZag\ZigZag{times + 1}.png";
-                    break;
-            }
-            sprite.ChangeImage(imagePath);
         }
     }
 }

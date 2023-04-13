@@ -71,7 +71,7 @@ namespace GameWindow.Components.Initializers
 
             InputHandler.AddInputLoop(InputLoop);
 
-            player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.735f), this);
+            player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.735f));
             await Invader.PlotInvaders();
             Invader.PauseUnpauseInvaders(false);
             Player.PauseUnpause(false);

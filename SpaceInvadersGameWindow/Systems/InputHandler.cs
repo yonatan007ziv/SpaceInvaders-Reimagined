@@ -27,7 +27,7 @@ namespace GameWindow.Systems
                 if (!Disabled)
                     inputLoopDel?.Invoke();
 
-                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 4));
+                await Task.Delay(250 / MainWindow.TARGET_FPS); // Less delay = A more responsive input
             }
         }
 

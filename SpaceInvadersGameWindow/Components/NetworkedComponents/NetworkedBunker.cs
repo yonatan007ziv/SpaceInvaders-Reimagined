@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.GameComponents;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -10,6 +11,14 @@ namespace GameWindow.Components.NetworkedComponents
 
         public NetworkedBunkerPart[] parts = new NetworkedBunkerPart[8];
 
+        static NetworkedBunker()
+        {
+            for (int i = 0; i < 8; i++)
+                Bunkers[i] = new NetworkedBunker();
+        }
+
+        public NetworkedBunker() { }
+
         public NetworkedBunker(int BunkerID, bool up)
         {
             GetX(BunkerID, out float x);
@@ -18,14 +27,14 @@ namespace GameWindow.Components.NetworkedComponents
             Bunkers[BunkerID] = this;
 
             int reverser = up ? -1 : 1;
-            parts[0] = new NetworkedBunkerPart(PieceTypes.TopLeft, new Vector2(x, y) + new Vector2(-9, -4 * reverser), BunkerID, up);
-            parts[1] = new NetworkedBunkerPart(PieceTypes.BottomLeft, new Vector2(x, y) + new Vector2(-9, 4 * reverser), BunkerID, up);
-            parts[2] = new NetworkedBunkerPart(PieceTypes.MiddleTopLeft, new Vector2(x, y) + new Vector2(-3, -4 * reverser), BunkerID, up);
-            parts[3] = new NetworkedBunkerPart(PieceTypes.MiddleBottomLeft, new Vector2(x, y) + new Vector2(-3, 4 * reverser), BunkerID, up);
-            parts[4] = new NetworkedBunkerPart(PieceTypes.MiddleTopRight, new Vector2(x, y) + new Vector2(3, -4 * reverser), BunkerID, up);
-            parts[5] = new NetworkedBunkerPart(PieceTypes.MiddleBottomRight, new Vector2(x, y) + new Vector2(3, 4 * reverser), BunkerID, up);
-            parts[6] = new NetworkedBunkerPart(PieceTypes.TopRight, new Vector2(x, y) + new Vector2(9, -4 * reverser), BunkerID, up);
-            parts[7] = new NetworkedBunkerPart(PieceTypes.BottomRight, new Vector2(x, y) + new Vector2(9, 4 * reverser), BunkerID, up);
+            parts[0] = new NetworkedBunkerPart(BunkerPartType.TopLeft, new Vector2(x, y) + new Vector2(-9, -4 * reverser), BunkerID, up);
+            parts[1] = new NetworkedBunkerPart(BunkerPartType.BottomLeft, new Vector2(x, y) + new Vector2(-9, 4 * reverser), BunkerID, up);
+            parts[2] = new NetworkedBunkerPart(BunkerPartType.MiddleTopLeft, new Vector2(x, y) + new Vector2(-3, -4 * reverser), BunkerID, up);
+            parts[3] = new NetworkedBunkerPart(BunkerPartType.MiddleBottomLeft, new Vector2(x, y) + new Vector2(-3, 4 * reverser), BunkerID, up);
+            parts[4] = new NetworkedBunkerPart(BunkerPartType.MiddleTopRight, new Vector2(x, y) + new Vector2(3, -4 * reverser), BunkerID, up);
+            parts[5] = new NetworkedBunkerPart(BunkerPartType.MiddleBottomRight, new Vector2(x, y) + new Vector2(3, 4 * reverser), BunkerID, up);
+            parts[6] = new NetworkedBunkerPart(BunkerPartType.TopRight, new Vector2(x, y) + new Vector2(9, -4 * reverser), BunkerID, up);
+            parts[7] = new NetworkedBunkerPart(BunkerPartType.BottomRight, new Vector2(x, y) + new Vector2(9, 4 * reverser), BunkerID, up);
         }
         private static void GetX(int bunkerID, out float x)
         {
@@ -37,6 +46,15 @@ namespace GameWindow.Components.NetworkedComponents
                 x = 1.2f * (MainWindow.referenceSize.X / 2);
             else
                 x = 1.6f * (MainWindow.referenceSize.X / 2);
+        }
+        public bool BunkerExists()
+        {
+            if (parts[0] == null) return false;
+
+            foreach (NetworkedBunkerPart part in parts)
+                if (part.imagePathIndex != 4)
+                    return true;
+            return false;
         }
         private void Dispose()
         {

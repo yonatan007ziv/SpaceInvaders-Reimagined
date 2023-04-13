@@ -10,17 +10,17 @@ namespace GameWindow.Components.NetworkedComponents
     class NetworkedBullet : Bullet
     {
         private ActionString? sendMessage;
-        private Action? killBullet;
         private string shooter;
 
-        public NetworkedBullet(Vector2 pos, ActionString sendMessage, Action killBullet) :
+        public NetworkedBullet(Vector2 pos, ActionString sendMessage) :
             base(pos, -6, BulletType.Normal, CollisionLayer.PlayerBullet)
         {
+            sendMessage($"InitiateBullet");
             shooter = GameInitializers.username!;
             this.sendMessage = sendMessage;
-            this.killBullet = killBullet;
             col.IgnoreLayer(NetworkedPlayer.localPlayer.team == 'A' ? CollisionLayer.TeamA : CollisionLayer.TeamB);
             col.IgnoreLayer(CollisionLayer.PlayerBullet);
+
             LocalBulletLoop();
         }
         public NetworkedBullet(string shooter) :
@@ -35,29 +35,27 @@ namespace GameWindow.Components.NetworkedComponents
 
         public async void LocalBulletLoop()
         {
-            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
-            while (col.TouchingCollider() == null)
+            while (col.TouchingCollider() == null && !bulletHit)
             {
-                transform.Position += SpeedVector;
+                transform.Position += new Vector2(0, bulletSpeed);
                 await Task.Delay(1000 / MainWindow.TARGET_FPS);
             }
 
             if (col.TouchingCollider()!.parent is NetworkedPlayer player && !player.invincible)
-                sendMessage!($"BULLET HIT:(Player,{player.username})");
+                sendMessage!($"BulletHit:Player({player.username})");
             else if (col.TouchingCollider()!.parent is NetworkedBunkerPart part)
-                sendMessage!($"BULLET HIT:(BunkerPart%{part.BunkerID},{(int)part.part})");
+                sendMessage!($"BulletHit:BunkerPart({part.BunkerID},{(int)part.part})");
 
-            sendMessage!($"BULLET EXPLOSION");
-            killBullet!();
+            sendMessage!($"BulletExplosion");
+            NetworkedPlayer.localPlayer.myBullet = null;
             BulletExplosion();
             NetworkedPlayer.currentPlayers[shooter].myBullet = null;
         }
         public async void OnlineBulletLoop()
         {
-            Vector2 SpeedVector = new Vector2(0, bulletSpeed);
-            while (col.TouchingCollider() == null)
+            while (col.TouchingCollider() == null && !bulletHit)
             {
-                transform.Position += SpeedVector;
+                transform.Position += new Vector2(0, bulletSpeed);
                 await Task.Delay(1000 / MainWindow.TARGET_FPS);
             }
         }

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameWindow", "SpaceInvadersGameWindow\GameWindow.csproj", "{2FB76F94-AB27-4B98-8279-EC3EE0C564B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoginRegistServer", "SpaceInvadersLoginRegistServer\LoginRegistServer.csproj", "{3445540A-A90D-4A9A-B6F2-139AD09EB085}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoginRegisterServer", "SpaceInvadersLoginRegistServer\LoginRegisterServer.csproj", "{3445540A-A90D-4A9A-B6F2-139AD09EB085}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameplayServer", "SpaceInvadersGameplayServer\GameplayServer.csproj", "{B8E9EA17-699E-40E9-9BB3-798C2207DA4D}"
 EndProject

@@ -1,13 +1,14 @@
-﻿using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.Initializers;
+﻿using GameWindow.Components.Initializers;
+using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using System.Numerics;
-using System.Security.Principal;
 using System.Windows;
-using GameWindow.Components.NetworkedComponents;
 
 namespace GameWindow.Components.Pages
 {
+    /// <summary>
+    /// A page representing the online menu
+    /// </summary>
     internal class GameMultiplayerMenu
     {
         private CustomLabel ipLabel, portLabel;
@@ -23,12 +24,12 @@ namespace GameWindow.Components.Pages
 
                 ipInput = new CustomTextInput(new Transform(new Vector2(125, 50), new Vector2(100, 50)))
                 {
-                    Text = "127.0.0.1" // temp
+                    Text = "127.0.0.1"
                 };
 
                 portInput = new CustomTextInput(new Transform(new Vector2(125, 50), new Vector2(100, 100)))
                 {
-                    Text = "7778" // temp
+                    Text = "7778"
                 };
 
                 connectButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(125, 225)), OnConnect, "", "Connect");
@@ -41,7 +42,23 @@ namespace GameWindow.Components.Pages
             ipInput!.ToString();
             portInput!.ToString();
             connectButton!.ToString();
+            backButton!.ToString();
         }
+
+        private void OnConnect()
+        {
+            if (ipInput.Text == "" && portInput.Text == "")
+                return;
+            Dispose();
+            new MultiplayerGameClient(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
+        }
+
+        private void OnBack()
+        {
+            Dispose();
+            GameInitializers.StartGameMenu(GameInitializers.username);
+        }
+
         private void Dispose()
         {
             ipLabel.Dispose();
@@ -50,18 +67,6 @@ namespace GameWindow.Components.Pages
             portInput.Dispose();
             connectButton.Dispose();
             backButton.Dispose();
-        }
-        void OnConnect()
-        {
-            if (ipInput.Text == "" && portInput.Text == "")
-                return;
-            Dispose();
-            new MultiplayerGameClientInitializer(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
-        }
-        void OnBack()
-        {
-            Dispose();
-            GameInitializers.StartGameMenu(GameInitializers.username);
         }
     }
 }

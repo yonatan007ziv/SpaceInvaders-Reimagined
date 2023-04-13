@@ -1,51 +1,61 @@
 ﻿using GameWindow.Components.Initializers;
+using GameWindow.Components.Pages;
 using GameWindow.Components.UIElements;
 using System;
 
 namespace GameWindow.Systems.Networking
 {
+    /// <summary>
+    /// Connects to remote Login-Server and gets the appropriate response
+    /// </summary>
     class LoginValidator : NetworkClient
     {
-        Action DiposeRegistLoginMenu;
-        private CustomLabel resultLabel;
-
         private string username;
+        private CustomLabel resultLabel;
+        private Action DiposeLoginRegisterMenu;
 
-        public LoginValidator(string username, string password, CustomLabel resultLabel, Action InitializeMenu) : base()
+        /// <summary>
+        /// Sends Login Data to the remote Login-Server and reads a response
+        /// </summary>
+        /// <param name="username"> The inputted username </param>
+        /// <param name="password"> The inputted password </param>
+        /// <param name="resultLabel"> The result label </param>
+        /// <param name="DiposeLoginRegisterMenu"> Action to dispose <see cref="LoginRegister"/> menu </param>
+        public LoginValidator(string username, string password, CustomLabel resultLabel, Action DiposeLoginRegisterMenu) : base()
         {
             this.username = username;
 
             this.resultLabel = resultLabel;
-            this.DiposeRegistLoginMenu = InitializeMenu;
-            if (ConnectToAddress("46.121.141.134", 7777))
+            this.DiposeLoginRegisterMenu = DiposeLoginRegisterMenu;
+            if (Connect("46.121.141.134", 7777))
             {
-                SendMessage($"LOGIN:{username}/{password}");
-                BeginSingleRead();
+                SendMessage($"Login:{username}/{password}");
+                BeginRead(false);
             }
             else
                 resultLabel.Text = "Failed! server unreachable.";
         }
 
-        protected override void DecodeMessage(string msg)
+        /// <summary>
+        /// Interprets login-Response from server
+        /// </summary>
+        /// <param name="msg"> Response from server </param>
+        protected override void InterpretMessage(string msg)
         {
-            if (msg == "SUCCESS")
+            if (msg == "Success")
             {
                 resultLabel.Text = "Successfully logged in!";
-                DiposeRegistLoginMenu();
+                DiposeLoginRegisterMenu();
                 GameInitializers.StartGameMenu(username);
             }
-            else if (msg == "NO SUCH USERNAME")
-            {
+            else if (msg == "NoSuchUsername")
                 resultLabel.Text = "No such username exists, maybe try to register?";
-            }
-            else if (msg == "WRONG PASSWORD")
-            {
+            else if (msg == "WrongPassword")
                 resultLabel.Text = "Wrong password entered.";
-            }
-            else if (msg == "FAILED")
-            {
-                resultLabel.Text = "Failed! please try again.";
-            }
+            else if (msg == "AlreadyConnected")
+                resultLabel.Text = "Already connected to the game.";
+            else if (msg == "Failed")
+                resultLabel.Text = "Failed Login! please try again.";
             StopClient();
         }
     }

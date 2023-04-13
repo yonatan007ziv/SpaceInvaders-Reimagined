@@ -14,6 +14,7 @@ namespace GameWindow.Components.NetworkedComponents
         Collider col;
         private ActionString sendMessage;
         private NetworkedPlayer player;
+
         public NetworkedPlayerController(NetworkedPlayer player, Transform transform, Collider col, ActionString sendMessage)
         {
             this.player = player;
@@ -33,15 +34,11 @@ namespace GameWindow.Components.NetworkedComponents
             if (axis == 1 && (col == null || col.parent != Wall.RightWall) || axis == -1 && (col == null || col.parent != Wall.LeftWall))
             {
                 transform.Position += new Vector2(axis, 0);
-                sendMessage($"PLAYER POS:{transform.Position.X}");
+                sendMessage($"PlayerPosition:{transform.Position.X}");
             }
             if (InputHandler.keysDown.Contains(Key.Space) && player.myBullet == null)
-            {
-                player.myBullet = new NetworkedBullet(transform.Position, sendMessage, () => player.myBullet = null);
-                sendMessage($"INITIATE BULLET:");
-            }
+                player.myBullet = new NetworkedBullet(transform.Position, sendMessage);
         }
-
         public void Dispose()
         {
             InputHandler.RemoveInputLoop(InputLoop);

@@ -6,10 +6,14 @@ using System.Windows;
 
 namespace GameWindow.Components.Pages
 {
+    /// <summary>
+    /// A page representing the local game pause menu
+    /// </summary>
     internal class LocalPauseMenu
     {
         CustomLabel pauseLabel;
         CustomButton newGameButton, mainMenuButton;
+
         public LocalPauseMenu()
         {
             LocalGame.Paused = true;
@@ -26,6 +30,7 @@ namespace GameWindow.Components.Pages
             newGameButton!.ToString();
             mainMenuButton!.ToString();
         }
+
         private void NewGame()
         {
             Dispose();
@@ -33,6 +38,7 @@ namespace GameWindow.Components.Pages
             LocalGame.instance.StartGame();
             LocalGame.Paused = false;
         }
+
         private void MainMenu()
         {
             Dispose();
@@ -40,6 +46,7 @@ namespace GameWindow.Components.Pages
             GameInitializers.StartGameMenu(GameInitializers.username);
             LocalGame.Paused = false;
         }
+
         public void Dispose()
         {
             pauseLabel.Dispose();

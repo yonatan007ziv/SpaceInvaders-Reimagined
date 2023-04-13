@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -8,7 +9,9 @@ namespace GameWindow.Components.GameComponents
     internal class PlayerBullet : Bullet
     {
         public const int PLAYER_BULLET_SPEED = 5;
+
         public static PlayerBullet? instance;
+
         public PlayerBullet(Vector2 pos) : base(pos, -PLAYER_BULLET_SPEED, BulletType.Normal, CollisionLayer.PlayerBullet)
         {
             instance = this;
@@ -18,15 +21,14 @@ namespace GameWindow.Components.GameComponents
             col.IgnoreLayer(CollisionLayer.Player);
             col.IgnoreLayer(CollisionLayer.PlayerBullet);
 
-            BulletLoop();
+            clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Bullet.png"));
+
+            _ = BulletLoop();
         }
-        private async void BulletLoop()
+        protected override async Task BulletLoop()
         {
-            while (col.TouchingCollider() == null && !bulletHit)
-            {
-                transform.Position += new Vector2(0, bulletSpeed);
-                await Task.Delay(1000 / (MainWindow.TARGET_FPS * 8));
-            }
+            await base.BulletLoop();
+
             if (bulletHit)
             {
                 instance = null;

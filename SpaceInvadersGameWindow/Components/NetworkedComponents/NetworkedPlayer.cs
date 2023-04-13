@@ -42,7 +42,7 @@ namespace GameWindow.Components.NetworkedComponents
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
                 sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
-                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Purple);
+                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Black);
             });
 
             // Suppressing the "Null When Leaving a Constructor" warning
@@ -67,7 +67,7 @@ namespace GameWindow.Components.NetworkedComponents
             { // UI Objects need to be created in an STA thread
 
                 sprite = new Sprite(transform, path);
-                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Purple);
+                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Black);
             });
 
             // Suppressing the "Null When Leaving a Constructor" warning
@@ -142,6 +142,7 @@ namespace GameWindow.Components.NetworkedComponents
         {
             foreach (NetworkedPlayer p in currentPlayers.Values)
                 p.Dispose();
+            currentPlayers.Clear();
         }
     }
 }

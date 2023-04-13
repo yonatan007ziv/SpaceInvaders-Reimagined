@@ -1,7 +1,6 @@
 ﻿using GameWindow.Components.Initializers;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
-using GameWindow.Systems;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,14 +10,14 @@ namespace GameWindow.Components.GameComponents
     internal class Player
     {
         public Transform transform;
-        public Collider col;
-        private PlayerController controller;
         private Sprite sprite;
-        private LocalGame currentGame;
-        public Player(Vector2 pos, LocalGame currentGame)
-        {
-            this.currentGame = currentGame;
+        public Collider col;
 
+        private PlayerController controller;
+        private bool invincible = false;
+
+        public Player(Vector2 pos)
+        {
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this, CollisionLayer.Player);
 
@@ -30,13 +29,12 @@ namespace GameWindow.Components.GameComponents
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
         }
-        private bool invincible = false;
         public async void Kill()
         {
             if (invincible) return;
-            if (--currentGame.LivesLeft == 0)
+            if (--LocalGame.instance!.LivesLeft == 0)
             {
-                currentGame.Lost();
+                LocalGame.instance.Lost();
                 return;
             }
 

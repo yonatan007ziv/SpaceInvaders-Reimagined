@@ -18,7 +18,7 @@ public enum Sound
 }
 public static class SoundManager
 {
-    private static float currentVol = 1;
+    public static float currentVol = 1;
     private static readonly XAudio2 _xaudio= new XAudio2();
     private static readonly Dictionary<Sound, AudioBuffer> _audioBuffers = new Dictionary<Sound, AudioBuffer>();
     private static readonly Dictionary<Sound, List<SourceVoice>> currentSounds = new Dictionary<Sound, List<SourceVoice>>();
@@ -54,8 +54,6 @@ public static class SoundManager
             sourceVoice.SubmitSourceBuffer(_audioBuffers[sound], null);
             sourceVoice.Start();
 
-            if (!currentSounds.ContainsKey(sound))
-                currentSounds[sound] = new List<SourceVoice>();
             currentSounds[sound].Add(sourceVoice);
         }
     }
@@ -72,6 +70,8 @@ public static class SoundManager
     }
     private static void LoadSound(Sound sound, string uri)
     {
+        currentSounds[sound] = new List<SourceVoice>();
+
         var ms = new MemoryStream();
         using (var stream = Application.GetResourceStream(new Uri(uri)).Stream)
             stream.CopyTo(ms);

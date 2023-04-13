@@ -11,7 +11,7 @@ namespace GameWindow.Components.Initializers
         public static string username = "";
         public static void StartLoginRegist()
         {
-            new LoginRegist();
+            new LoginRegister();
         }
 
         public static void StartGameMenu(string username)
@@ -31,6 +31,10 @@ namespace GameWindow.Components.Initializers
         public static void StartMultiplayerGameMenu()
         {
             new GameMultiplayerMenu();
+        }
+        public static void StartOptionsMenu()
+        {
+            new OptionsMenu();
         }
     }
 }

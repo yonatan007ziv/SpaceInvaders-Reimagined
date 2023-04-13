@@ -9,14 +9,14 @@ namespace GameWindow.Components.NetworkedComponents
     internal class NetworkedBunkerPart
     {
         public int BunkerID;
-        public int imagePathIndex = 0;
-        public PieceTypes part;
+        public int imagePathIndex = 1;
+        public BunkerPartType part;
         public bool flipped;
         private Transform transform;
         private Collider col;
         private Sprite sprite;
 
-        public NetworkedBunkerPart(PieceTypes part, Vector2 pos, int bunkerId, bool flipped)
+        public NetworkedBunkerPart(BunkerPartType part, Vector2 pos, int bunkerId, bool flipped)
         {
             this.part = part;
             this.flipped = flipped;
@@ -36,7 +36,10 @@ namespace GameWindow.Components.NetworkedComponents
         public void Hit()
         {
             if (imagePathIndex == 4)
+            {
                 Dispose();
+                return;
+            }
             imagePathIndex++;
             NextClip();
         }
@@ -48,28 +51,28 @@ namespace GameWindow.Components.NetworkedComponents
                 default:
                     bunkerImagePath = "";
                     break;
-                case PieceTypes.TopLeft:
+                case BunkerPartType.TopLeft:
                     bunkerImagePath = @$"Resources\Images\Bunker\TopLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
-                case PieceTypes.BottomLeft:
+                case BunkerPartType.BottomLeft:
                     bunkerImagePath = @$"Resources\Images\Bunker\BottomLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
-                case PieceTypes.MiddleTopLeft:
+                case BunkerPartType.MiddleTopLeft:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
-                case PieceTypes.MiddleBottomLeft:
+                case BunkerPartType.MiddleBottomLeft:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
-                case PieceTypes.MiddleTopRight:
+                case BunkerPartType.MiddleTopRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
-                case PieceTypes.MiddleBottomRight:
+                case BunkerPartType.MiddleBottomRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
-                case PieceTypes.TopRight:
+                case BunkerPartType.TopRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\TopRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
-                case PieceTypes.BottomRight:
+                case BunkerPartType.BottomRight:
                     bunkerImagePath = $@"Resources\Images\Bunker\BottomRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
                     break;
             }

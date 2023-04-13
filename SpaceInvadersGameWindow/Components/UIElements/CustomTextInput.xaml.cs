@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
+using System;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,7 @@ namespace GameWindow.Components.UIElements
     {
         public string Text { get { return box.Text; } set { box.Text = value; } }
         Transform transform;
+
         public CustomTextInput(Transform transform)
         {
             InitializeComponent();
@@ -22,6 +24,20 @@ namespace GameWindow.Components.UIElements
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
+        public CustomTextInput(Transform transform, string defaultText, Action textChanged)
+        {
+            InitializeComponent();
+
+            this.transform = transform;
+            transform.PositionChanged += SetPosition;
+            transform.ScaleChanged += SetScale;
+
+            box.Text = defaultText;
+            box.TextChanged += (s, e) => textChanged();
+
+            MainWindow.instance!.CenteredCanvas.Children.Add(this);
+        }
+
         public void SetPosition()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -38,6 +54,12 @@ namespace GameWindow.Components.UIElements
                 Height = transform.ActualScale.Y;
             });
         }
+        public void Visible(bool visible)
+        {
+            // UI Objects need to be changed in an STA thread
+            Application.Current.Dispatcher.Invoke(() => Visibility = visible ? Visibility.Visible : Visibility.Hidden);
+        }
+
         public void Dispose()
         {
             // UI Objects need to be changed in an STA thread
