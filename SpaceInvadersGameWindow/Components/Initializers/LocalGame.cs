@@ -9,6 +9,9 @@ using System.Windows.Input;
 
 namespace GameWindow.Components.Initializers
 {
+    /// <summary>
+    /// A class implementing a local game
+    /// </summary>
     internal class LocalGame
     {
         public static LocalGame? instance;
@@ -34,6 +37,9 @@ namespace GameWindow.Components.Initializers
         private CustomButton? playAgainButton;
         private CustomButton? mainMenuButton;
 
+        /// <summary>
+        /// Builds a local game
+        /// </summary>
         public LocalGame()
         {
             instance = this;
@@ -52,11 +58,15 @@ namespace GameWindow.Components.Initializers
         }
 
         #region Game Preparation
+
+        /// <summary>
+        /// Starts a new game
+        /// </summary>
         public async void StartGame()
         {
-            InputHandler.Disabled = true;
+            InputHandler.Disabled(true);
             Player.PauseUnpause(true);
-            MakeWall();
+            Wall.MakeLocalGameWalls();
             MakeBunkers();
 
             Application.Current.Dispatcher.Invoke(() =>
@@ -75,16 +85,13 @@ namespace GameWindow.Components.Initializers
             await Invader.PlotInvaders();
             Invader.PauseUnpauseInvaders(false);
             Player.PauseUnpause(false);
-            InputHandler.Disabled = false;
+            InputHandler.Disabled(false);
         }
-        private void MakeWall()
-        {
-            Wall.Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), @"Resources\Images\Pixels\Red.png");
-            Wall.Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 1.08f), @"Resources\Images\Pixels\Green.png");
-            Wall.LeftWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(25, MainWindow.referenceSize.Y / 2));
-            Wall.RightWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X - 25, MainWindow.referenceSize.Y / 2));
-        }
-        private void MakeBunkers()
+
+        /// <summary>
+        /// Makes the bunkers
+        /// </summary>
+        private static void MakeBunkers()
         {
             Bunker.AllBunkers[0] = new Bunker(new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
             Bunker.AllBunkers[1] = new Bunker(new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3));
@@ -98,6 +105,10 @@ namespace GameWindow.Components.Initializers
         private static bool HeldRestart;
         private static bool heldEscape;
         private static LocalPauseMenu? pauseMenu;
+
+        /// <summary>
+        /// Input Loop for the local game
+        /// </summary>
         private void InputLoop()
         {
             if (InputHandler.keysDown.Contains(Key.Escape))
@@ -123,6 +134,11 @@ namespace GameWindow.Components.Initializers
             else
                 HeldRestart = false;
         }
+
+        /// <summary>
+        /// Pauses or Unpauses the current <see cref="LocalGame"/>
+        /// </summary>
+        /// <param name="pause"> Whether to pause or unpause </param>
         public static void PauseUnpause(bool pause)
         {
             Paused = pause;
@@ -142,6 +158,11 @@ namespace GameWindow.Components.Initializers
                 pauseMenu?.Dispose();
             }
         }
+
+        /// <summary>
+        /// Freezes the game or Unfreezes the game
+        /// </summary>
+        /// <param name="freeze"> Whether to freeze the game or unfreeze it </param>
         public static void FreezeUnfreeze(bool freeze)
         {
             if (freeze)
@@ -162,6 +183,10 @@ namespace GameWindow.Components.Initializers
         }
         #endregion
 
+        /// <summary>
+        /// Called when the player loses the game <br/>
+        /// Opens "LostMenu"
+        /// </summary>
         public void Lost()
         {
             Dispose();
@@ -190,12 +215,20 @@ namespace GameWindow.Components.Initializers
                     }, "", "Main Menu");
             });
         }
+
+        /// <summary>
+        /// Disposes the "LostMenu"
+        /// </summary>
         private void DisposeLostMenu()
         {
             lostLabel?.Dispose();
             playAgainButton?.Dispose();
             mainMenuButton?.Dispose();
         }
+
+        /// <summary>
+        /// Disposes the current <see cref="LocalGame"/>
+        /// </summary>
         public void Dispose()
         {
             SoundManager.StopAllSounds();

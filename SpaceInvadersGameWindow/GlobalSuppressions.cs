@@ -7,3 +7,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier")]
 [assembly: SuppressMessage("Style", "IDE0090:Use 'new(...)'")]
+[assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression")]

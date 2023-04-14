@@ -21,7 +21,7 @@ namespace GameWindow.Components.GameComponents
         /// Initializes a new BunkerPart
         /// </summary>
         /// <param name="partType"> The type of the bunker part </param>
-        /// <param name="pos"> The position of the bunker part </param>
+        /// <param name="pos"> A <see cref="Vector2"/> representing the position of the bunker part </param>
         public BunkerPart(BunkerPartType partType, Vector2 pos)
         {
             this.partType = partType;
@@ -52,11 +52,11 @@ namespace GameWindow.Components.GameComponents
         /// Next clip in the 4-stage animation
         /// </summary>
         /// <remarks>
-        /// Stage 1 - Completely Intact
-        /// Stage 2 - Slightly Damaged
-        /// Stage 3 - Moderately Damaged
-        /// Stage 4 - Severely Damaged
-        /// Stage 5 - Completely Broken
+        /// Stage 1 - Completely Intact <br/>
+        /// Stage 2 - Slightly Damaged <br/>
+        /// Stage 3 - Moderately Damaged <br/>
+        /// Stage 4 - Severely Damaged <br/>
+        /// Stage 5 - Completely Broken <br/>
         /// </remarks>
         public void NextClip()
         {

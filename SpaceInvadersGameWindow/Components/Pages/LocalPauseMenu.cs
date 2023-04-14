@@ -11,9 +11,12 @@ namespace GameWindow.Components.Pages
     /// </summary>
     internal class LocalPauseMenu
     {
-        CustomLabel pauseLabel;
-        CustomButton newGameButton, mainMenuButton;
+        private CustomLabel pauseLabel;
+        private CustomButton newGameButton, mainMenuButton;
 
+        /// <summary>
+        /// Builds the local game pause menu page
+        /// </summary>
         public LocalPauseMenu()
         {
             LocalGame.Paused = true;
@@ -31,6 +34,9 @@ namespace GameWindow.Components.Pages
             mainMenuButton!.ToString();
         }
 
+        /// <summary>
+        /// Starts a new <see cref="LocalGame"/>
+        /// </summary>
         private void NewGame()
         {
             Dispose();
@@ -39,6 +45,9 @@ namespace GameWindow.Components.Pages
             LocalGame.Paused = false;
         }
 
+        /// <summary>
+        /// Goes back to the Main Menu page
+        /// </summary>
         private void MainMenu()
         {
             Dispose();
@@ -47,6 +56,9 @@ namespace GameWindow.Components.Pages
             LocalGame.Paused = false;
         }
 
+        /// <summary>
+        /// Disposes the current <see cref="LocalPauseMenu"/> page
+        /// </summary>
         public void Dispose()
         {
             pauseLabel.Dispose();

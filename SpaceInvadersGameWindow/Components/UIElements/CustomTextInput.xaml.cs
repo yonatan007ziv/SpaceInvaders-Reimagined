@@ -24,6 +24,7 @@ namespace GameWindow.Components.UIElements
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
+
         public CustomTextInput(Transform transform, string defaultText, Action textChanged)
         {
             InitializeComponent();

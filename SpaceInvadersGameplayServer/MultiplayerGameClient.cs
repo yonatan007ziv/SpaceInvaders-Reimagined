@@ -10,6 +10,7 @@ namespace GameplayServer
         private static readonly Dictionary<string, MultiplayerGameClient> players = new Dictionary<string, MultiplayerGameClient>();
 
         private readonly TcpClient client;
+        private IAsyncResult currentRead;
         private readonly Byte[] buffer;
 
         private bool gotUsername = false;
@@ -18,14 +19,14 @@ namespace GameplayServer
         static MultiplayerGameClient()
         {
             for (int i = 0; i < 8; i++)
-                bunkersData[i] = new BunkerData(i);
+                bunkersData[i] = new BunkerData(i, true);
         }
 
         public MultiplayerGameClient(TcpClient client)
         {
             this.client = client;
             buffer = new Byte[client.ReceiveBufferSize];
-            this.client.GetStream().BeginRead(buffer, 0, buffer.Length, (ar) => { ReceiveRSA(); WriteEncryptedAes(); BeginRead(); }, null);
+            currentRead = this.client.GetStream().BeginRead(buffer, 0, buffer.Length, (ar) => { ReceiveRSA(); WriteEncryptedAes(); BeginRead(); }, null);
 
             playerData = new PlayerData();
         }
@@ -82,21 +83,13 @@ namespace GameplayServer
         private static int teamBScore = 0;
         private static int teamAPlayers = 0;
         private static int teamBPlayers = 0;
-        private static bool gaveABunker;
-        private static bool gaveBBunker;
 
         public static void BunkersOpportunity()
         {
-            if (teamAScore >= 25 && !gaveABunker)
-            {
+            if (teamAScore >= 25)
                 Broadcast("SERVER$TeamBunker:A");
-                gaveABunker = true;
-            }
-            if (teamBScore >= 25 && !gaveBBunker)
-            {
+            if (teamBScore >= 25)
                 Broadcast("SERVER$TeamBunker:B");
-                gaveBBunker = true;
-            }
         }
         public static void BroadcastScores()
         {
@@ -128,7 +121,7 @@ namespace GameplayServer
                 teamBPlayers--;
 
             DatabaseHandler.UpdateConnected(playerData.username, false);
-            Broadcast($"{playerData.username}$LEFT");
+            Broadcast($"{playerData.username}$Left");
         }
         #endregion
 
@@ -158,11 +151,18 @@ namespace GameplayServer
         }
         private void BeginRead()
         {
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null);
+            try { currentRead = client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveMessage, null); }
+            catch { OnDisconnect(); }
+        }
+        private void EndRead()
+        {
+            try { client.GetStream().EndRead(currentRead); }
+            catch { OnDisconnect(); }
         }
         private void ReceiveMessage(IAsyncResult aR)
         {
             int bytesRead = 0;
+
             try
             {
                 lock (client.GetStream())
@@ -175,6 +175,7 @@ namespace GameplayServer
             byte[] encrypted = new byte[bytesRead];
             Array.Copy(buffer, encrypted, bytesRead);
             EncryptedSeperator(encrypted);
+
             BeginRead();
         }
         private void DecodeMessage(string msg)
@@ -182,13 +183,22 @@ namespace GameplayServer
             if (!gotUsername)
             {
                 gotUsername = true;
+                if (players.ContainsKey(msg))
+                {
+                    SendMessage("AlreadyConnected");
+                    EndRead();
+                    return;
+                }
+
                 playerData.username = msg;
+
                 playerData.team = NextTeam();
-                players.Add(playerData.username, this);
                 DatabaseHandler.UpdateConnected(playerData.username, true);
 
                 // Broadcast Player
+                SendMessage($"{playerData.username}$InitiatePlayer:({playerData.xPos},{playerData.team})");
                 Broadcast($"{playerData.username}$InitiatePlayer:({playerData.xPos},{playerData.team})");
+                players.Add(playerData.username, this);
 
                 // Send Scores
                 SendMessage($"SERVER$Score:(A,{teamAScore})");
@@ -203,6 +213,8 @@ namespace GameplayServer
                 foreach (BunkerData b in bunkersData)
                     foreach (BunkerPartData p in b.parts)
                         SendMessage($"SERVER$InitiateBunkerPart:({p.BunkerID},{(int)p.partType},{p.stage})");
+
+                BunkersOpportunity();
                 return;
             }
 
@@ -210,16 +222,13 @@ namespace GameplayServer
                 int.TryParse(msg.Split(':')[1], out playerData.xPos);
             else if (msg.Contains("CreateBunker"))
             {
+                int bunkerID = int.Parse(msg.Split(':')[1]);
+                bunkersData[bunkerID] = new BunkerData(bunkerID);
+
                 if (playerData.team == 'A')
-                {
                     teamAScore -= 25;
-                    gaveABunker = false;
-                }
                 else
-                {
                     teamBScore -= 25;
-                    gaveBBunker = false;
-                }
 
                 BroadcastScores();
                 BunkersOpportunity();
@@ -246,9 +255,11 @@ namespace GameplayServer
                 }
                 else if (HitObject.Contains("BunkerPart"))
                 {
-                    int BunkerID = int.Parse(HitObjectDetails.Split(',')[0]);
-                    int part = int.Parse(HitObjectDetails.Split(',')[1]);
-                    bunkersData[BunkerID].parts[part].stage++;
+                    string partDetails = msg.Split("(")[1].Split(')')[0];
+                    int BunkerID = int.Parse(partDetails.Split(',')[0]);
+                    int part = int.Parse(partDetails.Split(',')[1]);
+                    int stage = int.Parse(partDetails.Split(',')[2]);
+                    bunkersData[BunkerID].parts[part].stage = stage;
                 }
             }
 

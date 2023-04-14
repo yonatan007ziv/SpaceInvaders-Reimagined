@@ -29,7 +29,7 @@ namespace GameWindow.Components.GameComponents
         /// <summary>
         /// Builds a <see cref="Bunker"/>
         /// </summary>
-        /// <param name="pos"> position of the bunker on the screen </param>
+        /// <param name="pos"> A <see cref="Vector2"/> representing the position of the bunker on the screen </param>
         public Bunker(Vector2 pos)
         {
             parts[0] = new BunkerPart(BunkerPartType.TopLeft, pos + new Vector2(-9, -4));

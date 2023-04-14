@@ -11,9 +11,12 @@ namespace GameWindow.Components.Pages
     /// </summary>
     internal class OnlinePauseMenu
     {
-        CustomLabel pauseLabel;
-        CustomButton mainMenuButton;
+        private CustomLabel pauseLabel;
+        private CustomButton mainMenuButton;
 
+        /// <summary>
+        /// Builds the online "pause" menu page
+        /// </summary>
         public OnlinePauseMenu()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -27,6 +30,9 @@ namespace GameWindow.Components.Pages
             mainMenuButton!.ToString();
         }
 
+        /// <summary>
+        /// Goes back to the Main Menu
+        /// </summary>
         private void MainMenu()
         {
             Dispose();
@@ -34,6 +40,9 @@ namespace GameWindow.Components.Pages
             GameInitializers.StartGameMenu(GameInitializers.username);
         }
 
+        /// <summary>
+        /// Disposes the current <see cref="OnlinePauseMenu"/> page
+        /// </summary>
         public void Dispose()
         {
             pauseLabel.Dispose();

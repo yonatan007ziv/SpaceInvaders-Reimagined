@@ -11,7 +11,7 @@ namespace GameWindow.Components.Pages
     /// </summary>
     internal class LoginRegister
     {
-        private bool loginRegistFlip = false;
+        private bool loginRegisterFlip = false;
         private CustomTextInput usernameInput;
         private CustomTextInput passwordInput;
         private CustomTextInput emailInput;
@@ -21,6 +21,9 @@ namespace GameWindow.Components.Pages
         private CustomButton register2FAButton;
         private CustomLabel resultLabel;
 
+        /// <summary>
+        /// Builds the Login Register page
+        /// </summary>
         public LoginRegister()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -29,8 +32,8 @@ namespace GameWindow.Components.Pages
                 passwordInput = new CustomTextInput(new Transform(new Vector2(50, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 + 25, MainWindow.referenceSize.Y / 2 - 37.5f)));
                 emailInput = new CustomTextInput(new Transform(new Vector2(100, 12.5f), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 - 25)));
                 register2FAInput = new CustomTextInput(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 25, MainWindow.referenceSize.Y / 2 - 7.5f)));
-                loginRegistFlipper = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 25, MainWindow.referenceSize.Y / 2 - 7.5f)), flipLoginRegist, @"Resources\Images\Pixels\Green.png", "Register?"); ;
-                loginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 25, MainWindow.referenceSize.Y / 2 - 7.5f)), loginRegist, @"Resources\Images\Pixels\Green.png", "Click To Login");
+                loginRegistFlipper = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 25, MainWindow.referenceSize.Y / 2 - 7.5f)), FlipLoginRegist, @"Resources\Images\Pixels\Green.png", "Register?"); ;
+                loginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 25, MainWindow.referenceSize.Y / 2 - 7.5f)), LoginRegisterClick, @"Resources\Images\Pixels\Green.png", "Click To Login");
                 register2FAButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 25, MainWindow.referenceSize.Y / 2 - 7.5f)), () => { }, @"Resources\Images\Pixels\Green.png", "Submit 2FA code");
                 resultLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 - 62.5f)), "", System.Windows.Media.Colors.White);
             });
@@ -54,10 +57,13 @@ namespace GameWindow.Components.Pages
             resultLabel!.ToString();
         }
 
-        private void flipLoginRegist()
+        /// <summary>
+        /// Ping pongs between the states of "Login" and "Register"
+        /// </summary>
+        private void FlipLoginRegist()
         {
-            loginRegistFlip = !loginRegistFlip;
-            if (loginRegistFlip)
+            loginRegisterFlip = !loginRegisterFlip;
+            if (loginRegisterFlip)
             {
                 loginRegistFlipper.Text = "Login?";
                 loginRegistButton.Text = "Click To Register";
@@ -75,20 +81,28 @@ namespace GameWindow.Components.Pages
             }
         }
 
-        private void loginRegist()
+        /// <summary>
+        /// LoginRegister button click
+        /// </summary>
+        private void LoginRegisterClick()
         {
             string username = usernameInput.box.Text.ToLower();
             string password = passwordInput.box.Text.ToLower();
             string email = emailInput.box.Text.ToLower();
 
-            if (loginRegistFlip)
-                AddToSubmitCode(new RegisterValidator(username, password, email, On2FA, resultLabel));
+            if (loginRegisterFlip)
+                AddToSubmitCode(new RegisterValidator(username, password, email, On2FANeeded, resultLabel));
             else
                 new LoginValidator(username, password, resultLabel, Dispose);
         }
 
         #region 2FA handling
         RoutedEventHandler? currentSubmit = null;
+
+        /// <summary>
+        /// Adds the current <see cref="RegisterValidator"/> to the 2FA submit button
+        /// </summary>
+        /// <param name="validator"> The current <see cref="RegisterValidator"/> connection handler </param>
         private void AddToSubmitCode(RegisterValidator validator)
         {
             if (currentSubmit != null)
@@ -106,11 +120,16 @@ namespace GameWindow.Components.Pages
                 emailInput.Visible(true);
                 loginRegistFlipper.Visible(true);
                 loginRegistButton.Visible(true);
+                FlipLoginRegist();
             };
 
             register2FAButton.button.Click += currentSubmit;
         }
-        private void On2FA(RegisterValidator validator)
+
+        /// <summary>
+        /// Called when 2FA needed and appropriately prepares the page
+        /// </summary>
+        private void On2FANeeded()
         {
             usernameInput.Visible(false);
             passwordInput.Visible(false);
@@ -123,6 +142,9 @@ namespace GameWindow.Components.Pages
         }
         #endregion
 
+        /// <summary>
+        /// Disposes the current <see cref="LoginRegister"/> page
+        /// </summary>
         private void Dispose()
         {
             usernameInput.Dispose();

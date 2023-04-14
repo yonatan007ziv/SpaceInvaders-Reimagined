@@ -1,30 +1,43 @@
 ﻿using GameWindow.Components.GameComponents;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace GameWindow.Components.NetworkedComponents
 {
+    /// <summary>
+    /// A class implementing a networked bunker
+    /// </summary>
     internal class NetworkedBunker
     {
         public static NetworkedBunker[] Bunkers = new NetworkedBunker[8];
 
         public NetworkedBunkerPart[] parts = new NetworkedBunkerPart[8];
 
-        static NetworkedBunker()
+        /// <summary>
+        /// Get the x position for the bunker
+        /// </summary>
+        /// <param name="bunkerID"> Bunker to get X </param>
+        private static float GetX(int bunkerID)
         {
-            for (int i = 0; i < 8; i++)
-                Bunkers[i] = new NetworkedBunker();
+            if (bunkerID == 0 || bunkerID == 4)
+                return 0.4f * (MainWindow.referenceSize.X / 2);
+            else if (bunkerID == 1 || bunkerID == 5)
+                return 0.8f * (MainWindow.referenceSize.X / 2);
+            else if (bunkerID == 2 || bunkerID == 6)
+                return 1.2f * (MainWindow.referenceSize.X / 2);
+            else
+                return 1.6f * (MainWindow.referenceSize.X / 2);
         }
 
-        public NetworkedBunker() { }
-
+        /// <summary>
+        /// Builds a networked bunker
+        /// </summary>
+        /// <param name="BunkerID"> Bunker to build </param>
+        /// <param name="up"> Whether the bunker should appear at the top of the screen </param>
         public NetworkedBunker(int BunkerID, bool up)
         {
-            GetX(BunkerID, out float x);
-
-            float y = up ? 50 : 2 * MainWindow.referenceSize.Y / 3;
             Bunkers[BunkerID] = this;
+            float x = GetX(BunkerID);
+            float y = up ? 50 : 2 * MainWindow.referenceSize.Y / 3;
 
             int reverser = up ? -1 : 1;
             parts[0] = new NetworkedBunkerPart(BunkerPartType.TopLeft, new Vector2(x, y) + new Vector2(-9, -4 * reverser), BunkerID, up);
@@ -36,31 +49,33 @@ namespace GameWindow.Components.NetworkedComponents
             parts[6] = new NetworkedBunkerPart(BunkerPartType.TopRight, new Vector2(x, y) + new Vector2(9, -4 * reverser), BunkerID, up);
             parts[7] = new NetworkedBunkerPart(BunkerPartType.BottomRight, new Vector2(x, y) + new Vector2(9, 4 * reverser), BunkerID, up);
         }
-        private static void GetX(int bunkerID, out float x)
-        {
-            if (bunkerID == 0 || bunkerID == 4)
-                x = 0.4f * (MainWindow.referenceSize.X / 2);
-            else if (bunkerID == 1 || bunkerID == 5)
-                x = 0.8f * (MainWindow.referenceSize.X / 2);
-            else if (bunkerID == 2 || bunkerID == 6)
-                x = 1.2f * (MainWindow.referenceSize.X / 2);
-            else
-                x = 1.6f * (MainWindow.referenceSize.X / 2);
-        }
+
+        /// <summary>
+        /// Does the bunker exist
+        /// </summary>
+        /// <returns> Whether the bunker exists or not </returns>
         public bool BunkerExists()
         {
             if (parts[0] == null) return false;
 
             foreach (NetworkedBunkerPart part in parts)
-                if (part.imagePathIndex != 4)
+                if (part.imagePathIndex != 5)
                     return true;
             return false;
         }
+
+        /// <summary>
+        /// Disposes the current <see cref="NetworkedBunker"/>
+        /// </summary>
         private void Dispose()
         {
             for (int i = 0; i < 8; i++)
                     parts[i]?.Dispose();
         }
+
+        /// <summary>
+        /// Disposes all <see cref="NetworkedBunker"/>
+        /// </summary>
         public static void DisposeAll()
         {
             for (int i = 0; i < 8; i++)

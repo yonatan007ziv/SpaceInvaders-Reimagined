@@ -14,20 +14,41 @@ namespace GameWindow.Components.Initializers
     internal class MultiplayerGameClient : NetworkClient
     {
         public static MultiplayerGameClient? instance;
+        private static bool Paused;
+        private static bool heldEscape;
+        private OnlinePauseMenu? pauseMenu;
 
-        public MultiplayerGameClient(string ip, int port, string username) : base()
+        private CustomLabel? teamALabel;
+        private CustomLabel? teamBLabel;
+        private void SetScoreA(int value)
+        { teamALabel!.Text = $"Team A: {value}"; }
+        private void SetScoreB(int value)
+        { teamBLabel!.Text = $"Team B: {value}"; }
+
+        private CustomButton? bunkerButton1;
+        private CustomButton? bunkerButton2;
+        private CustomButton? bunkerButton3;
+        private CustomButton? bunkerButton4;
+        private CustomButton? bunkerButton5;
+        private CustomButton? bunkerButton6;
+        private CustomButton? bunkerButton7;
+        private CustomButton? bunkerButton8;
+
+        /// <summary>
+        /// Prepares a new multiplayer game player
+        /// </summary>
+        /// <param name="IP"> "Game-Server"'s IP Address </param>
+        /// <param name="port"> "Game-Server"'s port </param>
+        /// <param name="username"> Current username </param>
+        public MultiplayerGameClient(string IP, int port, string username) : base()
         {
             instance = this;
-            if (Connect(ip, port))
+            if (Connect(IP, port))
             {
                 SendMessage(username);
                 BeginRead(true);
 
-
-                Wall.Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), @"Resources\Images\Pixels\Red.png");
-                Wall.Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y * 0.735f + 25), @"Resources\Images\Pixels\Green.png");
-                Wall.LeftWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(25, MainWindow.referenceSize.Y / 2));
-                Wall.RightWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X - 25, MainWindow.referenceSize.Y / 2));
+                Wall.MakeOnlineGameWalls();
 
                 Application.Current.Dispatcher.Invoke(() =>
                 { // UI Objects need to be created in an STA thread
@@ -61,25 +82,12 @@ namespace GameWindow.Components.Initializers
                 Dispose();
             }
         }
-        private static bool Paused;
-        private static bool heldEscape;
-        private OnlinePauseMenu? pauseMenu;
 
-        private CustomLabel? teamALabel;
-        private CustomLabel? teamBLabel;
-        private void SetScoreA(int value)
-        { teamALabel!.Text = $"Team A: {value}"; }
-        private void SetScoreB(int value)
-        { teamBLabel!.Text = $"Team B: {value}"; }
-
-        private CustomButton? bunkerButton1;
-        private CustomButton? bunkerButton2;
-        private CustomButton? bunkerButton3;
-        private CustomButton? bunkerButton4;
-        private CustomButton? bunkerButton5;
-        private CustomButton? bunkerButton6;
-        private CustomButton? bunkerButton7;
-        private CustomButton? bunkerButton8;
+        /// <summary>
+        /// Disables or enables the bunker buttons
+        /// </summary>
+        /// <param name="team"> Team to enable / disable the buttons for </param>
+        /// <param name="show"> Whether to enable or disable the buttons </param>
         private void BunkerButtons(char team, bool show)
         {
             if (team == 'A')
@@ -105,21 +113,40 @@ namespace GameWindow.Components.Initializers
             }
             else
             {
-                if (NetworkedBunker.Bunkers[4]?.BunkerExists() ?? show)
-                    bunkerButton5?.Visible(show);
-                if (NetworkedBunker.Bunkers[5]?.BunkerExists() ?? show)
-                    bunkerButton6?.Visible(show);
-                if (NetworkedBunker.Bunkers[6]?.BunkerExists() ?? show)
-                    bunkerButton7?.Visible(show);
-                if (NetworkedBunker.Bunkers[7]?.BunkerExists() ?? show)
-                    bunkerButton8?.Visible(show);
+                if (show)
+                {
+                    if (!NetworkedBunker.Bunkers[4].BunkerExists())
+                        bunkerButton5?.Visible(true);
+                    if (!NetworkedBunker.Bunkers[5].BunkerExists())
+                        bunkerButton6?.Visible(true);
+                    if (!NetworkedBunker.Bunkers[6].BunkerExists())
+                        bunkerButton7?.Visible(true);
+                    if (!NetworkedBunker.Bunkers[7].BunkerExists())
+                        bunkerButton8?.Visible(true);
+                }
+                else
+                {
+                    bunkerButton5?.Visible(false);
+                    bunkerButton6?.Visible(false);
+                    bunkerButton7?.Visible(false);
+                    bunkerButton8?.Visible(false);
+                }
             }
         }
+
+        /// <summary>
+        /// Disables bunker buttons for the current client and sends a CreateBunker message to the server
+        /// </summary>
+        /// <param name="bunkerID"> The bunker to create </param>
         private void CreateBunker(string bunkerID)
         {
-            BunkerButtons(NetworkedPlayer.localPlayer.team, false);
+            BunkerButtons(NetworkedPlayer.localPlayer!.team, false);
             SendMessage("CreateBunker:" + bunkerID);
         }
+
+        /// <summary>
+        /// Input Loop for the multiplayer game
+        /// </summary>
         private void InputLoop()
         {
             if (InputHandler.keysDown.Contains(Key.Escape))
@@ -131,6 +158,11 @@ namespace GameWindow.Components.Initializers
             else
                 heldEscape = false;
         }
+
+        /// <summary>
+        /// Opens / Closes the pause menu
+        /// </summary>
+        /// <param name="pause"> Whether to pause or unpause </param>
         private void PauseUnpause(bool pause)
         {
             Paused = pause;
@@ -139,6 +171,11 @@ namespace GameWindow.Components.Initializers
             else
                 pauseMenu?.Dispose();
         }
+
+        /// <summary>
+        /// Interprets incoming messages from the "Game-Server"
+        /// </summary>
+        /// <param name="msg"> Message to interpret </param>
         protected override void InterpretMessage(string msg)
         {
             string senderUsername = msg.Split('$')[0];
@@ -171,7 +208,12 @@ namespace GameWindow.Components.Initializers
             }
 
 
-            if (msg.Contains("BulletHit"))
+            if (msg.Contains("AlreadyConnected"))
+            {
+                Dispose();
+                GameInitializers.StartMultiplayerGameMenu();
+            }
+            else if (msg.Contains("BulletHit"))
             {
                 string HitObject = msg.Split(':')[1].Split('(')[0];
                 string HitObjectDetails = msg.Split('(')[1].Split(')')[0];
@@ -196,6 +238,7 @@ namespace GameWindow.Components.Initializers
                 NetworkedBunker.Bunkers[BunkerID] = new NetworkedBunker(BunkerID,
                     0 <= BunkerID && BunkerID <= 3 && NetworkedPlayer.localPlayer!.team == 'B'
                     || 4 <= BunkerID && BunkerID <= 7 && NetworkedPlayer.localPlayer!.team == 'A');
+                BunkerButtons(0 <= BunkerID && BunkerID <= 3 ? 'A' : 'B', false);
             }
 
             if (senderUsername == GameInitializers.username) return; // prevent message loopback
@@ -205,11 +248,6 @@ namespace GameWindow.Components.Initializers
                 int.TryParse(msg.Split(':')[1], out int x);
                 Transform t = NetworkedPlayer.currentPlayers[senderUsername].transform;
                 t.Position = new Vector2(x, t.Position.Y);
-            }
-            else if (msg.Contains("Left"))
-            {
-                NetworkedPlayer.currentPlayers[senderUsername].Dispose();
-                NetworkedPlayer.currentPlayers.Remove(senderUsername);
             }
             else if (msg.Contains("TeamBunker"))
             {
@@ -233,17 +271,16 @@ namespace GameWindow.Components.Initializers
                 else
                     SetScoreB(score);
             }
-            else if (msg.Contains("UpdateBunkerPart"))
+            else if (msg.Contains("InitiateBunkerPart"))
             {
                 string partDetails = msg.Split("(")[1].Split(')')[0];
                 int BunkerID = int.Parse(partDetails.Split(',')[0]);
-
                 int part = int.Parse(partDetails.Split(',')[1]);
                 int stage = int.Parse(partDetails.Split(',')[2]);
 
                 if (NetworkedBunker.Bunkers[BunkerID] == null)
                     NetworkedBunker.Bunkers[BunkerID] = new NetworkedBunker(BunkerID, 0 <= BunkerID && BunkerID <= 3 && NetworkedPlayer.localPlayer!.team == 'B' || 4 <= BunkerID && BunkerID <= 7 && NetworkedPlayer.localPlayer!.team == 'A');
-                for (int i = 0; i < stage; i++)
+                for (int i = 1; i < stage; i++)
                     NetworkedBunker.Bunkers[BunkerID].parts[part].Hit();
             }
             else if (msg.Contains("BulletExplosion"))
@@ -251,18 +288,33 @@ namespace GameWindow.Components.Initializers
                 NetworkedPlayer.currentPlayers[senderUsername].myBullet?.BulletExplosion();
                 NetworkedPlayer.currentPlayers[senderUsername].myBullet = null;
             }
+            else if (msg.Contains("Left"))
+                NetworkedPlayer.currentPlayers[senderUsername].Dispose();
             else if (msg.Contains("InitiateBullet"))
                 new NetworkedBullet(senderUsername);
         }
+
+        /// <summary>
+        /// Disposes the current <see cref="MultiplayerGameClient"/>
+        /// </summary>
         public void Dispose()
         {
             StopClient();
             InputHandler.RemoveInputLoop(InputLoop);
             Wall.DisposeAll();
+            NetworkedPlayer.localPlayer = null;
             NetworkedPlayer.DisposeAll();
             NetworkedBunker.DisposeAll();
             teamALabel?.Dispose();
             teamBLabel?.Dispose();
+            bunkerButton1?.Dispose();
+            bunkerButton2?.Dispose();
+            bunkerButton3?.Dispose();
+            bunkerButton4?.Dispose();
+            bunkerButton5?.Dispose();
+            bunkerButton6?.Dispose();
+            bunkerButton7?.Dispose();
+            bunkerButton8?.Dispose();
         }
     }
 }

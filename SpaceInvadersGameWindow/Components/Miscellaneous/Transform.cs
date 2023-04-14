@@ -5,9 +5,12 @@ using System.Numerics;
 
 namespace GameWindow.Components.Miscellaneous
 {
-    public class Transform : IDisposable
+    /// <summary>
+    /// A class implementing a basic transform
+    /// </summary>
+    public class Transform
     {
-        public static List<Transform> transforms = new List<Transform>();
+        public static readonly List<Transform> transforms = new List<Transform>();
 
         private Action? positionChanged;
         private Action? scaleChanged;

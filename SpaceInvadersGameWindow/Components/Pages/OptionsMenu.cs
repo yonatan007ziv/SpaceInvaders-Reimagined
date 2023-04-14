@@ -1,6 +1,7 @@
 ﻿using GameWindow.Components.Initializers;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Systems;
 using System.Numerics;
 using System.Windows;
 
@@ -11,10 +12,13 @@ namespace GameWindow.Components.Pages
     /// </summary>
     internal class OptionsMenu
     {
-        CustomLabel volumeLabel;
-        CustomTextInput volumeInput;
-        CustomButton backButton;
+        private CustomLabel volumeLabel;
+        private CustomTextInput volumeInput;
+        private CustomButton backButton;
 
+        /// <summary>
+        /// Builds the options menu page
+        /// </summary>
         public OptionsMenu()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -30,7 +34,11 @@ namespace GameWindow.Components.Pages
             backButton!.ToString();
         }
 
-        public void UpdateVolume(string text)
+        /// <summary>
+        /// Updates the <see cref="SoundManager.currentVol"/>
+        /// </summary>
+        /// <param name="text"> The new volume </param>
+        private static void UpdateVolume(string text)
         {
             if (int.TryParse(text, out int volume))
             {
@@ -46,14 +54,20 @@ namespace GameWindow.Components.Pages
             SoundManager.PlaySound(Sound.UFO);
         }
 
-        public void Back()
+        /// <summary>
+        /// Goes back to the Main Menu page
+        /// </summary>
+        private void Back()
         {
             SoundManager.StopSound(Sound.UFO);
             Dispose();
             GameInitializers.StartGameMenu(GameInitializers.username);
         }
 
-        public void Dispose()
+        /// <summary>
+        /// Disposes the current <see cref="OptionsMenu"/> page
+        /// </summary>
+        private void Dispose()
         {
             volumeLabel.Dispose();
             volumeInput.Dispose();

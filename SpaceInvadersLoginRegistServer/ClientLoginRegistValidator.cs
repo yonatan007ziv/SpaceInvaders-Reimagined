@@ -95,7 +95,7 @@ namespace LoginRegistServer
             {
                 if (DatabaseHandler.UsernameExists(username))
                     return RegisterResult.UsernameExists;
-                else if (DatabaseHandler.EmailExists(username))
+                else if (DatabaseHandler.EmailExists(email))
                     return RegisterResult.EmailExists;
                 else if (username.Length == 0 || username.Contains('/'))
                     return RegisterResult.InvalidUsername;

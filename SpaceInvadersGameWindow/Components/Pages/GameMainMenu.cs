@@ -11,7 +11,11 @@ namespace GameWindow.Components.Pages
     /// </summary>
     internal class GameMainMenu
     {
-        CustomButton SingleplayerButton, MultiplayerButton, OptionsButton;
+        private CustomButton SingleplayerButton, MultiplayerButton, OptionsButton;
+
+        /// <summary>
+        /// Builds a new Main Menu page
+        /// </summary>
         public GameMainMenu()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -26,21 +30,37 @@ namespace GameWindow.Components.Pages
             MultiplayerButton!.ToString();
             OptionsButton!.ToString();
         }
+
+        /// <summary>
+        /// Starts a new singleplayer game
+        /// </summary>
         private void OnSingleplayer()
         {
             Dispose();
             GameInitializers.StartSingleplayerGame();
         }
+
+        /// <summary>
+        /// Starts a new <see cref="GameMultiplayerMenu"/> page
+        /// </summary>
         private void OnMultiplayer()
         {
             Dispose();
             GameInitializers.StartMultiplayerGameMenu();
         }
+
+        /// <summary>
+        /// Starts a new <see cref="OptionsMenu"/> page
+        /// </summary>
         private void OnOptions()
         {
             Dispose();
             GameInitializers.StartOptionsMenu();
         }
+
+        /// <summary>
+        /// Disposes the current <see cref="GameMainMenu"/> page
+        /// </summary>
         public void Dispose()
         {
             SingleplayerButton.Dispose();

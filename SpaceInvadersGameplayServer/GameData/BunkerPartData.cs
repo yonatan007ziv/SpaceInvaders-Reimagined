@@ -10,6 +10,18 @@
         public int stage = 1;
 
         /// <summary>
+        /// Constructs a new <see cref="BunkerPartData"/> data for first run
+        /// </summary>
+        /// <param name="partType"> The type of the part </param>
+        /// <param name="BunkerID"> ID of the bunker it belongs to </param>
+        public BunkerPartData(BunkerPartType partType, int BunkerID, bool first)
+        {
+            this.partType = partType;
+            this.BunkerID = BunkerID;
+            stage = 5;
+        }
+
+        /// <summary>
         /// Constructs a new <see cref="BunkerPartData"/> data
         /// </summary>
         /// <param name="partType"> The type of the part </param>

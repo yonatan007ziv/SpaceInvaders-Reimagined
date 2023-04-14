@@ -5,11 +5,20 @@ using System.Windows.Input;
 
 namespace GameWindow.Components.GameComponents
 {
+    /// <summary>
+    /// A class implementing controls for the <see cref="Player"/>
+    /// </summary>
     internal class PlayerController
     {
-        public static bool Disabled = false;
+        public static bool disabled = false;
+        
         private Transform playerTransform;
         private Collider playerCol;
+
+        /// <summary>
+        /// Builds a controller for the <see cref="Player"/> by adding an input loop to <see cref="InputHandler"/>
+        /// </summary>
+        /// <param name="player"> Current player </param>
         public PlayerController(Player player)
         {
             playerTransform = player.transform;
@@ -17,9 +26,12 @@ namespace GameWindow.Components.GameComponents
             InputHandler.AddInputLoop(InputLoop);
         }
 
+        /// <summary>
+        /// Input loop for the <see cref="Player"/>
+        /// </summary>
         private void InputLoop()
         {
-            if (Disabled) return;
+            if (disabled) return;
 
             //Touching walls?
             int axis = InputHandler.GetAxis("Horizontal");
@@ -32,6 +44,9 @@ namespace GameWindow.Components.GameComponents
                 new PlayerBullet(playerTransform.Position);
         }
 
+        /// <summary>
+        /// Disposes the current <see cref="InputLoop"/> from <see cref="InputHandler"/>
+        /// </summary>
         public void Dispose() => InputHandler.RemoveInputLoop(InputLoop);
     }
 }

@@ -1,12 +1,11 @@
-﻿using GameWindow.Systems.Networking;
-using System.Net.Sockets;
-
-namespace GameWindow.Components.Miscellaneous
+﻿namespace GameWindow.Components.Miscellaneous
 {
+    /// <summary>
+    /// Helper class implementing custom delegates
+    /// </summary>
     public static class Delegates
     {
         public delegate void Action();
         public delegate void ActionString(string str);
-        public delegate void ActionRegistValidator(RegisterValidator validator);
     }
 }

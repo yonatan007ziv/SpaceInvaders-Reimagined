@@ -8,8 +8,8 @@ namespace GameWindow.Systems
 {
     public class InputHandler
     {
-        public static List<Key> keysDown = new List<Key>();
-        public static bool Disabled;
+        public static readonly List<Key> keysDown = new List<Key>();
+        private static bool disabled = false;
 
         public InputHandler(Window TargetInputWindow)
         {
@@ -20,11 +20,15 @@ namespace GameWindow.Systems
 
             InputUpdateLoop();
         }
-        private async void InputUpdateLoop()
+        public static void Disabled(bool disabled)
+        {
+            InputHandler.disabled = disabled;
+        }
+        private static async void InputUpdateLoop()
         {
             while (true)
             {
-                if (!Disabled)
+                if (!disabled)
                     inputLoopDel?.Invoke();
 
                 await Task.Delay(250 / MainWindow.TARGET_FPS); // Less delay = A more responsive input

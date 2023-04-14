@@ -9,7 +9,7 @@ namespace GameWindow.Systems.Networking
     public class RegisterValidator : NetworkClient
     {
         private CustomLabel resultLabel;
-        private ActionRegistValidator On2FA;
+        private Action On2FA;
 
         /// <summary>
         /// Sends Register Data to the remote Register-Server and reads a response
@@ -19,11 +19,11 @@ namespace GameWindow.Systems.Networking
         /// <param name="email"> The inputted email </param>
         /// <param name="On2FA"> What happens on 2FA needed </param>
         /// <param name="resultLabel"> The result label </param>
-        public RegisterValidator(string username, string password, string email, ActionRegistValidator On2FA, CustomLabel resultLabel) : base()
+        public RegisterValidator(string username, string password, string email, Action On2FA, CustomLabel resultLabel) : base()
         {
             this.resultLabel = resultLabel;
             this.On2FA = On2FA;
-            if (Connect("46.121.141.134", 7777))
+            if (Connect("46.121.140.69", 7777))
             {
                 SendMessage($"Register:{username}/{password}/{email}");
                 BeginRead(false);
@@ -43,7 +43,7 @@ namespace GameWindow.Systems.Networking
         }
 
         /// <summary>
-        /// Interprets login-Response from server
+        /// Interprets Register-Response from server
         /// </summary>
         /// <param name="msg"> Response from server </param>
         protected override void InterpretMessage(string msg)
@@ -67,7 +67,7 @@ namespace GameWindow.Systems.Networking
                 resultLabel.Text = "Wrong code entered! please try to register again.";
             else if (msg == "Need2FA")
             {
-                On2FA(this);
+                On2FA();
                 resultLabel.Text = "Please check your email inbox.";
                 return; // Prevents disconnection from server
             }

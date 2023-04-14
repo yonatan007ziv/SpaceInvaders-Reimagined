@@ -27,7 +27,7 @@ namespace GameWindow.Systems.Networking
 
             this.resultLabel = resultLabel;
             this.DiposeLoginRegisterMenu = DiposeLoginRegisterMenu;
-            if (Connect("46.121.141.134", 7777))
+            if (Connect("46.121.140.69", 7777))
             {
                 SendMessage($"Login:{username}/{password}");
                 BeginRead(false);
@@ -37,7 +37,7 @@ namespace GameWindow.Systems.Networking
         }
 
         /// <summary>
-        /// Interprets login-Response from server
+        /// Interprets Login-Response from server
         /// </summary>
         /// <param name="msg"> Response from server </param>
         protected override void InterpretMessage(string msg)

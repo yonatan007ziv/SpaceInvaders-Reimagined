@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace GameWindow.Components.Miscellaneous
 {
+    /// <summary>
+    /// Represents the types of available collision layers in the game
+    /// </summary>
     public enum CollisionLayer
     {
-        Wall = 1,
+        Wall,
         Bunker,
         Player,
         OnlinePlayer,
@@ -17,31 +19,45 @@ namespace GameWindow.Components.Miscellaneous
         TeamB,
     }
 
+    /// <summary>
+    /// A class implementing colliders
+    /// </summary>
     internal class Collider
     {
-        private static List<Collider> AllColliders = new List<Collider>();
+        private static readonly List<Collider> AllColliders = new List<Collider>();
 
-        public object parent;
-        private CollisionLayer layer;
-        private CollisionLayer[] ignoredLayers = new CollisionLayer[8];
-        private Transform transform;
+        public readonly object parent;
+        private readonly Transform transform;
+        private readonly CollisionLayer myLayer;
+        private readonly List<CollisionLayer> ignoredLayers = new List<CollisionLayer>();
 
-        public Collider(Transform transform, object parent, CollisionLayer layer)
+        /// <summary>
+        /// Builds a collider and adds it to <see cref="AllColliders"/>
+        /// </summary>
+        /// <param name="transform"> The parent transform </param>
+        /// <param name="parent"> The parent object </param>
+        /// <param name="myLayer"> The collider <see cref="CollisionLayer"/> </param>
+        public Collider(Transform transform, object parent, CollisionLayer myLayer)
         {
             AllColliders.Add(this);
-            this.layer = layer;
+            this.myLayer = myLayer;
             this.transform = transform;
             this.parent = parent;
         }
+
+        /// <summary>
+        /// Collider detection using the <see cref="Rectangle"/> class
+        /// </summary>
+        /// <returns> The first detected touching <see cref="Collider"/> </returns>
         public Collider? TouchingCollider()
         {
+            Rectangle thisRect = new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y, (int)transform.ActualScale.X, (int)transform.ActualScale.Y);
             for (int i = 0; i < AllColliders.Count; i++)
             {
                 Collider c = AllColliders[i];
-                if (c == this || ignoredLayers.Contains(c.layer)) continue;
+                if (c == this || ignoredLayers.Contains(c.myLayer)) continue;
 
                 // check collision
-                Rectangle thisRect = new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y, (int)transform.ActualScale.X, (int)transform.ActualScale.Y);
                 Rectangle otherRect = new Rectangle((int)c.transform.CenteredPosition.X, (int)c.transform.CenteredPosition.Y, (int)c.transform.ActualScale.X, (int)c.transform.ActualScale.Y);
 
                 // return first detected collision
@@ -51,11 +67,18 @@ namespace GameWindow.Components.Miscellaneous
             return null;
         }
 
-        private int currentLayerIndex = 0;
-        public void IgnoreLayer(CollisionLayer layer)
+        /// <summary>
+        /// Adds a layer to <see cref="ignoredLayers"/>
+        /// </summary>
+        /// <param name="layer"> The layer to ignore </param>
+        public void AddIgnoreLayer(CollisionLayer layer)
         {
-            ignoredLayers[currentLayerIndex++] = layer;
+            ignoredLayers.Add(layer);
         }
+
+        /// <summary>
+        /// Disposes the current collider object
+        /// </summary>
         public void Dispose()
         {
             AllColliders.Remove(this);

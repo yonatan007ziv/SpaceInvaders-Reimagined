@@ -7,6 +7,9 @@ using static GameWindow.Components.Miscellaneous.Delegates;
 
 namespace GameWindow.Components.NetworkedComponents
 {
+    /// <summary>
+    /// Implementation of the networked player controller
+    /// </summary>
     internal class NetworkedPlayerController
     {
         public bool disabled = false;
@@ -15,15 +18,23 @@ namespace GameWindow.Components.NetworkedComponents
         private ActionString sendMessage;
         private NetworkedPlayer player;
 
-        public NetworkedPlayerController(NetworkedPlayer player, Transform transform, Collider col, ActionString sendMessage)
+        /// <summary>
+        /// Builds a new <see cref="NetworkedPlayerController"/>
+        /// </summary>
+        /// <param name="player"> The local <see cref="NetworkedPlayer"/> </param>
+        /// <param name="sendMessage"> Delegate used to send messages to the "Game-Server" </param>
+        public NetworkedPlayerController(NetworkedPlayer player, ActionString sendMessage)
         {
             this.player = player;
-            this.transform = transform;
-            this.col = col;
+            transform = player.transform;
+            col = player.col;
             this.sendMessage = sendMessage;
             InputHandler.AddInputLoop(InputLoop);
         }
 
+        /// <summary>
+        /// Player's input loop
+        /// </summary>
         private void InputLoop()
         {
             if (disabled) return;
@@ -39,6 +50,10 @@ namespace GameWindow.Components.NetworkedComponents
             if (InputHandler.keysDown.Contains(Key.Space) && player.myBullet == null)
                 player.myBullet = new NetworkedBullet(transform.Position, sendMessage);
         }
+
+        /// <summary>
+        /// Disposes the current <see cref="NetworkedPlayerController"/> by removing its <see cref="InputLoop"/> from the <see cref="InputHandler.inputLoopDel"/>
+        /// </summary>
         public void Dispose()
         {
             InputHandler.RemoveInputLoop(InputLoop);

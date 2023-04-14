@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 
 namespace GameWindow.Systems.Networking
 {
+    /// <summary>
+    /// Base abstract class for all network clients
+    /// </summary>
     public abstract class NetworkClient
     {
-        // Client related fieles
-        private TcpClient client;
+        // Client related fields
+        private TcpClient client = new TcpClient();
         private Byte[] buffer;
 
         // Encryption related fields
@@ -24,7 +27,6 @@ namespace GameWindow.Systems.Networking
         /// </summary>
         public NetworkClient()
         {
-            client = new TcpClient();
             buffer = new Byte[client.ReceiveBufferSize];
         }
 
@@ -42,21 +44,23 @@ namespace GameWindow.Systems.Networking
         /// <returns> <c>true</c> if the connection was established successfully; otherwise, <c>false</c> </returns>
         protected bool Connect(string ip, int port)
         {
-
             try
             {
-                client.Connect(IPAddress.Parse(ip), port);
+                client.Connect(ip, port);
 
-                byte[] publicKey = rsa.ExportRSAPublicKey();
-                client.GetStream().Write(publicKey, 0, publicKey.Length);
+                // After successful connection, Write the RSA public key
+                WriteRSA();
+
+                //After writing the RSA public key, read received AES Key and IV
                 client.GetStream().BeginRead(buffer, 0, buffer.Length, ReceiveAES, null);
 
                 return true;
             }
-            catch
+            catch(SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionRefused)
             {
-                return false;
+                Debug.WriteLine($"Connection Refused: {ip}:{port}");
             }
+            return false;
         }
 
         /// <summary>
@@ -86,25 +90,59 @@ namespace GameWindow.Systems.Networking
         protected async void SendMessage(string msg)
         {
             await EncryptionReady.Task;
-
+            
+            // Get message bytes
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
-            byte[] encrypted = aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length);
 
-            byte[] encryptedWithPrefix = new byte[encrypted.Length + sizeof(int)];
-            byte[] length = BitConverter.GetBytes(encrypted.Length);
+            // Get encrypted message bytes
+            byte[] encrypted = EncryptAES(bytes);
 
-            int pos;
-            // Add the encrypted message's length as a prefix
-            for (pos = 0; pos < length.Length; pos++)
-                encryptedWithPrefix[pos] = length[pos];
-
-            Array.Copy(encrypted, 0, encryptedWithPrefix, pos, encrypted.Length);
+            // Get encrypted message bytes with 4 first bytes representing the length of the message
+            byte[] encryptedWithPrefix = Prefix4BytesLength(encrypted);
 
             client.GetStream().Write(encryptedWithPrefix, 0, encryptedWithPrefix.Length);
         }
 
         /// <summary>
-        /// The first read of the stream: Reads the AES Key and IV and raises <see cref="EncryptionReady"/> to true
+        /// Encrypts an array of bytes using <see cref="aes"/>
+        /// </summary>
+        /// <param name="bytes"> The bytes to encrypt </param>
+        /// <returns> A byte array containing the encrypted bytes </returns>
+        private byte[] EncryptAES(byte[] bytes) { return aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length); }
+        
+        /// <summary>
+        /// Takes an array of bytes and prefixes its length at the first 4 bytes
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns> A byte array cointaining the original message with the first 4 bytes being length-bytes </returns>
+        private byte[] Prefix4BytesLength(byte[] arr)
+        {
+            byte[] arrWithPrefix = new byte[arr.Length + sizeof(int)];
+            byte[] length = BitConverter.GetBytes(arr.Length);
+
+            // Prefix 4 length-bytes to the start of the array
+            int pos;
+            for (pos = 0; pos < length.Length; pos++)
+                arrWithPrefix[pos] = length[pos];
+
+            // Copy the original message after length-bytes
+            Array.Copy(arr, 0, arrWithPrefix, pos, arr.Length);
+
+            // Return the original message with 4 length-bytes at the start
+            return arrWithPrefix;
+        }
+
+        /// <summary>
+        /// Writes the RSA public key to the remote stream
+        /// </summary>
+        private void WriteRSA()
+        {
+            byte[] publicKey = rsa.ExportRSAPublicKey();
+            client.GetStream().Write(publicKey, 0, publicKey.Length);
+        }
+
+        /// <summary>
+        /// The first read of the stream: Reads the AES Key and IV and raises <see cref="EncryptionReady"/>
         /// </summary>
         /// <param name="ar"> A <see cref="IAsyncResult"/> representing the async state of the read operation </param>
         private void ReceiveAES(IAsyncResult ar)
@@ -143,7 +181,7 @@ namespace GameWindow.Systems.Networking
                 lock (client.GetStream())
                     bytesRead = client.GetStream().EndRead(ar);
             }
-            catch { StopClient(); }
+            catch { StopClient(); return; }
 
             if (bytesRead == 0) { StopClient(); return; }
 
@@ -153,7 +191,8 @@ namespace GameWindow.Systems.Networking
             EncryptedSeperator(encrypted);
 
             if (loop)
-                client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, true), null);
+                try { client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, true), null); }
+                catch { StopClient(); return; }
         }
 
         /// <summary>

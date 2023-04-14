@@ -31,7 +31,7 @@ namespace GameWindow.Components.GameComponents
         private const int MIN_TIME_BETWEEN_UFOS = 10;
 
         // Global variables
-        private static Invader?[] invaders = new Invader[55];
+        private static Invader[] invaders = new Invader[55];
         private static Invader? currentUFO = null;
         private static Random random = new Random();
         private static int invaderCount = 0;
@@ -149,6 +149,7 @@ namespace GameWindow.Components.GameComponents
 
             for (int i = 0; i < invaders.Length; i++)
                 invaders[i]?.Dispose();
+            currentUFO?.Dispose();
 
             ResetInfo();
         }
@@ -205,9 +206,9 @@ namespace GameWindow.Components.GameComponents
                 if (invaderCount == 0 && LocalGame.instance!.LivesLeft > 0 && !cts.IsCancellationRequested)
                 {
                     Bullet.DisposeAll();
-                    InputHandler.Disabled = true;
+                    InputHandler.Disabled(true);
                     await PlotInvaders();
-                    InputHandler.Disabled = false;
+                    InputHandler.Disabled(false);
                     PauseUnpauseInvaders(false);
                     return;
                 }
@@ -230,7 +231,7 @@ namespace GameWindow.Components.GameComponents
         /// </remarks>
         public static void CycleInvaders()
         {
-            if (random.Next(50) < invaders.Length)
+            if (random.Next(100) < invaders.Length)
                 invaders[random.Next(invaders.Length)]?.Shoot();
 
             bool shouldGoDown = false;
@@ -533,7 +534,7 @@ namespace GameWindow.Components.GameComponents
             }
 
             invaderCount--;
-            invaders[arrPos] = null;
+            invaders[arrPos] = null!;
             col.Dispose();
 
             SoundManager.PlaySound(Sound.InvaderDeath);

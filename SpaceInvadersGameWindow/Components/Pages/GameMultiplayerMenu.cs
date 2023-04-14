@@ -15,6 +15,9 @@ namespace GameWindow.Components.Pages
         private CustomTextInput ipInput, portInput;
         private CustomButton connectButton, backButton;
 
+        /// <summary>
+        /// Builds a new Multiplayer Menu page
+        /// </summary>
         public GameMultiplayerMenu()
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -45,20 +48,30 @@ namespace GameWindow.Components.Pages
             backButton!.ToString();
         }
 
+        /// <summary>
+        /// On "connect" button click
+        /// </summary>
         private void OnConnect()
         {
             if (ipInput.Text == "" && portInput.Text == "")
                 return;
+
             Dispose();
             new MultiplayerGameClient(ipInput.Text, int.Parse(portInput.Text), GameInitializers.username!);
         }
 
+        /// <summary>
+        /// On "back" button click
+        /// </summary>
         private void OnBack()
         {
             Dispose();
             GameInitializers.StartGameMenu(GameInitializers.username);
         }
 
+        /// <summary>
+        /// Disposes the current online menu
+        /// </summary>
         private void Dispose()
         {
             ipLabel.Dispose();

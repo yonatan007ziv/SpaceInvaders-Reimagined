@@ -38,25 +38,6 @@ namespace GameWindow.Components.GameComponents
         protected BulletType bulletType;
 
         /// <summary>
-        /// Disposes all bullets by setting their bulletHit field to true, and disposing of their collision, sprite, and transform objects
-        /// Also clears the list of all bullets and sets the instance of PlayerBullet to null
-        /// </summary>
-        public static void DisposeAll()
-        {
-            for (int i = 0; i < AllBullets.Count; i++)
-            {
-                if (AllBullets[i] == null) continue;
-
-                AllBullets[i].bulletHit = true;
-                AllBullets[i]?.col.Dispose();
-                AllBullets[i]?.sprite.Dispose();
-                AllBullets[i]?.transform.Dispose();
-            }
-            PlayerBullet.instance = null;
-            AllBullets.Clear();
-        }
-
-        /// <summary>
         /// Pauses or unpauses all bullets by setting their bulletSpeed to zero if pause is true, or to their originalBulletSpeed if pause is false
         /// </summary>
         /// <param name="pause"> If true, all bullets are paused, if false, all bullets are unpaused</param>
@@ -77,7 +58,7 @@ namespace GameWindow.Components.GameComponents
         /// Constructor for the Bullet class, adds the newly created bullet to the AllBullets list,
         /// initializes the bullet's properties, creates and sets up its transform, collider and sprite objects
         /// </summary>
-        /// <param name="pos"> The position of the bullet </param>
+        /// <param name="pos"> A <see cref="Vector2"/> representing the bullet's position </param>
         /// <param name="speed"> The speed of the bullet </param>
         /// <param name="bulletType"> The type of the bullet </param>
         /// <param name="colliderLayer"> The collision layer of the bullet </param>
@@ -101,7 +82,7 @@ namespace GameWindow.Components.GameComponents
         /// The basic bullet loop, runs until the bullet hits a collider that is not ignored
         /// </summary>
         /// <returns> A <see cref="Task"/> representing the async state of the bullet loop </returns>
-        protected virtual async Task BulletLoop()
+        protected async Task BulletMovementLoop()
         {
             while (col.TouchingCollider() == null && !bulletHit)
             {
@@ -133,7 +114,7 @@ namespace GameWindow.Components.GameComponents
         /// <summary>
         /// Triggers the explosion of the bullet, disposing its collider and changing its sprite
         /// </summary>
-        public void BulletExplosion()
+        public async void BulletExplosion()
         {
             bulletHit = true;
             col.Dispose();
@@ -142,7 +123,8 @@ namespace GameWindow.Components.GameComponents
             transform.Scale = new Vector2(6, 8);
             sprite.ChangeImage(@"Resources\Images\Bullet\BulletExplosion.png");
 
-            Task.Delay(500).ContinueWith((p) => Dispose());
+            await Task.Delay(500);
+            Dispose();
         }
 
         /// <summary>
@@ -154,6 +136,25 @@ namespace GameWindow.Components.GameComponents
             sprite.Dispose();
             transform.Dispose();
             AllBullets.Remove(this);
+        }
+
+        /// <summary>
+        /// Disposes all bullets by setting their bulletHit field to true, and disposing of their collision, sprite, and transform objects
+        /// Also clears the list of all bullets and sets the instance of PlayerBullet to null
+        /// </summary>
+        public static void DisposeAll()
+        {
+            for (int i = 0; i < AllBullets.Count; i++)
+            {
+                if (AllBullets[i] == null) continue;
+
+                AllBullets[i].bulletHit = true;
+                AllBullets[i]?.col.Dispose();
+                AllBullets[i]?.sprite.Dispose();
+                AllBullets[i]?.transform.Dispose();
+            }
+            PlayerBullet.instance = null;
+            AllBullets.Clear();
         }
     }
 }

@@ -6,9 +6,12 @@ using System.Windows;
 
 namespace GameWindow.Components.NetworkedComponents
 {
+    /// <summary>
+    /// A class implementing a networked bunker part
+    /// </summary>
     internal class NetworkedBunkerPart
     {
-        public int BunkerID;
+        public int bunkerID;
         public int imagePathIndex = 1;
         public BunkerPartType part;
         public bool flipped;
@@ -16,11 +19,18 @@ namespace GameWindow.Components.NetworkedComponents
         private Collider col;
         private Sprite sprite;
 
-        public NetworkedBunkerPart(BunkerPartType part, Vector2 pos, int bunkerId, bool flipped)
+        /// <summary>
+        /// Builds a bunker part
+        /// </summary>
+        /// <param name="part"> Part's type </param>
+        /// <param name="pos"> A <see cref="Vector2"/> representing the part's position </param>
+        /// <param name="bunkerID"> Bunker's ID </param>
+        /// <param name="flipped"> Whether the bunker part sprite is flipped or not </param>
+        public NetworkedBunkerPart(BunkerPartType part, Vector2 pos, int bunkerID, bool flipped)
         {
             this.part = part;
             this.flipped = flipped;
-            BunkerID = bunkerId;
+            this.bunkerID = bunkerID;
 
             transform = new Transform(new Vector2(6, 8), pos);
             col = new Collider(transform, this, CollisionLayer.Bunker);
@@ -33,16 +43,25 @@ namespace GameWindow.Components.NetworkedComponents
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
         }
+
+        /// <summary>
+        /// When the bunker parts get hit
+        /// </summary>
         public void Hit()
         {
             if (imagePathIndex == 4)
             {
+                imagePathIndex++;
                 Dispose();
                 return;
             }
             imagePathIndex++;
             NextClip();
         }
+
+        /// <summary>
+        /// Next bunker part's clip
+        /// </summary>
         private void NextClip()
         {
             string bunkerImagePath;
@@ -78,6 +97,10 @@ namespace GameWindow.Components.NetworkedComponents
             }
             sprite.ChangeImage(bunkerImagePath);
         }
+
+        /// <summary>
+        /// Disposes the curret <see cref="BunkerPart"/>
+        /// </summary>
         public void Dispose()
         {
             sprite.Dispose();
