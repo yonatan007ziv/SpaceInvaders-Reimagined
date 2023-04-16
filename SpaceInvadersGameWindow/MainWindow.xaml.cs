@@ -1,6 +1,6 @@
-﻿using GameWindow.Components.Initializers;
+﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.GameComponents;
+using GameWindow.Components.Pages;
 using GameWindow.Systems;
 using System;
 using System.Numerics;
@@ -26,6 +26,7 @@ namespace GameWindow
         public const int TARGET_FPS = 60;
 
         public static MainWindow? instance;
+        public static string username = "";
 
         /// <summary>
         /// A ratio between current screen size and <see cref="referenceSize"/>
@@ -57,7 +58,7 @@ namespace GameWindow
             SizeChanged += (s, e) =>
             {
                 CalculateRatio();
-                foreach (Transform T in Transform.transforms)
+                foreach (Transform T in Transform.Transforms)
                     T.OnSizeChanged();
             };
 
@@ -74,12 +75,12 @@ namespace GameWindow
                 CenteredCanvas.Width = scale.X;
                 CenteredCanvas.Height = scale.Y;
             };
-            
+
             // Start taking inputs
             new InputHandler(this);
 
             // Start "Login Register" page
-            GameInitializers.StartLoginRegist();
+            new LoginRegister();
         }
 
         /// <summary>

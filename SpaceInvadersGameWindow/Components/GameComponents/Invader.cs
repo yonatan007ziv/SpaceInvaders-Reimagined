@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.Initializers;
-using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System;
@@ -12,7 +11,7 @@ using System.Windows;
 namespace GameWindow.Components.GameComponents
 {
     /// <summary>
-    /// Represents an enemy from the classic arcade game Space Invaders (1978)
+    /// Implements an enemy from the classic arcade game Space Invaders (1978)
     /// </summary>
     internal class Invader
     {
@@ -31,10 +30,11 @@ namespace GameWindow.Components.GameComponents
         private const int MIN_TIME_BETWEEN_UFOS = 10;
 
         // Global variables
-        private static Invader[] invaders = new Invader[55];
-        private static Invader? currentUFO = null;
-        private static Random random = new Random();
-        private static int invaderCount = 0;
+        private static Invader[] Invaders = new Invader[55];
+        private static Invader? CurrentUFO = null;
+        private static Random _Random = new Random();
+        private static int InvaderCount = 0;
+        public static int Stage = 1;
 
         // Uniform Invader Settings
         private static int InvaderDir = 1;
@@ -73,7 +73,7 @@ namespace GameWindow.Components.GameComponents
                     break;
                 case InvaderType.UFO:
                     imgPath = @$"Resources\Images\Enemies\UFO.png";
-                    int rand = random.Next(4);
+                    int rand = _Random.Next(4);
                     pointsReward = rand == 3 ? 300 : (rand == 2 ? 150 : (rand == 1 ? 100 : 50)); // Random 300, 150, 100 or 50
                     scale = new Vector2(16, 8);
                     break;
@@ -86,9 +86,9 @@ namespace GameWindow.Components.GameComponents
             Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, imgPath));
 
             if (type == InvaderType.UFO)
-                currentUFO = this;
+                CurrentUFO = this;
             else
-                invaders[arrPos = invaderCount++] = this;
+                Invaders[arrPos = InvaderCount++] = this;
 
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
@@ -102,7 +102,7 @@ namespace GameWindow.Components.GameComponents
             InvaderDir = 1;
             SpriteSwitch = false;
 
-            invaderCount = 0;
+            InvaderCount = 0;
             CycleCount = 0;
 
             stopwatchUFO.Restart();
@@ -147,9 +147,9 @@ namespace GameWindow.Components.GameComponents
                 cts.Dispose();
             }
 
-            for (int i = 0; i < invaders.Length; i++)
-                invaders[i]?.Dispose();
-            currentUFO?.Dispose();
+            for (int i = 0; i < Invaders.Length; i++)
+                Invaders[i]?.Dispose();
+            CurrentUFO?.Dispose();
 
             ResetInfo();
         }
@@ -197,18 +197,19 @@ namespace GameWindow.Components.GameComponents
         {
             while (true)
             {
-                int toWait = (int)CycleTimeCurveMilliseconds();                
+                int toWait = (int)CycleTimeCurveMilliseconds();
                 try { await Task.Delay(toWait, token); }
                 catch { token.ThrowIfCancellationRequested(); }
 
                 CycleInvaders();
 
-                if (invaderCount == 0 && LocalGame.instance!.LivesLeft > 0 && !cts.IsCancellationRequested)
+                if (InvaderCount == 0 && LocalGame.instance!.LivesLeft > 0 && !cts.IsCancellationRequested)
                 {
+                    LocalGame.instance.Score += Stage++ * 55;
                     Bullet.DisposeAll();
-                    InputHandler.Disabled(true);
+                    InputHandler.Disable(true);
                     await PlotInvaders();
-                    InputHandler.Disabled(false);
+                    InputHandler.Disable(false);
                     PauseUnpauseInvaders(false);
                     return;
                 }
@@ -231,12 +232,12 @@ namespace GameWindow.Components.GameComponents
         /// </remarks>
         public static void CycleInvaders()
         {
-            if (random.Next(100) < invaders.Length)
-                invaders[random.Next(invaders.Length)]?.Shoot();
+            if (_Random.Next(100) < Invaders.Length)
+                Invaders[_Random.Next(Invaders.Length)]?.Shoot();
 
             bool shouldGoDown = false;
-            for (int i = 0; i < invaders.Length; i++)
-                if (invaders[i]?.DecideDir() ?? false)
+            for (int i = 0; i < Invaders.Length; i++)
+                if (Invaders[i]?.DecideDir() ?? false)
                     shouldGoDown = true;
 
             if (shouldGoDown)
@@ -246,8 +247,8 @@ namespace GameWindow.Components.GameComponents
 
             CycleBeatSound();
 
-            for (int i = 0; i < invaders.Length; i++)
-                if (invaders[i]?.CheckLose() ?? false)
+            for (int i = 0; i < Invaders.Length; i++)
+                if (Invaders[i]?.CheckLose() ?? false)
                 {
                     LocalGame.instance!.Lost();
                     return;
@@ -280,12 +281,12 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         private static void MoveInvadersSide()
         {
-            for (int i = 0; i < invaders.Length; i++)
+            for (int i = 0; i < Invaders.Length; i++)
             {
-                if (invaders[i] == null) continue;
+                if (Invaders[i] == null) continue;
 
-                invaders[i].transform.Position += new Vector2(INVADER_SPEED_SIDE * InvaderDir, 0);
-                invaders[i].NextClip();
+                Invaders[i].transform.Position += new Vector2(INVADER_SPEED_SIDE * InvaderDir, 0);
+                Invaders[i].NextClip();
             }
         }
 
@@ -294,12 +295,12 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         private static void MoveInvadersDown()
         {
-            for (int i = 0; i < invaders.Length; i++)
+            for (int i = 0; i < Invaders.Length; i++)
             {
-                if (invaders[i] == null) continue;
+                if (Invaders[i] == null) continue;
 
-                invaders[i].transform.Position += new Vector2(0, INVADER_SPEED_DOWN);
-                invaders[i].NextClip();
+                Invaders[i].transform.Position += new Vector2(0, INVADER_SPEED_DOWN);
+                Invaders[i].NextClip();
             }
         }
 
@@ -312,20 +313,20 @@ namespace GameWindow.Components.GameComponents
         /// b = Current 'y' Intercept (5 Different Stages)
         /// </summary>
         /// <returns> The Time Between Invader Movement Cycles In Milliseconds </returns>
-        /// <exception cref="ArgumentOutOfRangeException"> Thrown if the number of invaders is outside the valid range of (0 &lt;= <see cref="invaderCount"/> &lt;= 55) </exception>
+        /// <exception cref="ArgumentOutOfRangeException"> Thrown if the number of invaders is outside the valid range of (0 &lt;= <see cref="InvaderCount"/> &lt;= 55) </exception>
         private static double CycleTimeCurveMilliseconds()
         {
-            if (0 <= invaderCount && invaderCount <= 11)
-                return Am * invaderCount + Ab;
-            else if (11 <= invaderCount && invaderCount <= 22)
-                return Bm * invaderCount + Bb;
-            else if (22 <= invaderCount && invaderCount <= 33)
-                return Cm * invaderCount + Cb;
-            else if (33 <= invaderCount && invaderCount <= 44)
-                return Dm * invaderCount + Db;
-            else if (44 <= invaderCount && invaderCount <= 55)
-                return Em * invaderCount + Eb;
-            throw new ArgumentOutOfRangeException($"Number of Invaders Outside Bounds: (0 <= {invaderCount} <= 55)");
+            if (0 <= InvaderCount && InvaderCount <= 11)
+                return Am * InvaderCount + Ab;
+            else if (11 <= InvaderCount && InvaderCount <= 22)
+                return Bm * InvaderCount + Bb;
+            else if (22 <= InvaderCount && InvaderCount <= 33)
+                return Cm * InvaderCount + Cb;
+            else if (33 <= InvaderCount && InvaderCount <= 44)
+                return Dm * InvaderCount + Db;
+            else if (44 <= InvaderCount && InvaderCount <= 55)
+                return Em * InvaderCount + Eb;
+            throw new ArgumentOutOfRangeException($"Number of Invaders Outside Bounds: (0 <= {InvaderCount} <= 55)");
         }
 
         #region curve
@@ -361,13 +362,13 @@ namespace GameWindow.Components.GameComponents
         /// Generates a new UFO randomly, if the following conditions are met:
         /// <list type="bullet">
         ///     <item> Elapsed at least <see cref="MIN_TIME_BETWEEN_UFOS"/> seconds from last UFO </item>
-        ///     <item> <see cref="invaderCount"/> larger or equal to 8 </item>
-        ///     <item> <see cref="currentUFO"/> is null </item>
+        ///     <item> <see cref="InvaderCount"/> larger or equal to 8 </item>
+        ///     <item> <see cref="CurrentUFO"/> is null </item>
         /// </list>
         /// </summary>
         private static void GenerateUFO()
         {
-            if (random.Next(50) == 0 && stopwatchUFO.Elapsed.Seconds >= MIN_TIME_BETWEEN_UFOS && invaderCount >= 8 && currentUFO == null)
+            if (_Random.Next(50) == 0 && stopwatchUFO.Elapsed.Seconds >= MIN_TIME_BETWEEN_UFOS && InvaderCount >= 8 && CurrentUFO == null)
             {
                 new Invader(InvaderType.UFO, new Vector2(-25, 15));
                 UFOMovementLoop();
@@ -384,7 +385,7 @@ namespace GameWindow.Components.GameComponents
         private static async void UFOMovementLoop()
         {
             bool playingSound = false;
-            while (!(currentUFO == null || UFOPaused))
+            while (!(CurrentUFO == null || UFOPaused))
             {
                 if (!playingSound)
                 {
@@ -392,14 +393,14 @@ namespace GameWindow.Components.GameComponents
                     playingSound = true;
                 }
 
-                currentUFO.transform.Position += new Vector2(UFO_SPEED, 0);
+                CurrentUFO.transform.Position += new Vector2(UFO_SPEED, 0);
 
-                if (currentUFO.transform.Position.X > MainWindow.referenceSize.X + 16)
+                if (CurrentUFO.transform.Position.X > MainWindow.referenceSize.X + 16)
                 {
                     stopwatchUFO.Restart();
                     SoundManager.StopSound(Sound.UFO);
-                    currentUFO.Dispose();
-                    currentUFO = null;
+                    CurrentUFO.Dispose();
+                    CurrentUFO = null;
                 }
 
                 await Task.Delay(1000 / MainWindow.TARGET_FPS);
@@ -412,7 +413,7 @@ namespace GameWindow.Components.GameComponents
         private void UFODeath()
         {
             stopwatchUFO.Restart();
-            currentUFO = null;
+            CurrentUFO = null;
             col.Dispose();
 
             SoundManager.StopSound(Sound.UFO);
@@ -533,8 +534,8 @@ namespace GameWindow.Components.GameComponents
                 return;
             }
 
-            invaderCount--;
-            invaders[arrPos] = null!;
+            InvaderCount--;
+            Invaders[arrPos] = null!;
             col.Dispose();
 
             SoundManager.PlaySound(Sound.InvaderDeath);

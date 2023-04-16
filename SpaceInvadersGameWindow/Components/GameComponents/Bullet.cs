@@ -34,7 +34,7 @@ namespace GameWindow.Components.GameComponents
         private float originalBulletSpeed;
         protected Queue<BitmapImage> clips = new Queue<BitmapImage>();
         protected float bulletSpeed;
-        protected bool bulletHit;
+        protected bool disposed;
         protected BulletType bulletType;
 
         /// <summary>
@@ -75,6 +75,7 @@ namespace GameWindow.Components.GameComponents
             Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Bullet\Bullet.png"));
 
             // Suppressing the "Null When Leaving a Constructor" warning
+            clips!.ToString();
             sprite!.ToString();
         }
 
@@ -84,7 +85,7 @@ namespace GameWindow.Components.GameComponents
         /// <returns> A <see cref="Task"/> representing the async state of the bullet loop </returns>
         protected async Task BulletMovementLoop()
         {
-            while (col.TouchingCollider() == null && !bulletHit)
+            while (col.TouchingCollider() == null && !disposed)
             {
                 NextClip();
                 transform.Position += new Vector2(0, bulletSpeed);
@@ -116,7 +117,6 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         public async void BulletExplosion()
         {
-            bulletHit = true;
             col.Dispose();
 
             // Bullet Explosion
@@ -125,6 +125,7 @@ namespace GameWindow.Components.GameComponents
 
             await Task.Delay(500);
             Dispose();
+            AllBullets.Remove(this);
         }
 
         /// <summary>
@@ -132,10 +133,10 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         private void Dispose()
         {
+            disposed = true;
             col.Dispose();
             sprite.Dispose();
             transform.Dispose();
-            AllBullets.Remove(this);
         }
 
         /// <summary>
@@ -147,11 +148,7 @@ namespace GameWindow.Components.GameComponents
             for (int i = 0; i < AllBullets.Count; i++)
             {
                 if (AllBullets[i] == null) continue;
-
-                AllBullets[i].bulletHit = true;
-                AllBullets[i]?.col.Dispose();
-                AllBullets[i]?.sprite.Dispose();
-                AllBullets[i]?.transform.Dispose();
+                AllBullets[i].Dispose();
             }
             PlayerBullet.instance = null;
             AllBullets.Clear();

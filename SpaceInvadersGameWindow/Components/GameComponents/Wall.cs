@@ -13,7 +13,7 @@ namespace GameWindow.Components.GameComponents
         public static Wall? Ceiling, Floor, RightWall, LeftWall;
 
         private Transform transform;
-        private Sprite sprite;
+        private Sprite? sprite;
         private Collider col;
 
         /// <summary>
@@ -47,12 +47,6 @@ namespace GameWindow.Components.GameComponents
         {
             transform = new Transform(scale, pos);
             col = new Collider(transform, this, CollisionLayer.Wall);
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform));
-
-            // Suppressing the "Null When Leaving a Constructor" warning
-            sprite!.ToString();
         }
 
         /// <summary>
@@ -79,7 +73,7 @@ namespace GameWindow.Components.GameComponents
         public void Dispose()
         {
             transform.Dispose();
-            sprite.Dispose();
+            sprite?.Dispose();
             col.Dispose();
         }
 

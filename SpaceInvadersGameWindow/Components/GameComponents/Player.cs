@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.Initializers;
-using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Numerics;

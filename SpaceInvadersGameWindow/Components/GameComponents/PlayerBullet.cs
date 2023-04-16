@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.Initializers;
-using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Numerics;
@@ -22,7 +21,7 @@ namespace GameWindow.Components.GameComponents
         /// <param name="pos"> A <see cref="Vector2"/> representing the bullet's position </param>
         public PlayerBullet(Vector2 pos) : base(pos, -PLAYER_BULLET_SPEED, BulletType.Normal, CollisionLayer.PlayerBullet)
         {
-            if (GameInitializers.username != "shifragoras")
+            if (MainWindow.username != "shifragoras")
                 instance = this;
 
             SoundManager.PlaySound(Sound.BulletInitiated);

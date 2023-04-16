@@ -1,6 +1,5 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
-using GameWindow.Components.NetworkedComponents;
 using GameWindow.Components.Pages;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
@@ -9,21 +8,17 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace GameWindow.Components.Initializers
+namespace GameWindow.Components.NetworkedComponents
 {
-    internal class MultiplayerGameClient : NetworkClient
+    /// <summary>
+    /// A class for all Gameplay-Server communication
+    /// </summary>
+    internal class NetworkedGameClient : NetworkClient
     {
-        public static MultiplayerGameClient? instance;
+        public static NetworkedGameClient? instance;
         private static bool Paused;
         private static bool heldEscape;
         private OnlinePauseMenu? pauseMenu;
-
-        private CustomLabel? teamALabel;
-        private CustomLabel? teamBLabel;
-        private void SetScoreA(int value)
-        { teamALabel!.Text = $"Team A: {value}"; }
-        private void SetScoreB(int value)
-        { teamBLabel!.Text = $"Team B: {value}"; }
 
         private CustomButton? bunkerButton1;
         private CustomButton? bunkerButton2;
@@ -34,18 +29,25 @@ namespace GameWindow.Components.Initializers
         private CustomButton? bunkerButton7;
         private CustomButton? bunkerButton8;
 
+        private CustomLabel? teamALabel;
+        private CustomLabel? teamBLabel;
+        private void SetScoreA(int value)
+        { teamALabel!.Text = $"Team A: {value}"; }
+        private void SetScoreB(int value)
+        { teamBLabel!.Text = $"Team B: {value}"; }
+
         /// <summary>
         /// Prepares a new multiplayer game player
         /// </summary>
         /// <param name="IP"> "Game-Server"'s IP Address </param>
         /// <param name="port"> "Game-Server"'s port </param>
         /// <param name="username"> Current username </param>
-        public MultiplayerGameClient(string IP, int port, string username) : base()
+        public NetworkedGameClient(string IP, int port) : base()
         {
             instance = this;
             if (Connect(IP, port))
             {
-                SendMessage(username);
+                SendMessage(MainWindow.username);
                 BeginRead(true);
 
                 Wall.MakeOnlineGameWalls();
@@ -78,7 +80,7 @@ namespace GameWindow.Components.Initializers
             }
             else
             {
-                GameInitializers.StartMultiplayerGameMenu();
+                new GameMultiplayerMenu("Failed to connect to server");
                 Dispose();
             }
         }
@@ -196,7 +198,7 @@ namespace GameWindow.Components.Initializers
                 else
                     yPos = MainWindow.referenceSize.Y * 0.735f;
 
-                if (senderUsername == GameInitializers.username) // if local player
+                if (senderUsername == MainWindow.username) // if local player
                 {
                     teamALabel!.transform.Position = new Vector2(30, team == 'A' ? MainWindow.referenceSize.Y * 0.735f + 16 : 14);
                     teamBLabel!.transform.Position = new Vector2(30, team == 'B' ? MainWindow.referenceSize.Y * 0.735f + 16 : 14);
@@ -211,7 +213,7 @@ namespace GameWindow.Components.Initializers
             if (msg.Contains("AlreadyConnected"))
             {
                 Dispose();
-                GameInitializers.StartMultiplayerGameMenu();
+                new GameMultiplayerMenu("Username already connected!");
             }
             else if (msg.Contains("BulletHit"))
             {
@@ -220,7 +222,7 @@ namespace GameWindow.Components.Initializers
 
                 if (HitObject.Contains("Player"))
                 {
-                    if (HitObjectDetails == GameInitializers.username)
+                    if (HitObjectDetails == MainWindow.username)
                         NetworkedPlayer.currentPlayers[HitObjectDetails].LocalKill();
                     else
                         NetworkedPlayer.currentPlayers[HitObjectDetails].OnlineKill();
@@ -241,7 +243,7 @@ namespace GameWindow.Components.Initializers
                 BunkerButtons(0 <= BunkerID && BunkerID <= 3 ? 'A' : 'B', false);
             }
 
-            if (senderUsername == GameInitializers.username) return; // prevent message loopback
+            if (senderUsername == MainWindow.username) return; // prevent message loopback
 
             if (msg.Contains("PlayerPosition"))
             {
@@ -249,17 +251,17 @@ namespace GameWindow.Components.Initializers
                 Transform t = NetworkedPlayer.currentPlayers[senderUsername].transform;
                 t.Position = new Vector2(x, t.Position.Y);
             }
-            else if (msg.Contains("TeamBunker"))
+            else if (msg.Contains("GiveTeamBunker"))
             {
                 char team = msg.Split(':')[1][0];
                 if (team == NetworkedPlayer.localPlayer!.team)
                     BunkerButtons(team, true);
             }
-            else if (msg.Contains("DisableBunkerButtons"))
+            else if (msg.Contains("RevokeTeamBunker"))
             {
                 char team = msg.Split(':')[1][0];
                 if (team == NetworkedPlayer.localPlayer!.team)
-                    BunkerButtons(team, true);
+                    BunkerButtons(team, false);
             }
             else if (msg.Contains("Score"))
             {
@@ -295,13 +297,14 @@ namespace GameWindow.Components.Initializers
         }
 
         /// <summary>
-        /// Disposes the current <see cref="MultiplayerGameClient"/>
+        /// Disposes the current <see cref="NetworkedGameClient"/>
         /// </summary>
         public void Dispose()
         {
             StopClient();
             InputHandler.RemoveInputLoop(InputLoop);
             Wall.DisposeAll();
+            Bullet.DisposeAll();
             NetworkedPlayer.localPlayer = null;
             NetworkedPlayer.DisposeAll();
             NetworkedBunker.DisposeAll();

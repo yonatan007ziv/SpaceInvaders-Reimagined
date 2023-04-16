@@ -7,76 +7,98 @@ using System.Windows.Controls;
 namespace GameWindow.Components.UIElements
 {
     /// <summary>
-    /// Interaction logic for NavigableButton.xaml
+    /// A custom <see cref="Button"/> implementation
     /// </summary>
-    public partial class CustomButton
+    public partial class CustomButton : Button
     {
+        public Transform transform;
+        private Sprite image;
+        private CustomLabel text;
+
         public string Text
         {
-            get { return buttonText.Text; }
-            set { buttonText.Text = value; }
+            get { return text.Text; }
+            set { text.Text = value; }
         }
 
-        public Transform transform;
-        public CustomButton(Transform transform, Action onClick, string imagePath)
+        /// <summary>
+        /// Builds a button UI element with an image
+        /// </summary>
+        /// <param name="transform"> The <see cref="Transform"/> to link </param>
+        /// <param name="onClick"> What happens on button click </param>
+        /// <param name="imagePath"> Path to the image </param>
+        /// <param name="text"> Text on button </param>
+        public CustomButton(Transform transform, Action onClick, string imagePath, string text) // Called within an STA thread
         {
             InitializeComponent();
 
             this.transform = transform;
+            image = new Sprite(transform, imagePath);
+            this.text = new CustomLabel(transform, text, System.Windows.Media.Colors.White);
+
             transform.PositionChanged += () => SetPosition();
             transform.ScaleChanged += () => SetScale();
-            buttonImage.Source = Sprite.BitmapFromPath(imagePath);
 
-            button.Click += (s, e) => { SoundManager.PlaySound(Sound.MenuClick); onClick(); };
+            Click += (s, e) => { SoundManager.PlaySound(Sound.MenuClick); onClick(); };
 
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(buttonImage, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-
-            MainWindow.instance!.CenteredCanvas.Children.Add(this);
-        }
-        public CustomButton(Transform transform, Action onClick, string imagePath, string text)
-        {
-            InitializeComponent();
-
-            Text = text;
-
-            this.transform = transform;
-            transform.PositionChanged += () => SetPosition();
-            transform.ScaleChanged += () => SetScale();
-            buttonImage.Source = Sprite.BitmapFromPath(imagePath);
-
-            button.Click += (s, e) => { SoundManager.PlaySound(Sound.MenuClick); onClick(); };
-
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(buttonImage, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
+
+            SetValue(Panel.ZIndexProperty, 0);
         }
 
+        /// <summary>
+        /// Sets the position according to the linked transform
+        /// </summary>
         private void SetPosition()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             { // UI Objects need to be changed in an STA thread
                 SetValue(Canvas.LeftProperty, (double)transform.CenteredPosition.X);
                 SetValue(Canvas.TopProperty, (double)transform.CenteredPosition.Y);
             });
         }
 
+        /// <summary>
+        /// Sets the scale according to the linked transform
+        /// </summary>
         private void SetScale()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             { // UI Objects need to be changed in an STA thread
                 Width = transform.ActualScale.X;
                 Height = transform.ActualScale.Y;
             });
         }
+
+        /// <summary>
+        /// Sets the visibility
+        /// </summary>
+        /// <param name="visible"> Whether it should be visible or not </param>
         public void Visible(bool visible)
         {
             // UI Objects need to be changed in an STA thread
-            Application.Current.Dispatcher.Invoke(() => Visibility = visible ? Visibility.Visible : Visibility.Hidden);
+            Dispatcher.Invoke(() =>
+            {
+                Visibility = visible ? Visibility.Visible : Visibility.Hidden;
+                image.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
+                text.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
+            });
         }
+
+        /// <summary>
+        /// Disposes the <see cref="CustomButton"/>
+        /// </summary>
         public void Dispose()
         {
             // UI Objects need to be changed in an STA thread
-            Application.Current.Dispatcher.Invoke(() => MainWindow.instance!.CenteredCanvas.Children.Remove(this));
+            Dispatcher.Invoke(() =>
+            {
+                MainWindow.instance!.CenteredCanvas.Children.Remove(text);
+                MainWindow.instance!.CenteredCanvas.Children.Remove(image);
+                MainWindow.instance!.CenteredCanvas.Children.Remove(this);
+            });
         }
     }
 }

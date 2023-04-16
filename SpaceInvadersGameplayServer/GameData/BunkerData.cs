@@ -20,16 +20,14 @@
     /// </summary>
     internal struct BunkerData
     {
-        public int BunkerID;
         public BunkerPartData[] parts = new BunkerPartData[8];
-        
+
         /// <summary>
         /// Constructs a new <see cref="BunkerData"/> data
         /// </summary>
         /// <param name="BunkerID"> The bunker ID between 0 (inclusive) and 7 (inclusive) </param>
         public BunkerData(int BunkerID)
         {
-            this.BunkerID = BunkerID;
             parts[0] = new BunkerPartData(BunkerPartType.TopLeft, BunkerID);
             parts[1] = new BunkerPartData(BunkerPartType.BottomLeft, BunkerID);
             parts[2] = new BunkerPartData(BunkerPartType.MiddleTopLeft, BunkerID);
@@ -38,18 +36,6 @@
             parts[5] = new BunkerPartData(BunkerPartType.MiddleBottomRight, BunkerID);
             parts[6] = new BunkerPartData(BunkerPartType.TopRight, BunkerID);
             parts[7] = new BunkerPartData(BunkerPartType.BottomRight, BunkerID);
-        }
-        public BunkerData(int BunkerID, bool first)
-        {
-            this.BunkerID = BunkerID;
-            parts[0] = new BunkerPartData(BunkerPartType.TopLeft, BunkerID, first);
-            parts[1] = new BunkerPartData(BunkerPartType.BottomLeft, BunkerID, first);
-            parts[2] = new BunkerPartData(BunkerPartType.MiddleTopLeft, BunkerID, first);
-            parts[3] = new BunkerPartData(BunkerPartType.MiddleBottomLeft, BunkerID, first);
-            parts[4] = new BunkerPartData(BunkerPartType.MiddleTopRight, BunkerID, first);
-            parts[5] = new BunkerPartData(BunkerPartType.MiddleBottomRight, BunkerID, first);
-            parts[6] = new BunkerPartData(BunkerPartType.TopRight, BunkerID, first);
-            parts[7] = new BunkerPartData(BunkerPartType.BottomRight, BunkerID, first);
         }
     }
 }

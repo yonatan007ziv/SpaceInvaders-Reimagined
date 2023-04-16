@@ -34,8 +34,7 @@ namespace LoginRegistServer
 
             client.EnableSsl = true;
 
-            try { client.Send(message); }
-            catch (Exception ex) { Console.WriteLine("Sending mail failed: " + ex.Message); }
+            client.Send(message);
         }
     }
 }

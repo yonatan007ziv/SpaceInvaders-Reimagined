@@ -59,7 +59,7 @@ namespace GameWindow.Components.NetworkedComponents
             if (parts[0] == null) return false;
 
             foreach (NetworkedBunkerPart part in parts)
-                if (part.imagePathIndex != 5)
+                if (!(1 <= part.imagePathIndex && part.imagePathIndex <= 4))
                     return true;
             return false;
         }
@@ -70,7 +70,7 @@ namespace GameWindow.Components.NetworkedComponents
         private void Dispose()
         {
             for (int i = 0; i < 8; i++)
-                    parts[i]?.Dispose();
+                parts[i]?.Dispose();
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.Initializers;
-using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System.Numerics;
@@ -13,7 +12,7 @@ namespace GameWindow.Components.Pages
     internal class OptionsMenu
     {
         private CustomLabel volumeLabel;
-        private CustomTextInput volumeInput;
+        private CustomTextBox volumeInput;
         private CustomButton backButton;
 
         /// <summary>
@@ -21,12 +20,12 @@ namespace GameWindow.Components.Pages
         /// </summary>
         public OptionsMenu()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            Application.Current.Dispatcher.Invoke((System.Delegate)(() =>
             {
                 volumeLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(50, 50)), "Volume:", System.Windows.Media.Colors.White);
-                volumeInput = new CustomTextInput(new Transform(new Vector2(50, 50), new Vector2(150, 50)), "" + (int)(SoundManager.currentVol * 100), () => UpdateVolume(volumeInput!.box.Text));
+                volumeInput = new CustomTextBox(new Transform(new Vector2(50, 50), new Vector2(150, 50)), "" + (int)(SoundManager.currentVol * 100), () => UpdateVolume(volumeInput!.Text));
                 backButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(50, 150)), Back, "", "Back");
-            });
+            }));
 
             // Suppressing the "Null When Leaving a Constructor" warning
             volumeLabel!.ToString();
@@ -61,7 +60,7 @@ namespace GameWindow.Components.Pages
         {
             SoundManager.StopSound(Sound.UFO);
             Dispose();
-            GameInitializers.StartGameMenu(GameInitializers.username);
+            new GameMainMenu();
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using GameplayServer.GameData;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using GameplayServer.GameData;
 
 namespace GameplayServer
 {
@@ -19,7 +19,7 @@ namespace GameplayServer
         static MultiplayerGameClient()
         {
             for (int i = 0; i < 8; i++)
-                bunkersData[i] = new BunkerData(i, true);
+                bunkersData[i] = new BunkerData(i);
         }
 
         public MultiplayerGameClient(TcpClient client)
@@ -84,12 +84,17 @@ namespace GameplayServer
         private static int teamAPlayers = 0;
         private static int teamBPlayers = 0;
 
-        public static void BunkersOpportunity()
+        public static void BunkersChecker()
         {
+            Console.WriteLine("BunkersCheck");
             if (teamAScore >= 25)
-                Broadcast("SERVER$TeamBunker:A");
+                Broadcast("SERVER$GiveTeamBunker:A");
+            else
+                Broadcast("SERVER$RevokeTeamBunker:A");
             if (teamBScore >= 25)
-                Broadcast("SERVER$TeamBunker:B");
+                Broadcast("SERVER$GiveTeamBunker:B");
+            else
+                Broadcast("SERVER$RevokeTeamBunker:B");
         }
         public static void BroadcastScores()
         {
@@ -214,7 +219,7 @@ namespace GameplayServer
                     foreach (BunkerPartData p in b.parts)
                         SendMessage($"SERVER$InitiateBunkerPart:({p.BunkerID},{(int)p.partType},{p.stage})");
 
-                BunkersOpportunity();
+                BunkersChecker();
                 return;
             }
 
@@ -231,7 +236,7 @@ namespace GameplayServer
                     teamBScore -= 25;
 
                 BroadcastScores();
-                BunkersOpportunity();
+                BunkersChecker();
             }
             else if (msg.Contains("BulletHit"))
             {
@@ -250,7 +255,7 @@ namespace GameplayServer
                     else
                         teamBScore -= 5;
 
-                    BunkersOpportunity();
+                    BunkersChecker();
                     BroadcastScores();
                 }
                 else if (HitObject.Contains("BunkerPart"))

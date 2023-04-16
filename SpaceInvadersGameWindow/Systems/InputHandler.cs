@@ -6,11 +6,19 @@ using System.Windows.Input;
 
 namespace GameWindow.Systems
 {
+    /// <summary>
+    /// The base for all input loops
+    /// </summary>
     public class InputHandler
     {
+        private static bool Disabled = false;
+        private static Action? inputLoopDel;
         public static readonly List<Key> keysDown = new List<Key>();
-        private static bool disabled = false;
 
+        /// <summary>
+        /// Starts listening for key presses
+        /// </summary>
+        /// <param name="TargetInputWindow"> The targeted window </param>
         public InputHandler(Window TargetInputWindow)
         {
             // Subscribe to Input methods:
@@ -20,56 +28,73 @@ namespace GameWindow.Systems
 
             InputUpdateLoop();
         }
-        public static void Disabled(bool disabled)
+
+        /// <summary>
+        /// Set if the input is disabled
+        /// </summary>
+        /// <param name="disabled"> Whether input is disabled or not </param>
+        public static void Disable(bool disabled)
         {
-            InputHandler.disabled = disabled;
+            InputHandler.Disabled = disabled;
         }
+
+        /// <summary>
+        /// The main input loop
+        /// </summary>
         private static async void InputUpdateLoop()
         {
             while (true)
             {
-                if (!disabled)
+                if (!Disabled)
                     inputLoopDel?.Invoke();
 
                 await Task.Delay(250 / MainWindow.TARGET_FPS); // Less delay = A more responsive input
             }
         }
 
-        private static Action? inputLoopDel;
+        /// <summary>
+        /// Add input loop
+        /// </summary>
+        /// <param name="del"> The loop to add </param>
         public static void AddInputLoop(Action del)
         {
             inputLoopDel += del;
         }
+
+        /// <summary>
+        /// Remove input loop
+        /// </summary>
+        /// <param name="del"> The loop to remove </param>
         public static void RemoveInputLoop(Action del)
         {
             inputLoopDel -= del;
         }
 
-        #region delegates
-        private static Action? keyUpDel;
-        private static Action? keyPressDel;
-
-        public static void AddKeyUpDel(Action del)
-        {
-            keyUpDel += del;
-        }
-        public static void AddKeyDownDel(Action del)
-        {
-            keyPressDel += del;
-        }
-        #endregion
-        
+        /// <summary>
+        /// Occurs when a key is pressed
+        /// </summary>
+        /// <param name="e"> The key's data </param>
         public static void KeyDown(KeyEventArgs e)
         {
             if (!keysDown.Contains(e.Key))
                 keysDown.Add(e.Key);
-            keyPressDel?.Invoke();
         }
+
+        /// <summary>
+        /// Occurs when a key is released
+        /// </summary>
+        /// <param name="e"> The key's data </param>
         public static void KeyUp(KeyEventArgs e)
         {
             keysDown.Remove(e.Key);
-            keyUpDel?.Invoke();
         }
+        
+        /// <summary>
+        /// Get input on axis
+        /// </summary>
+        /// <param name="axis"> The axis to get </param>
+        /// <returns></returns>
+        /// <exception cref="Exception"> Thrown if no such axis exists </exception>
         public static int GetAxis(string axis)
         {
             if (axis == "Horizontal")
@@ -78,6 +103,11 @@ namespace GameWindow.Systems
                 return GetVerticalAxis();
             throw new Exception("Invalid Parameters");
         }
+
+        /// <summary>
+        /// Gets the "Horizontal" axis
+        /// </summary>
+        /// <returns> The "Horizontal" axis input value </returns>
         private static int GetHorizontalAxis()
         {
             int xAxis = 0;
@@ -87,6 +117,11 @@ namespace GameWindow.Systems
                 xAxis += 1;
             return xAxis;
         }
+
+        /// <summary>
+        /// Gets the "Vertical" axis
+        /// </summary>
+        /// <returns> The "Vertical" axis input value </returns>
         private static int GetVerticalAxis()
         {
             int yAxis = 0;

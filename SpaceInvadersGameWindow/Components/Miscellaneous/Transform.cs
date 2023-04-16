@@ -1,22 +1,21 @@
-﻿using GameWindow.Components.UIElements;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
 
 namespace GameWindow.Components.Miscellaneous
 {
     /// <summary>
-    /// A class implementing a basic transform
+    /// A class implementing a transform
     /// </summary>
     public class Transform
     {
-        public static readonly List<Transform> transforms = new List<Transform>();
+        public static readonly List<Transform> Transforms = new List<Transform>();
 
         private Action? positionChanged;
         private Action? scaleChanged;
 
         /// <summary>
-        /// Position changed adder / alerter
+        /// Position changed adder & alerter
         /// </summary>
         public Action? PositionChanged
         {
@@ -29,7 +28,7 @@ namespace GameWindow.Components.Miscellaneous
         }
 
         /// <summary>
-        /// Scale changed adder / alerter
+        /// Scale changed adder & alerter
         /// </summary>
         public Action? ScaleChanged
         {
@@ -114,7 +113,7 @@ namespace GameWindow.Components.Miscellaneous
         /// <param name="position"> The position of the transform </param>
         public Transform(Vector2 scale, Vector2 position)
         {
-            transforms.Add(this);
+            Transforms.Add(this);
 
             _baseScale = scale;
             _basePosition = position;
@@ -122,7 +121,7 @@ namespace GameWindow.Components.Miscellaneous
 
         /// <summary>
         /// Called when <see cref="MainWindow"/>'s size has changed, alerts the relevant registered components
-        /// <seealso cref="Sprite"/> <seealso cref="Collider"/> <seealso cref="CustomButton"/> <seealso cref="CustomLabel"/> <seealso cref="CustomTextInput"/> 
+        /// <seealso cref="Sprite"/> <seealso cref="Collider"/> <seealso cref="CustomButton"/> <seealso cref="CustomLabel"/> <seealso cref="CustomTextBox"/> 
         /// </summary>
         public void OnSizeChanged()
         {
@@ -131,11 +130,11 @@ namespace GameWindow.Components.Miscellaneous
         }
 
         /// <summary>
-        /// Dispose the transform by removing it from <see cref="transforms"/>
+        /// Dispose the transform by removing it from <see cref="Transforms"/>
         /// </summary>
         public void Dispose()
         {
-            transforms.Remove(this);
+            Transforms.Remove(this);
         }
     }
 }

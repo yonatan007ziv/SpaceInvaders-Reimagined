@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="GameWindow.Components.UIElements.CustomLabel"
+﻿<Viewbox x:Class="GameWindow.Components.UIElements.CustomLabel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" 
-             d:DesignHeight="0" d:DesignWidth="0">
-    <Viewbox>
-        <Label Name="label" Foreground="Green" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Space Invaders"/>
-    </Viewbox>
-</UserControl>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        <Label Name="label"
+               Foreground="White"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               FontFamily="Space Invaders"
+               IsHitTestVisible="False"
+               />
+</Viewbox>

@@ -11,13 +11,14 @@ namespace GameWindow.Components.NetworkedComponents
     /// </summary>
     internal class NetworkedBunkerPart
     {
+        private Transform transform;
+        private Collider col;
+        private Sprite sprite;
+
         public int bunkerID;
         public int imagePathIndex = 1;
         public BunkerPartType part;
         public bool flipped;
-        private Transform transform;
-        private Collider col;
-        private Sprite sprite;
 
         /// <summary>
         /// Builds a bunker part
@@ -33,12 +34,14 @@ namespace GameWindow.Components.NetworkedComponents
             this.bunkerID = bunkerID;
 
             transform = new Transform(new Vector2(6, 8), pos);
-            col = new Collider(transform, this, CollisionLayer.Bunker);
+
+            CollisionLayer layer = (0 <= bunkerID && bunkerID <= 3) ? CollisionLayer.BunkerA : CollisionLayer.BunkerB;
+            col = new Collider(transform, this, layer);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, ""));
 
-            NextClip();
+            UpdateClip();
 
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
@@ -49,20 +52,19 @@ namespace GameWindow.Components.NetworkedComponents
         /// </summary>
         public void Hit()
         {
-            if (imagePathIndex == 4)
+            imagePathIndex++;
+            if (imagePathIndex >= 4)
             {
-                imagePathIndex++;
                 Dispose();
                 return;
             }
-            imagePathIndex++;
-            NextClip();
+            UpdateClip();
         }
 
         /// <summary>
         /// Next bunker part's clip
         /// </summary>
-        private void NextClip()
+        private void UpdateClip()
         {
             string bunkerImagePath;
             switch (part)

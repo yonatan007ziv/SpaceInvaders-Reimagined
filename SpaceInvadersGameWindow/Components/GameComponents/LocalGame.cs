@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.GameComponents;
-using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.Pages;
 using GameWindow.Components.UIElements;
 using GameWindow.Systems;
@@ -7,7 +6,7 @@ using System.Numerics;
 using System.Windows;
 using System.Windows.Input;
 
-namespace GameWindow.Components.Initializers
+namespace GameWindow.Components.GameComponents
 {
     /// <summary>
     /// A class implementing a local game
@@ -17,14 +16,15 @@ namespace GameWindow.Components.Initializers
         public static LocalGame? instance;
 
         private Player player;
-        private int score = 0;
         private bool gaveExtraLife = false;
+        private int score = 0;
+        private int livesLeft = 3;
+
         public int Score
         {
             get { return score; }
             set { score = value; creditsLabel.Text = "CREDIT " + score; if (score >= 1500 && !gaveExtraLife) { LivesLeft++; gaveExtraLife = true; } }
         }
-        private int livesLeft = 3;
         public int LivesLeft
         {
             get { return livesLeft; }
@@ -64,7 +64,7 @@ namespace GameWindow.Components.Initializers
         /// </summary>
         public async void StartGame()
         {
-            InputHandler.Disabled(true);
+            InputHandler.Disable(true);
             Player.PauseUnpause(true);
             Wall.MakeLocalGameWalls();
             MakeBunkers();
@@ -85,7 +85,7 @@ namespace GameWindow.Components.Initializers
             await Invader.PlotInvaders();
             Invader.PauseUnpauseInvaders(false);
             Player.PauseUnpause(false);
-            InputHandler.Disabled(false);
+            InputHandler.Disable(false);
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace GameWindow.Components.Initializers
                     {
                         DisposeLostMenu();
                         Dispose();
-                        GameInitializers.StartGameMenu(GameInitializers.username);
+                        new GameMainMenu();
                     }, "", "Main Menu");
             });
         }
@@ -237,6 +237,7 @@ namespace GameWindow.Components.Initializers
             Bunker.DisposeAll();
             Bullet.DisposeAll();
             Invader.DisposeAll();
+            Invader.Stage = 1;
             player.Dispose();
             livesLabel.Dispose();
             creditsLabel.Dispose();

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
-using static GameWindow.Components.Miscellaneous.Delegates;
 
 namespace GameWindow.Components.NetworkedComponents
 {
@@ -19,6 +18,7 @@ namespace GameWindow.Components.NetworkedComponents
         public static NetworkedPlayer? localPlayer;
 
         public bool invincible = false;
+        public DelegatesActions.ActionString? SendMessage;
         public NetworkedBullet? myBullet;
         public Transform transform;
         public Collider col;
@@ -34,12 +34,13 @@ namespace GameWindow.Components.NetworkedComponents
         /// <param name="pos"> A <see cref="Vector2"/> representing the player's position </param>
         /// <param name="username"> The username of the player </param>
         /// <param name="team"> Team of the player </param>
-        /// <param name="sendMessage"> Delegate used to send messages to the "Game-Server" </param>
-        public NetworkedPlayer(Vector2 pos, string username, char team, ActionString sendMessage) // local
+        /// <param name="SendMessage"> Delegate used to send messages to the "Game-Server" </param>
+        public NetworkedPlayer(Vector2 pos, string username, char team, DelegatesActions.ActionString SendMessage) // local
         {
             currentPlayers.Add(username, this);
 
             localPlayer = this;
+            this.SendMessage = SendMessage;
             this.username = username;
             this.team = team;
 
@@ -49,7 +50,7 @@ namespace GameWindow.Components.NetworkedComponents
             col = new Collider(transform, this, myLayer);
             col.AddIgnoreLayer(myLayer);
 
-            controller = new NetworkedPlayerController(this, sendMessage);
+            controller = new NetworkedPlayerController(this, SendMessage);
 
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
@@ -115,9 +116,9 @@ namespace GameWindow.Components.NetworkedComponents
             }
 
             Respawn(isOpponent: false);
+            controller!.disabled = false;
             await InvincibilityAnimation();
             invincible = false;
-            controller!.disabled = false;
         }
 
         /// <summary>
@@ -142,6 +143,7 @@ namespace GameWindow.Components.NetworkedComponents
 
             Respawn(isOpponent: localPlayer!.team != team);
             await InvincibilityAnimation();
+            invincible = false;
         }
 
         /// <summary>
@@ -160,7 +162,7 @@ namespace GameWindow.Components.NetworkedComponents
         /// <returns> A task representing the asynchronous operation of the invincibility animation </returns>
         private async Task InvincibilityAnimation()
         {
-            for (int i = 0; i < Player.INVINCIBILITY_PERIOD; i++)
+            for (int i = 0; i < Player.INVINCIBILITY_PERIOD * 10; i++)
             {
                 sprite.Visible(i % 2 == 0);
                 await Task.Delay(1000 / 10);

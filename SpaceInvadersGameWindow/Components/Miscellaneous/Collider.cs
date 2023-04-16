@@ -17,6 +17,8 @@ namespace GameWindow.Components.Miscellaneous
         InvaderBullet,
         TeamA,
         TeamB,
+        BunkerA,
+        BunkerB,
     }
 
     /// <summary>

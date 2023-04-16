@@ -1,4 +1,4 @@
-﻿using GameWindow.Components.Initializers;
+﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using System.Numerics;
@@ -23,7 +23,7 @@ namespace GameWindow.Components.Pages
 
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
-                pauseLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(50, 25)), "Game Paused", System.Windows.Media.Colors.Black);
+                pauseLabel = new CustomLabel(new Transform(new Vector2(100, 100), new Vector2(125, 60)), "Game Paused", System.Windows.Media.Colors.Blue);
                 newGameButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(100, 100)), NewGame, "", "New Game");
                 mainMenuButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(150, 100)), MainMenu, "", "Main Menu");
             });
@@ -52,7 +52,7 @@ namespace GameWindow.Components.Pages
         {
             Dispose();
             LocalGame.instance!.Dispose();
-            GameInitializers.StartGameMenu(GameInitializers.username);
+            new GameMainMenu();
             LocalGame.Paused = false;
         }
 

@@ -3,7 +3,6 @@ using GameWindow.Components.Miscellaneous;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Windows.Input;
-using static GameWindow.Components.Miscellaneous.Delegates;
 
 namespace GameWindow.Components.NetworkedComponents
 {
@@ -15,7 +14,7 @@ namespace GameWindow.Components.NetworkedComponents
         public bool disabled = false;
         Transform transform;
         Collider col;
-        private ActionString sendMessage;
+        private DelegatesActions.ActionString sendMessage;
         private NetworkedPlayer player;
 
         /// <summary>
@@ -23,7 +22,7 @@ namespace GameWindow.Components.NetworkedComponents
         /// </summary>
         /// <param name="player"> The local <see cref="NetworkedPlayer"/> </param>
         /// <param name="sendMessage"> Delegate used to send messages to the "Game-Server" </param>
-        public NetworkedPlayerController(NetworkedPlayer player, ActionString sendMessage)
+        public NetworkedPlayerController(NetworkedPlayer player, DelegatesActions.ActionString sendMessage)
         {
             this.player = player;
             transform = player.transform;
@@ -48,7 +47,7 @@ namespace GameWindow.Components.NetworkedComponents
                 sendMessage($"PlayerPosition:{transform.Position.X}");
             }
             if (InputHandler.keysDown.Contains(Key.Space) && player.myBullet == null)
-                player.myBullet = new NetworkedBullet(transform.Position, sendMessage);
+                player.myBullet = new NetworkedBullet(transform.Position);
         }
 
         /// <summary>

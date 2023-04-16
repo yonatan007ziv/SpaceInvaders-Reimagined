@@ -1,12 +1,17 @@
 ﻿using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace LoginRegistServer
 {
+    /// <summary>
+    /// A class responsible for communicating with a Login / Register request
+    /// </summary>
     internal class ClientLoginRegistValidator
     {
+        /// <summary>
+        /// Represents all the possible replies for a login attempt
+        /// </summary>
         private enum LoginResult
         {
             Success,
@@ -15,6 +20,10 @@ namespace LoginRegistServer
             AlreadyConnected,
             Failed
         }
+
+        /// <summary>
+        /// Represents all the possible replies for a register attempt
+        /// </summary>
         private enum RegisterResult
         {
             Success,
@@ -38,9 +47,13 @@ namespace LoginRegistServer
         private RSA rsa = RSA.Create();
         private Aes aes = Aes.Create();
 
+        /// <summary>
+        /// Builds a new <see cref="ClientLoginRegistValidator"/> responsible for validating the login / register attempt
+        /// </summary>
+        /// <param name="client"> The Login / Register client </param>
         public ClientLoginRegistValidator(TcpClient client)
         {
-            Console.WriteLine("New client accepted.");
+            Console.WriteLine("New Login/Register client accepted");
 
             this.client = client;
             buffer = new Byte[client.ReceiveBufferSize];
@@ -49,6 +62,10 @@ namespace LoginRegistServer
         }
 
         #region Login Logic
+        /// <summary>
+        /// Starts the login procedure
+        /// </summary>
+        /// <param name="loginData"> The gotten login data </param>
         private void Login(string loginData)
         {
             username = loginData.Split('/')[0];
@@ -57,6 +74,17 @@ namespace LoginRegistServer
 
             SendMessage(loginResult.ToString());
         }
+
+        /// <summary>
+        /// Validate Login in the following steps:
+        /// <list type="number">
+        ///     <item> Check if username exists in the database </item>
+        ///     <item> Check if password is correct </item>
+        ///     <item> Check if player is not connected </item>
+        /// </list>
+        /// If those checks are positive, then the login data is validated
+        /// </summary>
+        /// <returns> A <see cref="LoginResult"/> representing the result of the check </returns>
         private LoginResult ValidateLogin()
         {
             Console.WriteLine($"VALIDATING LOGIN: ({username}, {password})");
@@ -79,6 +107,10 @@ namespace LoginRegistServer
         #endregion
 
         #region Register Logic
+        /// <summary>
+        /// Starts the register procedure
+        /// </summary>
+        /// <param name="registerData"> The gotten register data </param>
         private void Register(string registerData)
         {
             username = registerData.Split('/')[0];
@@ -88,6 +120,17 @@ namespace LoginRegistServer
 
             SendMessage(registerResult.ToString());
         }
+
+        /// <summary>
+        /// Validate Login in the following steps:
+        /// <list type="number">
+        ///     <item> Check if username does not exists in the database </item>
+        ///     <item> Check if email does not exists in the database </item>
+        ///     <item> Check if username password and email are valid </item>
+        /// </list>
+        /// If those checks are positive, then the register data is validated and initiates 2FA check
+        /// </summary>
+        /// <returns> A <see cref="RegisterResult"/> representing the result of the check </returns>
         private RegisterResult ValidateRegister()
         {
             Console.WriteLine($"VALIDATING REGISTER: ({username}, {password}, {email})");
@@ -104,35 +147,44 @@ namespace LoginRegistServer
                 else if (email.Length == 0 || email.Contains('/'))
                     return RegisterResult.InvalidEmail;
 
-                generated2FACode = new Random().Next(10000, 100000);
+                generated2FACode = new Random().Next(10000, 100000); // 5 digit number
                 SMTPHandler.SendEmail(email, "Space Invaders - Reimagined", $"Your 2FA code is: {generated2FACode}");
                 BeginRead();
                 return RegisterResult.Need2FA;
+            }
+            catch (FormatException ex) when (ex.Message.Contains("e-mail"))
+            {
+                return RegisterResult.InvalidEmail;
             }
             catch
             {
                 return RegisterResult.Failed;
             }
         }
+
+        /// <summary>
+        /// Compares the gotten code against the generated code and responds appropriately
+        /// </summary>
+        /// <param name="code"> The received 2FA code </param>
         private void Check2FA(string code)
         {
             if (int.TryParse(code, out int codeReceived))
-            {
                 if (codeReceived == generated2FACode)
                 {
                     Console.WriteLine($"INSERTING USER: ({username}, {password}, {email})");
                     DatabaseHandler.InsertUser(username, password, email);
                     SendMessage(RegisterResult.Success.ToString());
+                    return;
                 }
-                else
-                    SendMessage(RegisterResult.Wrong2FA.ToString());
-            }
-            else
-                SendMessage(RegisterResult.Wrong2FA.ToString());
+            SendMessage(RegisterResult.Wrong2FA.ToString());
         }
         #endregion
 
-        private void DecodeMessage(string msg)
+        /// <summary>
+        /// Interprets the message gotten from the client
+        /// </summary>
+        /// <param name="msg"> The received message </param>
+        private void InterpretMessage(string msg)
         {
             if (msg.Contains("Login"))
                 Login(msg.Split(':')[1]);
@@ -202,7 +254,7 @@ namespace LoginRegistServer
         {
             byte[] decrypted = aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
             string msg = Encoding.UTF8.GetString(decrypted);
-            DecodeMessage(msg);
+            InterpretMessage(msg);
         }
         private void SendMessage(string msg)
         {

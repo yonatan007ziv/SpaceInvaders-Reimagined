@@ -11,7 +11,7 @@ namespace GameWindow.Components.GameComponents
     internal class PlayerController
     {
         public static bool disabled = false;
-        
+
         private Transform playerTransform;
         private Collider playerCol;
 

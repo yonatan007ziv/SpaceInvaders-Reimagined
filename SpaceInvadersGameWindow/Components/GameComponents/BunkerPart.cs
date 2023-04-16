@@ -29,7 +29,7 @@ namespace GameWindow.Components.GameComponents
             col = new Collider(transform, this, CollisionLayer.Bunker);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, ""));
 
             NextClip();
 

@@ -1,5 +1,4 @@
-﻿using GameWindow.Components.Initializers;
-using GameWindow.Components.Pages;
+﻿using GameWindow.Components.Pages;
 using GameWindow.Components.UIElements;
 using System;
 
@@ -10,6 +9,9 @@ namespace GameWindow.Systems.Networking
     /// </summary>
     class LoginValidator : NetworkClient
     {
+        private const string LOGIN_SERVER_IP = "46.121.140.69";
+        private const int LOGIN_SERVER_PORT = 7777;
+
         private string username;
         private CustomLabel resultLabel;
         private Action DiposeLoginRegisterMenu;
@@ -27,10 +29,22 @@ namespace GameWindow.Systems.Networking
 
             this.resultLabel = resultLabel;
             this.DiposeLoginRegisterMenu = DiposeLoginRegisterMenu;
-            if (Connect("46.121.140.69", 7777))
+
+            if (username == "")
+            {
+                resultLabel.Text = "Invalid Username entered.";
+                return;
+            }
+            else if (password == "")
+            {
+                resultLabel.Text = "Invalid Password entered.";
+                return;
+            }
+
+            if (Connect(LOGIN_SERVER_IP, LOGIN_SERVER_PORT))
             {
                 SendMessage($"Login:{username}/{password}");
-                BeginRead(false);
+                BeginRead(loop: false);
             }
             else
                 resultLabel.Text = "Failed! server unreachable.";
@@ -46,7 +60,9 @@ namespace GameWindow.Systems.Networking
             {
                 resultLabel.Text = "Successfully logged in!";
                 DiposeLoginRegisterMenu();
-                GameInitializers.StartGameMenu(username);
+
+                MainWindow.username = username;
+                new GameMainMenu();
             }
             else if (msg == "NoSuchUsername")
                 resultLabel.Text = "No such username exists, maybe try to register?";

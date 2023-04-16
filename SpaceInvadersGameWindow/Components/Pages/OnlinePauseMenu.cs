@@ -1,5 +1,5 @@
-﻿using GameWindow.Components.Initializers;
-using GameWindow.Components.Miscellaneous;
+﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Components.NetworkedComponents;
 using GameWindow.Components.UIElements;
 using System.Numerics;
 using System.Windows;
@@ -36,8 +36,8 @@ namespace GameWindow.Components.Pages
         private void MainMenu()
         {
             Dispose();
-            MultiplayerGameClient.instance?.Dispose();
-            GameInitializers.StartGameMenu(GameInitializers.username);
+            NetworkedGameClient.instance?.Dispose();
+            new GameMainMenu();
         }
 
         /// <summary>

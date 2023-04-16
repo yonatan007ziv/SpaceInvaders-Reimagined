@@ -1,4 +1,4 @@
-﻿using GameWindow.Components.Initializers;
+﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
 using System.Numerics;
@@ -37,7 +37,10 @@ namespace GameWindow.Components.Pages
         private void OnSingleplayer()
         {
             Dispose();
-            GameInitializers.StartSingleplayerGame();
+            if (LocalGame.instance == null)
+                new LocalGame();
+            else
+                LocalGame.instance?.StartGame();
         }
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace GameWindow.Components.Pages
         private void OnMultiplayer()
         {
             Dispose();
-            GameInitializers.StartMultiplayerGameMenu();
+            new GameMultiplayerMenu("");
         }
 
         /// <summary>
@@ -55,7 +58,7 @@ namespace GameWindow.Components.Pages
         private void OnOptions()
         {
             Dispose();
-            GameInitializers.StartOptionsMenu();
+            new OptionsMenu();
         }
 
         /// <summary>

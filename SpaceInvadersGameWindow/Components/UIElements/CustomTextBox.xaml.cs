@@ -1,47 +1,44 @@
 ﻿using GameWindow.Components.Miscellaneous;
+using System;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GameWindow.Components.UIElements
 {
     /// <summary>
-    /// A custom <see cref="Label"/> implementation
+    /// A custom <see cref="TextBox"/> implementation
     /// </summary>
-    public partial class CustomLabel : Viewbox
+    public partial class CustomTextBox : TextBox
     {
         public Transform transform;
-
-        public string Text
-        {
-            get { return (string)label.Content; }
-            set { Dispatcher.Invoke(() => label.Content = value); }
-        }
+        public bool Censor = false;
 
         /// <summary>
-        /// Builds a label UI element
+        /// Builds a text box UI element
         /// </summary>
         /// <param name="transform"> The <see cref="Transform"/> to link </param>
-        /// <param name="text"> Text to display </param>
-        /// <param name="TextColor"> Color of the text </param>
-        public CustomLabel(Transform transform, string text, System.Windows.Media.Color TextColor) // Called within an STA thread
+        /// <param name="defaultText"> The default displayed text </param>
+        /// <param name="textChanged"> An <see cref="Action"/> that will be called when the text changes </param>
+        public CustomTextBox(Transform transform, string defaultText, Action textChanged) // Called within an STA thread
         {
             InitializeComponent();
-            Text = text;
-            label.SetValue(Control.ForegroundProperty, new System.Windows.Media.SolidColorBrush(TextColor));
 
             this.transform = transform;
             transform.PositionChanged += SetPosition;
             transform.ScaleChanged += SetScale;
 
-            MainWindow.instance!.CenteredCanvas.Children.Add(this);
+            Text = defaultText;
+            TextChanged += (s, e) => textChanged();
 
-            SetValue(Panel.ZIndexProperty, 2);
+            MainWindow.instance!.CenteredCanvas.Children.Add(this);
         }
 
         /// <summary>
         /// Sets the position according to the linked transform
         /// </summary>
-        private void SetPosition()
+        public void SetPosition()
         {
             Dispatcher.Invoke(() =>
             { // UI Objects need to be changed in an STA thread
@@ -53,7 +50,7 @@ namespace GameWindow.Components.UIElements
         /// <summary>
         /// Sets the scale according to the linked transform
         /// </summary>
-        private void SetScale()
+        public void SetScale()
         {
             Dispatcher.Invoke(() =>
             { // UI Objects need to be changed in an STA thread
@@ -73,7 +70,7 @@ namespace GameWindow.Components.UIElements
         }
 
         /// <summary>
-        /// Disposes the <see cref="CustomLabel"/>
+        /// Disposes the <see cref="CustomTextBox"/>
         /// </summary>
         public void Dispose()
         {

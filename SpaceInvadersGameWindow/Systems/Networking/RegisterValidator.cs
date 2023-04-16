@@ -1,5 +1,5 @@
 ﻿using GameWindow.Components.UIElements;
-using static GameWindow.Components.Miscellaneous.Delegates;
+using System;
 
 namespace GameWindow.Systems.Networking
 {
@@ -8,6 +8,9 @@ namespace GameWindow.Systems.Networking
     /// </summary>
     public class RegisterValidator : NetworkClient
     {
+        private const string REGISTER_SERVER_IP = "46.121.140.69";
+        private const int REGISTER_SERVER_PORT = 7777;
+
         private CustomLabel resultLabel;
         private Action On2FA;
 
@@ -23,7 +26,24 @@ namespace GameWindow.Systems.Networking
         {
             this.resultLabel = resultLabel;
             this.On2FA = On2FA;
-            if (Connect("46.121.140.69", 7777))
+
+            if (username == "")
+            {
+                resultLabel.Text = "Invalid Username entered.";
+                return;
+            }
+            else if (password == "")
+            {
+                resultLabel.Text = "Invalid Password entered.";
+                return;
+            }
+            else if (email == "")
+            {
+                resultLabel.Text = "Invalid Email entered.";
+                return;
+            }
+
+            if (Connect(REGISTER_SERVER_IP, REGISTER_SERVER_PORT))
             {
                 SendMessage($"Register:{username}/{password}/{email}");
                 BeginRead(false);
@@ -58,9 +78,9 @@ namespace GameWindow.Systems.Networking
             else if (msg == "InvalidUsername")
                 resultLabel.Text = "Invalid Username entered.";
             else if (msg == "InvalidPassword")
-                resultLabel.Text = "Invalid password entered.";
+                resultLabel.Text = "Invalid Password entered.";
             else if (msg == "InvalidEmail")
-                resultLabel.Text = "Invalid email entered.";
+                resultLabel.Text = "Invalid Email entered.";
             else if (msg == "Failed")
                 resultLabel.Text = "Failed Register! please try again.";
             else if (msg == "Wrong2FA")
@@ -68,7 +88,6 @@ namespace GameWindow.Systems.Networking
             else if (msg == "Need2FA")
             {
                 On2FA();
-                resultLabel.Text = "Please check your email inbox.";
                 return; // Prevents disconnection from server
             }
             StopClient();

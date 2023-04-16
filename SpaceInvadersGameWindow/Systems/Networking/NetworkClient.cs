@@ -16,6 +16,7 @@ namespace GameWindow.Systems.Networking
         // Client related fields
         private TcpClient client = new TcpClient();
         private Byte[] buffer;
+        private IAsyncResult? currentRead;
 
         // Encryption related fields
         private TaskCompletionSource<bool> EncryptionReady = new TaskCompletionSource<bool>();
@@ -56,7 +57,7 @@ namespace GameWindow.Systems.Networking
 
                 return true;
             }
-            catch(SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionRefused)
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionRefused)
             {
                 Debug.WriteLine($"Connection Refused: {ip}:{port}");
             }
@@ -70,7 +71,24 @@ namespace GameWindow.Systems.Networking
         protected async void BeginRead(bool loop)
         {
             await EncryptionReady.Task;
-            client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, loop), null);
+
+            try
+            {
+                currentRead = client.GetStream().BeginRead(buffer, 0, buffer.Length,
+                (result) => ReceiveMessage(result, loop), null);
+            }
+            catch { StopClient(); return; }
+        }
+
+        /// <summary>
+        /// Awaits until the encryption is ready, and then stops the current reading from the stream
+        /// </summary>
+        protected async void EndRead()
+        {
+            await EncryptionReady.Task;
+
+            if (currentRead != null)
+                client.GetStream().EndRead(currentRead);
         }
 
         /// <summary>
@@ -90,16 +108,13 @@ namespace GameWindow.Systems.Networking
         protected async void SendMessage(string msg)
         {
             await EncryptionReady.Task;
-            
+
             // Get message bytes
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
-
             // Get encrypted message bytes
             byte[] encrypted = EncryptAES(bytes);
-
             // Get encrypted message bytes with 4 first bytes representing the length of the message
             byte[] encryptedWithPrefix = Prefix4BytesLength(encrypted);
-
             client.GetStream().Write(encryptedWithPrefix, 0, encryptedWithPrefix.Length);
         }
 
@@ -109,13 +124,13 @@ namespace GameWindow.Systems.Networking
         /// <param name="bytes"> The bytes to encrypt </param>
         /// <returns> A byte array containing the encrypted bytes </returns>
         private byte[] EncryptAES(byte[] bytes) { return aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length); }
-        
+
         /// <summary>
         /// Takes an array of bytes and prefixes its length at the first 4 bytes
         /// </summary>
         /// <param name="arr"></param>
         /// <returns> A byte array cointaining the original message with the first 4 bytes being length-bytes </returns>
-        private byte[] Prefix4BytesLength(byte[] arr)
+        private static byte[] Prefix4BytesLength(byte[] arr)
         {
             byte[] arrWithPrefix = new byte[arr.Length + sizeof(int)];
             byte[] length = BitConverter.GetBytes(arr.Length);
@@ -191,8 +206,7 @@ namespace GameWindow.Systems.Networking
             EncryptedSeperator(encrypted);
 
             if (loop)
-                try { client.GetStream().BeginRead(buffer, 0, buffer.Length, (result) => ReceiveMessage(result, true), null); }
-                catch { StopClient(); return; }
+                BeginRead(true);
         }
 
         /// <summary>
