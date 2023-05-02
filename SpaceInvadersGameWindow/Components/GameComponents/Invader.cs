@@ -50,29 +50,29 @@ namespace GameWindow.Components.GameComponents
         {
             this.type = type;
 
-            string imgPath;
+            Image image;
             Vector2 scale;
             switch (type)
             {
                 default:
                     throw new ArgumentException($"InvaderType {type} isn't Valid");
                 case InvaderType.Octopus:
-                    imgPath = @$"Resources\Images\Enemies\Octopus1.png";
+                    image = Image.Octopus1;
                     pointsReward = 10;
                     scale = new Vector2(12, 8);
                     break;
                 case InvaderType.Crab:
-                    imgPath = @$"Resources\Images\Enemies\Crab1.png";
+                    image = Image.Crab1;
                     pointsReward = 20;
                     scale = new Vector2(11, 8);
                     break;
                 case InvaderType.Squid:
-                    imgPath = @$"Resources\Images\Enemies\Squid1.png";
+                    image = Image.Squid1;
                     pointsReward = 30;
                     scale = new Vector2(8, 8);
                     break;
                 case InvaderType.UFO:
-                    imgPath = @$"Resources\Images\Enemies\UFO.png";
+                    image = Image.UFO;
                     int rand = _Random.Next(4);
                     pointsReward = rand == 3 ? 300 : (rand == 2 ? 150 : (rand == 1 ? 100 : 50)); // Random 300, 150, 100 or 50
                     scale = new Vector2(16, 8);
@@ -83,7 +83,7 @@ namespace GameWindow.Components.GameComponents
             col = new Collider(transform, this, CollisionLayer.Invader);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, imgPath));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, image));
 
             if (type == InvaderType.UFO)
                 CurrentUFO = this;
@@ -421,7 +421,7 @@ namespace GameWindow.Components.GameComponents
 
             // Invader Explosion
             transform.Scale = new Vector2(13, 8);
-            sprite.ChangeImage(@"Resources\Images\Enemies\InvaderDeath.png");
+            sprite.ChangeImage(Image.InvaderDeath);
 
             LocalGame.instance!.Score += pointsReward;
 
@@ -499,28 +499,26 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         private void NextClip()
         {
-            int clipNum = SpriteSwitch ? 2 : 1;
-            string imagePath;
+            Image image;
             switch (type)
             {
                 default:
-                    imagePath = $@"Resources\Images\MissingSprite.png";
-                    break;
+                    throw new InvalidTimeZoneException();
                 case InvaderType.Octopus:
-                    imagePath = @$"Resources\Images\Enemies\Octopus{clipNum}.png";
+                    image = SpriteSwitch ? Image.Octopus2 : Image.Octopus1;
                     pointsReward = 10;
                     break;
                 case InvaderType.Crab:
-                    imagePath = $@"Resources\Images\Enemies\Crab{clipNum}.png";
+                    image = SpriteSwitch ? Image.Crab2 : Image.Crab1;
                     pointsReward = 20;
                     break;
                 case InvaderType.Squid:
-                    imagePath = $@"Resources\Images\Enemies\Squid{clipNum}.png";
+                    image = SpriteSwitch ? Image.Squid2 : Image.Squid1;
                     pointsReward = 30;
                     break;
             }
 
-            sprite.ChangeImage(imagePath);
+            sprite.ChangeImage(image);
         }
 
         /// <summary>
@@ -542,7 +540,7 @@ namespace GameWindow.Components.GameComponents
 
             // Invader Explosion
             transform.Scale = new Vector2(13, 8);
-            sprite.ChangeImage(@"Resources\Images\Enemies\InvaderDeath.png");
+            sprite.ChangeImage(Image.InvaderDeath);
 
             LocalGame.instance!.Score += pointsReward;
 

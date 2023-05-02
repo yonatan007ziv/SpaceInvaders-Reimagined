@@ -1,13 +1,14 @@
 ﻿using System.Data.SqlClient;
 
-namespace LoginRegistServer
+namespace LoginRegisterServer
 {
     /// <summary>
     /// DatabaseHandler class provides methods to interact with a SQL database for user authentication and registration purposes
     /// </summary>
     internal static class DatabaseHandler
     {
-        private static SqlConnection conn = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\Code\VS Community\SpaceInvaders-Reimagined\SpaceInvadersLoginRegistServer\Users.mdf"";Integrated Security=True");
+        private const string connString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=""D:\Code\VS Community\SpaceInvaders-Reimagined\SpaceInvadersLoginRegistServer\Users.mdf"";Integrated Security=True";
+        private readonly static SqlConnection conn = new SqlConnection(connString);
 
         /// <summary>
         /// Checks if a username exists in the database
@@ -55,21 +56,6 @@ namespace LoginRegistServer
             int result = (int)cmd.ExecuteScalar();
             conn.Close();
             return result > 0;
-        }
-
-        /// <summary>
-        /// Checks if a user is currently connected to the game
-        /// </summary>
-        /// <param name="username"> The username of the account to check </param>
-        /// <returns> Returns true if the user is connected, otherwise false </returns>
-        public static bool IsConnected(string username)
-        {
-            SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = $"SELECT Connected FROM [Users] WHERE Username='{username}'";
-            conn.Open();
-            bool result = (bool)cmd.ExecuteScalar();
-            conn.Close();
-            return result;
         }
 
         /// <summary>

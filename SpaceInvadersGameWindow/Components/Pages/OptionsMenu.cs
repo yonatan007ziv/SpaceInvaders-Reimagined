@@ -24,7 +24,7 @@ namespace GameWindow.Components.Pages
             {
                 volumeLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(50, 50)), "Volume:", System.Windows.Media.Colors.White);
                 volumeInput = new CustomTextBox(new Transform(new Vector2(50, 50), new Vector2(150, 50)), "" + (int)(SoundManager.currentVol * 100), () => UpdateVolume(volumeInput!.Text));
-                backButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(50, 150)), Back, "", "Back");
+                backButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(50, 150)), Back, Image.Empty, "Back");
             }));
 
             // Suppressing the "Null When Leaving a Constructor" warning

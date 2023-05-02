@@ -29,8 +29,8 @@ namespace GameWindow.Components.Pages
                 ipInput = new CustomTextBox(new Transform(new Vector2(125, 50), new Vector2(MainWindow.referenceSize.X / 2, 50)), "127.0.0.1", DelegatesActions.EmptyAction);
                 portInput = new CustomTextBox(new Transform(new Vector2(125, 50), new Vector2(MainWindow.referenceSize.X / 2, 100)), "7778", DelegatesActions.EmptyAction);
 
-                connectButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, 225)), OnConnect, "", "Connect");
-                backButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 26, 225)), OnBack, "", "Back");
+                connectButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, 225)), OnConnect, Image.Empty, "Connect");
+                backButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 26, 225)), OnBack, Image.Empty, "Back");
             });
 
             // Suppressing the "Null When Leaving a Constructor" warning

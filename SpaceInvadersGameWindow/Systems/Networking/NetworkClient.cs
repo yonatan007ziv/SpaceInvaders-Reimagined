@@ -14,7 +14,7 @@ namespace GameWindow.Systems.Networking
     public abstract class NetworkClient
     {
         // Client related fields
-        private TcpClient client = new TcpClient();
+        private TcpClient client;
         private Byte[] buffer;
         private IAsyncResult? currentRead;
 
@@ -24,10 +24,55 @@ namespace GameWindow.Systems.Networking
         private Aes aes = Aes.Create();
 
         /// <summary>
+        /// Takes a buffer and returns a new buffer with the added first 4 bytes representing the original buffer's length
+        /// </summary>
+        /// <param name="buffer"> The original buffer </param>
+        /// <returns> The new buffer with the first 4 bytes representing length </returns>
+        private static byte[] AddLengthPrefix(byte[] buffer)
+        {
+            byte[] prefixedBuffer = new byte[buffer.Length + sizeof(int)];
+            byte[] length = BitConverter.GetBytes(buffer.Length);
+
+            int pos;
+            // Add the encrypted message's length as a prefix
+            for (pos = 0; pos < length.Length; pos++)
+                prefixedBuffer[pos] = length[pos];
+
+            // Copy the rest of the buffer to the new buffer
+            Array.Copy(buffer, 0, prefixedBuffer, pos, buffer.Length);
+
+            return prefixedBuffer;
+        }
+
+        /// <summary>
+        /// Separates the conjoined encrypyted messages and returns a list with the buffers 
+        /// </summary>
+        /// <param name="encryptedWithPrefix"> The received message's buffer with the first 4 bytes representing the length of the message </param>
+        /// <returns> A list containing all of the separates messages </returns>
+        private static List<byte[]> SeparateEncrypted(byte[] encryptedWithPrefix)
+        {
+            List<byte[]> encryptedMessages = new List<byte[]>();
+            int pos = 0;
+
+            while (pos < encryptedWithPrefix.Length)
+            {
+                int currentLength = BitConverter.ToInt32(encryptedWithPrefix, pos);
+                pos += sizeof(int);
+                byte[] encryptedMessage = new byte[currentLength];
+                Array.Copy(encryptedWithPrefix, pos, encryptedMessage, 0, currentLength);
+                encryptedMessages.Add(encryptedMessage);
+                pos += currentLength;
+            }
+
+            return encryptedMessages;
+        }
+
+        /// <summary>
         /// Builds the <see cref="client"/> and <see cref="buffer"/> objects
         /// </summary>
         public NetworkClient()
         {
+            client = new TcpClient();
             buffer = new Byte[client.ReceiveBufferSize];
         }
 
@@ -36,6 +81,11 @@ namespace GameWindow.Systems.Networking
         /// </summary>
         /// <param name="message"> Message to interpret </param>
         protected abstract void InterpretMessage(string message);
+
+        /// <summary>
+        /// Abstract method for when an error occurs
+        /// </summary>
+        protected abstract void OnError();
 
         /// <summary>
         /// Establishes and initializes a safe transport to the desired endpoint by connecting and writing the public key
@@ -92,61 +142,69 @@ namespace GameWindow.Systems.Networking
         }
 
         /// <summary>
-        /// Writes a message to the endpoint in the following steps:
+        /// Receives encrypted message(s), and separates them
+        /// </summary>
+        /// <param name="aR"> A <see cref="IAsyncResult"/> representing the async state of the read operation </param>
+        /// <param name="loop"> Whether the read is looped or not </param>
+        /// <exception cref="Exception"> Thrown if an exception is thrown when getting the network stream or ending read has failed </exception>
+        private void ReceiveMessage(IAsyncResult aR, bool loop)
+        {
+            int bytesRead = 0;
+            try
+            {
+                lock (client.GetStream())
+                    bytesRead = client.GetStream().EndRead(aR);
+            }
+            catch (Exception ex)
+            {
+                OnError();
+                Console.WriteLine($"Closed conn, Caught Exception: {ex}");
+                return;
+            }
+
+            if (bytesRead == 0) return;
+
+            byte[] encrypted = new byte[bytesRead];
+            Array.Copy(buffer, encrypted, bytesRead);
+
+            List<byte[]> encryptedMessages = SeparateEncrypted(encrypted);
+            foreach (byte[] encryptedMessage in encryptedMessages)
+            {
+                byte[] decrypted = DecryptBuffer(encryptedMessage);
+                string msg = Encoding.UTF8.GetString(decrypted);
+                InterpretMessage(msg);
+            }
+
+            if (loop)
+                BeginRead(true);
+        }
+
+        /// <summary>
+        /// Sends a message in the following steps:
         /// <list type="number">
         ///     <item> Awaits until the encryption is ready </item>
-        ///     <item> Encrypts the message </item>
-        ///     <item> Attaches 4 bytes representing the messages length to the Encrypted message </item>
-        ///     <item> Writes to the recipient 's stream </item>
+        ///     <item> Extracts the bytes from the message </item>
+        ///     <item> encrypts the extracted bytes </item>
+        ///     <item> Prefixes 4 bytes representing the message's length </item>
+        ///     <item> Writes the prefixed message to the recipient </item>
         /// </list>
         /// </summary>
         /// <remarks>
-        /// Remark:
-        /// Important to prefix the length of the message because sometimes messages get written too fast and get joined up
+        /// Remark: It's important to prefix the length of the message because sometimes messages get written too fast and get joined up
         /// </remarks>
         /// <param name="msg"> The message to write </param>
         protected async void SendMessage(string msg)
         {
             await EncryptionReady.Task;
 
-            // Get message bytes
-            byte[] bytes = Encoding.UTF8.GetBytes(msg);
-            // Get encrypted message bytes
-            byte[] encrypted = EncryptAES(bytes);
-            // Get encrypted message bytes with 4 first bytes representing the length of the message
-            byte[] encryptedWithPrefix = Prefix4BytesLength(encrypted);
-            client.GetStream().Write(encryptedWithPrefix, 0, encryptedWithPrefix.Length);
+            byte[] messageBytes = Encoding.UTF8.GetBytes(msg);
+            byte[] encryptedBytes = EncryptBuffer(messageBytes);
+            byte[] prefixedEncryptedBytes = AddLengthPrefix(encryptedBytes);
+
+            client.GetStream().Write(prefixedEncryptedBytes, 0, prefixedEncryptedBytes.Length);
         }
 
-        /// <summary>
-        /// Encrypts an array of bytes using <see cref="aes"/>
-        /// </summary>
-        /// <param name="bytes"> The bytes to encrypt </param>
-        /// <returns> A byte array containing the encrypted bytes </returns>
-        private byte[] EncryptAES(byte[] bytes) { return aes.CreateEncryptor().TransformFinalBlock(bytes, 0, bytes.Length); }
-
-        /// <summary>
-        /// Takes an array of bytes and prefixes its length at the first 4 bytes
-        /// </summary>
-        /// <param name="arr"></param>
-        /// <returns> A byte array cointaining the original message with the first 4 bytes being length-bytes </returns>
-        private static byte[] Prefix4BytesLength(byte[] arr)
-        {
-            byte[] arrWithPrefix = new byte[arr.Length + sizeof(int)];
-            byte[] length = BitConverter.GetBytes(arr.Length);
-
-            // Prefix 4 length-bytes to the start of the array
-            int pos;
-            for (pos = 0; pos < length.Length; pos++)
-                arrWithPrefix[pos] = length[pos];
-
-            // Copy the original message after length-bytes
-            Array.Copy(arr, 0, arrWithPrefix, pos, arr.Length);
-
-            // Return the original message with 4 length-bytes at the start
-            return arrWithPrefix;
-        }
-
+        #region Encryption Decryption
         /// <summary>
         /// Writes the RSA public key to the remote stream
         /// </summary>
@@ -182,75 +240,25 @@ namespace GameWindow.Systems.Networking
         }
 
         /// <summary>
-        /// Receives encrypted message(s), and separates them
+        /// Takes a buffer and decrypts it
         /// </summary>
-        /// <param name="ar"> A <see cref="IAsyncResult"/> representing the async state of the read operation </param>
-        /// <param name="loop"> Whether the read is looped or not </param>
-        /// <exception cref="Exception"> Thrown if an exception is thrown when getting the network stream or ending read has failed </exception>
-        private void ReceiveMessage(IAsyncResult ar, bool loop)
+        /// <param name="encrypted"> A buffer containing the encrypted message </param>
+        /// <returns> The decrypted buffer </returns>
+        private byte[] EncryptBuffer(byte[] toEncrypt)
         {
-            int bytesRead = 0;
-
-            try
-            {
-                lock (client.GetStream())
-                    bytesRead = client.GetStream().EndRead(ar);
-            }
-            catch { StopClient(); return; }
-
-            if (bytesRead == 0) { StopClient(); return; }
-
-            byte[] encrypted = new byte[bytesRead];
-            Array.Copy(buffer, encrypted, bytesRead);
-
-            EncryptedSeperator(encrypted);
-
-            if (loop)
-                BeginRead(true);
+            return aes.CreateEncryptor().TransformFinalBlock(toEncrypt, 0, toEncrypt.Length);
         }
 
         /// <summary>
-        /// Separates the encrypted messages (if got more than one) and decrypts and interprets them
+        /// Takes a buffer and decrypts it
         /// </summary>
-        /// <param name="encryptedWithPrefix"> A byte array containing the received encrypted message(s), with the first 4 bytes representing the length </param>
-        private void EncryptedSeperator(byte[] encryptedWithPrefix)
-        {
-            List<byte[]> encryptedMessages = new List<byte[]>();
-            int pos = 0;
-
-            while (pos < encryptedWithPrefix.Length)
-            {
-                int currentLength = BitConverter.ToInt32(encryptedWithPrefix, pos);
-                pos += sizeof(int);
-                byte[] encryptedMessage = new byte[currentLength];
-                Array.Copy(encryptedWithPrefix, pos, encryptedMessage, 0, currentLength);
-                encryptedMessages.Add(encryptedMessage);
-                pos += currentLength;
-            }
-
-            foreach (byte[] encryptedMessage in encryptedMessages)
-                DecryptMessage(encryptedMessage);
-        }
-
-        /// <summary>
-        /// Decrypts the AES bytes and interprets the gotten message
-        /// </summary>
-        /// <param name="encrypted"> A byte array containing the Encrypted message </param>
-        private void DecryptMessage(byte[] encrypted)
-        {
-            byte[] decrypted = DecryptAES(encrypted);
-            InterpretMessage(Encoding.UTF8.GetString(decrypted));
-        }
-
-        /// <summary>
-        /// Decrypts the gotten AES bytes
-        /// </summary>
-        /// <param name="encrypted"> A byte array containing the Encrypted message </param>
-        /// <returns> A byte array containing the decrypted message </returns>
-        private byte[] DecryptAES(byte[] encrypted)
+        /// <param name="encrypted"> A buffer containing the encrypted message </param>
+        /// <returns> The decrypted buffer </returns>
+        private byte[] DecryptBuffer(byte[] encrypted)
         {
             return aes.CreateDecryptor(aes.Key, aes.IV).TransformFinalBlock(encrypted, 0, encrypted.Length);
         }
+        #endregion
 
         /// <summary>
         /// <list type="bullet">
@@ -260,11 +268,7 @@ namespace GameWindow.Systems.Networking
         /// </summary>
         public void StopClient()
         {
-            if (client.Connected)
-            {
-                client.GetStream().Close();
-                client.Close();
-            }
+            client.Close();
             client = new TcpClient();
         }
     }

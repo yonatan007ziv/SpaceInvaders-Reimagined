@@ -37,7 +37,7 @@ namespace GameWindow.Components.GameComponents
             col = new Collider(transform, this, CollisionLayer.Player);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Player\Player.png"));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Player));
 
             controller = new PlayerController(this);
 
@@ -91,7 +91,7 @@ namespace GameWindow.Components.GameComponents
         {
             for (int i = 0; i < 12; i++)
             {
-                sprite.ChangeImage($@"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png");
+                sprite.ChangeImage(i % 2 == 0 ? Image.PlayerDeath1 : Image.PlayerDeath2);
                 await Task.Delay(1000 / (MainWindow.TARGET_FPS / 6));
             }
         }
@@ -102,7 +102,7 @@ namespace GameWindow.Components.GameComponents
         private void Respawn()
         {
             transform.Scale = new Vector2(13, 8);
-            sprite.ChangeImage(@"Resources\Images\Player\Player.png");
+            sprite.ChangeImage(Image.Player);
             PlayerController.disabled = false;
         }
 

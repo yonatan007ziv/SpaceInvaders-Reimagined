@@ -26,22 +26,22 @@ namespace GameWindow.Components.GameComponents
             switch (bulletType)
             {
                 case BulletType.Charge:
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge1.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge2.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge3.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Charge\Charge4.png"));
+                    clips.Enqueue(Image.Charge1);
+                    clips.Enqueue(Image.Charge2);
+                    clips.Enqueue(Image.Charge3);
+                    clips.Enqueue(Image.Charge4);
                     break;
                 case BulletType.Imperfect:
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect1.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect2.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect3.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Imperfect\Imperfect4.png"));
+                    clips.Enqueue(Image.Imperfect1);
+                    clips.Enqueue(Image.Imperfect1);
+                    clips.Enqueue(Image.Imperfect1);
+                    clips.Enqueue(Image.Imperfect1);
                     break;
                 case BulletType.ZigZag:
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag1.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag2.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag3.png"));
-                    clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\ZigZag\ZigZag4.png"));
+                    clips.Enqueue(Image.ZigZag1);
+                    clips.Enqueue(Image.ZigZag2);
+                    clips.Enqueue(Image.ZigZag3);
+                    clips.Enqueue(Image.ZigZag4);
                     break;
             }
 

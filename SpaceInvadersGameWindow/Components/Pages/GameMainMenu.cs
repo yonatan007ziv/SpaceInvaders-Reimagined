@@ -20,9 +20,9 @@ namespace GameWindow.Components.Pages
         {
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
-                SingleplayerButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2 - 100, MainWindow.referenceSize.Y / 2)), OnSingleplayer, "", "Singleplayer");
-                MultiplayerButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)), OnMultiplayer, "", "Multiplayer");
-                OptionsButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2 + 100, MainWindow.referenceSize.Y / 2)), OnOptions, "", "Options");
+                SingleplayerButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2 - 100, MainWindow.referenceSize.Y / 2)), OnSingleplayer, Image.Empty, "Singleplayer");
+                MultiplayerButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)), OnMultiplayer, Image.Empty, "Multiplayer");
+                OptionsButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 6, MainWindow.referenceSize.Y / 6), new Vector2(MainWindow.referenceSize.X / 2 + 100, MainWindow.referenceSize.Y / 2)), OnOptions, Image.Empty, "Options");
             });
 
             // Suppressing the "Null When Leaving a Constructor" warning

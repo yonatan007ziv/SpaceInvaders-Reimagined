@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.GameComponents;
+using System.Data;
 using System.Numerics;
 
 namespace GameWindow.Components.NetworkedComponents
@@ -54,12 +55,30 @@ namespace GameWindow.Components.NetworkedComponents
         /// Does the bunker exist
         /// </summary>
         /// <returns> Whether the bunker exists or not </returns>
+        public static void InitiateEmptyBunkers()
+        {
+            for (int i = 0; i < Bunkers.Length; i++)
+            {
+                Bunkers[i] = new NetworkedBunker(i, NetworkedPlayer.localPlayer!.team == 'A' && 4 <= i && i <= 7
+                    || NetworkedPlayer.localPlayer.team == 'B' && 0 <= i && i <= 3);
+                foreach (NetworkedBunkerPart p in Bunkers[i].parts)
+                {
+                    p.imagePathIndex = 4;
+                    p.Hit();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Does the bunker exist
+        /// </summary>
+        /// <returns> Whether the bunker exists or not </returns>
         public bool BunkerExists()
         {
             if (parts[0] == null) return false;
 
             foreach (NetworkedBunkerPart part in parts)
-                if (!(1 <= part.imagePathIndex && part.imagePathIndex <= 4))
+                if (1 <= part.imagePathIndex && part.imagePathIndex <= 4)
                     return true;
             return false;
         }
@@ -67,7 +86,16 @@ namespace GameWindow.Components.NetworkedComponents
         /// <summary>
         /// Disposes the current <see cref="NetworkedBunker"/>
         /// </summary>
-        private void Dispose()
+        public void Reset()
+        {
+            for (int i = 0; i < 8; i++)
+                parts[i]?.ResetPart();
+        }
+
+        /// <summary>
+        /// Disposes the current <see cref="NetworkedBunker"/>
+        /// </summary>
+        public void Dispose()
         {
             for (int i = 0; i < 8; i++)
                 parts[i]?.Dispose();

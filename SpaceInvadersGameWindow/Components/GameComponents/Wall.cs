@@ -21,8 +21,8 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         public static void MakeLocalGameWalls()
         {
-            Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), @"Resources\Images\Pixels\Red.png");
-            Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 1.08f), @"Resources\Images\Pixels\Green.png");
+            Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), Image.Red);
+            Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 1.08f), Image.Green);
             LeftWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(25, MainWindow.referenceSize.Y / 2));
             RightWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X - 25, MainWindow.referenceSize.Y / 2));
         }
@@ -32,8 +32,8 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         public static void MakeOnlineGameWalls()
         {
-            Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), @"Resources\Images\Pixels\Red.png");
-            Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y * 0.735f + 25), @"Resources\Images\Pixels\Green.png");
+            Ceiling = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, 5), Image.Red);
+            Floor = new Wall(new Vector2(MainWindow.referenceSize.X, 5), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y * 0.735f + 25), Image.Green);
             LeftWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(25, MainWindow.referenceSize.Y / 2));
             RightWall = new Wall(new Vector2(5, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X - 25, MainWindow.referenceSize.Y / 2));
         }
@@ -55,7 +55,7 @@ namespace GameWindow.Components.GameComponents
         /// <param name="scale"> The scale of the wall </param>
         /// <param name="pos"> The position of the wall </param>
         /// <param name="image"> The image of the wall </param>
-        public Wall(Vector2 scale, Vector2 pos, string image)
+        public Wall(Vector2 scale, Vector2 pos, Image image)
         {
             transform = new Transform(scale, pos);
             col = new Collider(transform, this, CollisionLayer.Wall);

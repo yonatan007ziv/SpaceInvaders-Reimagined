@@ -28,7 +28,7 @@ namespace GameWindow.Components.NetworkedComponents
             col.AddIgnoreLayer(NetworkedPlayer.localPlayer!.team == 'A' ? CollisionLayer.BunkerA : CollisionLayer.BunkerB);
             col.AddIgnoreLayer(CollisionLayer.PlayerBullet);
 
-            clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Bullet.png"));
+            clips.Enqueue(Image.Bullet);
 
             LocalBulletLoop();
         }
@@ -46,7 +46,7 @@ namespace GameWindow.Components.NetworkedComponents
             col.AddIgnoreLayer(NetworkedPlayer.currentPlayers[shooter].team == 'A' ? CollisionLayer.BunkerA : CollisionLayer.BunkerB);
             col.AddIgnoreLayer(CollisionLayer.PlayerBullet);
 
-            clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Bullet.png"));
+            clips.Enqueue(Image.Bullet);
 
             OnlineBulletLoop();
         }
@@ -80,7 +80,10 @@ namespace GameWindow.Components.NetworkedComponents
             else if (hit.parent is NetworkedBunkerPart part)
             {
                 if (NetworkedPlayer.localPlayer!.SendMessage != null)
-                    NetworkedPlayer.localPlayer.SendMessage($"BulletHit:BunkerPart({part.bunkerID},{(int)part.part},{part.imagePathIndex + 1})");
+                {
+                    int newStage = part.imagePathIndex + 1 == 5 ? 0 : part.imagePathIndex + 1;
+                    NetworkedPlayer.localPlayer.SendMessage($"BulletHit:BunkerPart({part.bunkerID},{(int)part.partType},{newStage})");
+                }
             }
 
             if (NetworkedPlayer.localPlayer!.SendMessage != null)

@@ -29,7 +29,7 @@ namespace GameWindow.Components.GameComponents
             col = new Collider(transform, this, CollisionLayer.Bunker);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, ""));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Empty));
 
             NextClip();
 
@@ -60,38 +60,37 @@ namespace GameWindow.Components.GameComponents
         /// </remarks>
         public void NextClip()
         {
-            string bunkerImagePath;
+            Image image;
             switch (partType)
             {
                 default:
-                    bunkerImagePath = "";
-                    break;
+                    throw new System.Exception();
                 case BunkerPartType.TopLeft:
-                    bunkerImagePath = @$"Resources\Images\Bunker\TopLeft{imagePathIndex}.png";
+                    image = Image.TopLeft1 + imagePathIndex - 1;
                     break;
                 case BunkerPartType.BottomLeft:
-                    bunkerImagePath = @$"Resources\Images\Bunker\BottomLeft{imagePathIndex}.png";
+                    image = Image.BottomLeft1 + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleTopLeft:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopLeft{imagePathIndex}.png";
+                    image = Image.MiddleTopLeft1 + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleBottomLeft:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomLeft{imagePathIndex}.png";
+                    image = Image.MiddleBottomLeft1 + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleTopRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopRight{imagePathIndex}.png";
+                    image = Image.MiddleTopRight1 + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleBottomRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomRight{imagePathIndex}.png";
+                    image = Image.MiddleBottomRight1 + imagePathIndex - 1;
                     break;
                 case BunkerPartType.TopRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\TopRight{imagePathIndex}.png";
+                    image = Image.TopRight1 + imagePathIndex - 1;
                     break;
                 case BunkerPartType.BottomRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\BottomRight{imagePathIndex}.png";
+                    image = Image.BottomRight1 + imagePathIndex - 1;
                     break;
             }
-            sprite.ChangeImage(bunkerImagePath);
+            sprite.ChangeImage(image);
         }
 
         /// <summary>

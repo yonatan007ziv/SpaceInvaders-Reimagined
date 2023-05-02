@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -32,7 +31,7 @@ namespace GameWindow.Components.GameComponents
 
         private int clipCounter = 0;
         private float originalBulletSpeed;
-        protected Queue<BitmapImage> clips = new Queue<BitmapImage>();
+        protected Queue<Image> clips = new Queue<Image>();
         protected float bulletSpeed;
         protected bool disposed;
         protected BulletType bulletType;
@@ -72,7 +71,7 @@ namespace GameWindow.Components.GameComponents
             col = new Collider(transform, this, colliderLayer);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, @"Resources\Images\Bullet\Bullet.png"));
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Bullet));
 
             // Suppressing the "Null When Leaving a Constructor" warning
             clips!.ToString();
@@ -104,7 +103,7 @@ namespace GameWindow.Components.GameComponents
                 return;
             }
 
-            BitmapImage image = clips.Dequeue();
+            Image image = clips.Dequeue();
             clips.Enqueue(image);
 
             sprite.ChangeImage(image);
@@ -121,7 +120,7 @@ namespace GameWindow.Components.GameComponents
 
             // Bullet Explosion
             transform.Scale = new Vector2(6, 8);
-            sprite.ChangeImage(@"Resources\Images\Bullet\BulletExplosion.png");
+            sprite.ChangeImage(Image.BulletExplosion);
 
             await Task.Delay(500);
             Dispose();

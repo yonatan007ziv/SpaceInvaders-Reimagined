@@ -1,5 +1,6 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -7,45 +8,165 @@ using System.Windows.Media.Imaging;
 namespace GameWindow.Components.UIElements
 {
     /// <summary>
+    /// Represents the types of available images in the game
+    /// </summary>
+    public enum Image
+    {
+        Empty,
+        MissingSprite,
+
+        BulletExplosion,
+        Bullet,
+
+        Charge1,
+        Charge2,
+        Charge3,
+        Charge4,
+
+        Imperfect1,
+        Imperfect2,
+        Imperfect3,
+        Imperfect4,
+
+        ZigZag1,
+        ZigZag2,
+        ZigZag3,
+        ZigZag4,
+
+        Player,
+        PlayerDeath1,
+        PlayerDeath2,
+
+        OpponentPlayer,
+        OpponentPlayerDeath1,
+        OpponentPlayerDeath2,
+
+        Green,
+        Red,
+
+        Crab1,
+        Crab2,
+        Octopus1,
+        Octopus2,
+        Squid1,
+        Squid2,
+        UFO,
+        InvaderDeath,
+
+        #region Bunker parts
+        BottomLeft1,
+        BottomLeft2,
+        BottomLeft3,
+        BottomLeft4,
+
+        BottomRight1,
+        BottomRight2,
+        BottomRight3,
+        BottomRight4,
+
+        MiddleBottomLeft1,
+        MiddleBottomLeft2,
+        MiddleBottomLeft3,
+        MiddleBottomLeft4,
+
+        MiddleBottomRight1,
+        MiddleBottomRight2,
+        MiddleBottomRight3,
+        MiddleBottomRight4,
+
+        MiddleTopLeft1,
+        MiddleTopLeft2,
+        MiddleTopLeft3,
+        MiddleTopLeft4,
+
+        MiddleTopRight1,
+        MiddleTopRight2,
+        MiddleTopRight3,
+        MiddleTopRight4,
+
+        TopLeft1,
+        TopLeft2,
+        TopLeft3,
+        TopLeft4,
+
+        TopRight1,
+        TopRight2,
+        TopRight3,
+        TopRight4,
+
+        BottomLeft1Opponent,
+        BottomLeft2Opponent,
+        BottomLeft3Opponent,
+        BottomLeft4Opponent,
+
+        BottomRight1Opponent,
+        BottomRight2Opponent,
+        BottomRight3Opponent,
+        BottomRight4Opponent,
+
+        MiddleBottomLeft1Opponent,
+        MiddleBottomLeft2Opponent,
+        MiddleBottomLeft3Opponent,
+        MiddleBottomLeft4Opponent,
+
+        MiddleBottomRight1Opponent,
+        MiddleBottomRight2Opponent,
+        MiddleBottomRight3Opponent,
+        MiddleBottomRight4Opponent,
+
+        MiddleTopLeft1Opponent,
+        MiddleTopLeft2Opponent,
+        MiddleTopLeft3Opponent,
+        MiddleTopLeft4Opponent,
+
+        MiddleTopRight1Opponent,
+        MiddleTopRight2Opponent,
+        MiddleTopRight3Opponent,
+        MiddleTopRight4Opponent,
+
+        TopLeft1Opponent,
+        TopLeft2Opponent,
+        TopLeft3Opponent,
+        TopLeft4Opponent,
+
+        TopRight1Opponent,
+        TopRight2Opponent,
+        TopRight3Opponent,
+        TopRight4Opponent,
+        #endregion
+    }
+
+    /// <summary>
     /// The base class for all rendered images
     /// </summary>
-    public partial class Sprite : Image
+    public partial class Sprite : System.Windows.Controls.Image
     {
-        private static readonly BitmapImage MissingSprite = new BitmapImage(new Uri(@"pack://application:,,,/Resources\Images\MissingSprite.png"));
-
-        public Transform transform;
+        private static readonly Dictionary<Image, BitmapImage> Images = new Dictionary<Image, BitmapImage>();
 
         /// <summary>
-        /// Gets a <see cref="BitmapImage"/> from a path
+        /// Buffers all images
         /// </summary>
-        /// <param name="path"> The path to the image location </param>
-        /// <returns> If the path is legitimate, it returns the requested image, otherwise; returns the default texture </returns>
-        public static BitmapImage BitmapFromPath(string path)
+        static Sprite()
         {
-            try
-            {
-                BitmapImage myBitmapImage = null!;
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    myBitmapImage = new BitmapImage();
-                    myBitmapImage.BeginInit();
-                    myBitmapImage.UriSource = new Uri("pack://application:,,,/" + path);
-                    myBitmapImage.EndInit();
-                });
-                return myBitmapImage;
-            }
-            catch
-            {
-                return MissingSprite;
-            }
+            for (int i = 0; i < Enum.GetNames(typeof(Image)).Length; i++)
+                LoadImage((Image)i);
         }
+
+        /// <summary>
+        /// Buffers an image
+        /// </summary>
+        /// <param name="toLoad"> Image to load </param>
+        private static void LoadImage(Image toLoad) =>
+            Images.Add(toLoad, new BitmapImage(new Uri($@"pack://application:,,,/Resources\Images\{toLoad}.png")));
+
+        public Transform transform;
 
         /// <summary>
         /// Builds a sprite UI element with an image
         /// </summary>
         /// <param name="transform"> The <see cref="Transform"/> to link </param>
         /// <param name="imagePath"> Path to the image </param>
-        public Sprite(Transform transform, string imagePath) // Called within an STA thread
+        public Sprite(Transform transform, Image image) // Called within an STA thread
         {
             InitializeComponent();
 
@@ -57,7 +178,7 @@ namespace GameWindow.Components.UIElements
             System.Windows.Media.RenderOptions.SetBitmapScalingMode(this, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
 
             // set source image
-            Source = BitmapFromPath(imagePath);
+            ChangeImage(image);
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
 
@@ -101,23 +222,21 @@ namespace GameWindow.Components.UIElements
         /// <summary>
         /// Changes the image 
         /// </summary>
-        /// <param name="imagePath"> Path to new image </param>
-        public void ChangeImage(string imagePath)
-        {
-            var bitmap = BitmapFromPath(imagePath);
-
-            // UI Objects need to be changed in an STA thread
-            Dispatcher.Invoke(() => { bitmap.Freeze(); Source = bitmap; });
-        }
-
-        /// <summary>
-        /// Changes the image 
-        /// </summary>
         /// <param name="imagePath"> The new image </param>
-        public void ChangeImage(BitmapImage bitmap)
+        public void ChangeImage(Image changeTo)
         {
             // UI Objects need to be changed in an STA thread
-            Dispatcher.Invoke(() => { bitmap?.Freeze(); Source = bitmap; });
+            Dispatcher.Invoke(() =>
+            {
+                BitmapImage bitmap;
+                if (Images.ContainsKey(changeTo))
+                    bitmap = Images[changeTo];
+                else
+                    bitmap = Images[Image.MissingSprite];
+
+                bitmap?.Freeze();
+                Source = bitmap;
+            });
         }
 
         /// <summary>

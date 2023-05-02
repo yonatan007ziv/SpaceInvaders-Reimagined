@@ -26,14 +26,14 @@ namespace GameWindow.Components.UIElements
         /// </summary>
         /// <param name="transform"> The <see cref="Transform"/> to link </param>
         /// <param name="onClick"> What happens on button click </param>
-        /// <param name="imagePath"> Path to the image </param>
+        /// <param name="image"> Path to the image </param>
         /// <param name="text"> Text on button </param>
-        public CustomButton(Transform transform, Action onClick, string imagePath, string text) // Called within an STA thread
+        public CustomButton(Transform transform, Action onClick, Image image, string text) // Called within an STA thread
         {
             InitializeComponent();
 
             this.transform = transform;
-            image = new Sprite(transform, imagePath);
+            this.image = new Sprite(transform, image);
             this.text = new CustomLabel(transform, text, System.Windows.Media.Colors.White);
 
             transform.PositionChanged += () => SetPosition();
@@ -41,7 +41,7 @@ namespace GameWindow.Components.UIElements
 
             Click += (s, e) => { SoundManager.PlaySound(Sound.MenuClick); onClick(); };
 
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+            System.Windows.Media.RenderOptions.SetBitmapScalingMode(this.image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
 

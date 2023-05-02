@@ -8,9 +8,6 @@ namespace GameWindow.Systems.Networking
     /// </summary>
     public class RegisterValidator : NetworkClient
     {
-        private const string REGISTER_SERVER_IP = "46.121.140.69";
-        private const int REGISTER_SERVER_PORT = 7777;
-
         private CustomLabel resultLabel;
         private Action On2FA;
 
@@ -43,7 +40,7 @@ namespace GameWindow.Systems.Networking
                 return;
             }
 
-            if (Connect(REGISTER_SERVER_IP, REGISTER_SERVER_PORT))
+            if (Connect(IPConstants.REGISTER_SERVER_IP, IPConstants.REGISTER_SERVER_PORT))
             {
                 SendMessage($"Register:{username}/{password}/{email}");
                 BeginRead(false);
@@ -91,6 +88,11 @@ namespace GameWindow.Systems.Networking
                 return; // Prevents disconnection from server
             }
             StopClient();
+        }
+
+        protected override void OnError()
+        {
+            resultLabel.Text = "Failed Login! please try again.";
         }
     }
 }

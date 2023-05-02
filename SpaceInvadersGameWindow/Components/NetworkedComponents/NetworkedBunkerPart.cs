@@ -1,6 +1,7 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using System.Diagnostics.Eventing.Reader;
 using System.Numerics;
 using System.Windows;
 
@@ -12,39 +13,45 @@ namespace GameWindow.Components.NetworkedComponents
     internal class NetworkedBunkerPart
     {
         private Transform transform;
-        private Collider col;
-        private Sprite sprite;
+        private Collider? col;
+        private Sprite? sprite;
 
         public int bunkerID;
         public int imagePathIndex = 1;
-        public BunkerPartType part;
+        private CollisionLayer layer;
+        public BunkerPartType partType;
         public bool flipped;
 
         /// <summary>
         /// Builds a bunker part
         /// </summary>
-        /// <param name="part"> Part's type </param>
+        /// <param name="partType"> Part's type </param>
         /// <param name="pos"> A <see cref="Vector2"/> representing the part's position </param>
         /// <param name="bunkerID"> Bunker's ID </param>
         /// <param name="flipped"> Whether the bunker part sprite is flipped or not </param>
-        public NetworkedBunkerPart(BunkerPartType part, Vector2 pos, int bunkerID, bool flipped)
+        public NetworkedBunkerPart(BunkerPartType partType, Vector2 pos, int bunkerID, bool flipped)
         {
-            this.part = part;
+            this.partType = partType;
             this.flipped = flipped;
             this.bunkerID = bunkerID;
 
             transform = new Transform(new Vector2(6, 8), pos);
+            layer = (0 <= bunkerID && bunkerID <= 3) ? CollisionLayer.BunkerA : CollisionLayer.BunkerB;
+        }
 
-            CollisionLayer layer = (0 <= bunkerID && bunkerID <= 3) ? CollisionLayer.BunkerA : CollisionLayer.BunkerB;
+        /// <summary>
+        /// Resets the bunkerpart
+        /// </summary>
+        public void ResetPart()
+        {
+            Dispose();
+
+            transform = new Transform(new Vector2(6, 8), transform.Position);
             col = new Collider(transform, this, layer);
 
             // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, ""));
-
-            UpdateClip();
-
-            // Suppressing the "Null When Leaving a Constructor" warning
-            sprite!.ToString();
+            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Empty));
+            imagePathIndex = 0;
         }
 
         /// <summary>
@@ -53,8 +60,9 @@ namespace GameWindow.Components.NetworkedComponents
         public void Hit()
         {
             imagePathIndex++;
-            if (imagePathIndex >= 4)
+            if (imagePathIndex > 4)
             {
+                imagePathIndex = 0;
                 Dispose();
                 return;
             }
@@ -66,38 +74,37 @@ namespace GameWindow.Components.NetworkedComponents
         /// </summary>
         private void UpdateClip()
         {
-            string bunkerImagePath;
-            switch (part)
+            Image image;
+            switch (partType)
             {
                 default:
-                    bunkerImagePath = "";
-                    break;
+                    throw new System.Exception();
                 case BunkerPartType.TopLeft:
-                    bunkerImagePath = @$"Resources\Images\Bunker\TopLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.TopLeft1Opponent : Image.TopLeft1) + imagePathIndex - 1;
                     break;
                 case BunkerPartType.BottomLeft:
-                    bunkerImagePath = @$"Resources\Images\Bunker\BottomLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.BottomLeft1Opponent : Image.BottomLeft1) + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleTopLeft:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.MiddleTopLeft1Opponent : Image.MiddleTopLeft1) + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleBottomLeft:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomLeft{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.MiddleBottomLeft1Opponent : Image.MiddleBottomLeft1) + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleTopRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleTopRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.MiddleTopRight1Opponent : Image.MiddleTopRight1) + imagePathIndex - 1;
                     break;
                 case BunkerPartType.MiddleBottomRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\MiddleBottomRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.MiddleBottomRight1Opponent : Image.MiddleBottomRight1) + imagePathIndex - 1;
                     break;
                 case BunkerPartType.TopRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\TopRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.TopRight1Opponent : Image.TopRight1) + imagePathIndex - 1;
                     break;
                 case BunkerPartType.BottomRight:
-                    bunkerImagePath = $@"Resources\Images\Bunker\BottomRight{imagePathIndex}{(flipped ? "Opponent" : "")}.png";
+                    image = (flipped ? Image.BottomRight1Opponent : Image.BottomRight1) + imagePathIndex - 1;
                     break;
             }
-            sprite.ChangeImage(bunkerImagePath);
+            sprite!.ChangeImage(image);
         }
 
         /// <summary>
@@ -105,9 +112,9 @@ namespace GameWindow.Components.NetworkedComponents
         /// </summary>
         public void Dispose()
         {
-            sprite.Dispose();
-            col.Dispose();
             transform.Dispose();
+            col?.Dispose();
+            sprite?.Dispose();
         }
     }
 }

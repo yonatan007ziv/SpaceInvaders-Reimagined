@@ -7,7 +7,7 @@
     {
         public int BunkerID;
         public BunkerPartType partType;
-        public int stage = 4;
+        public int stage = 0;
 
         /// <summary>
         /// Constructs a new <see cref="BunkerPartData"/> data

@@ -6,6 +6,6 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
                FontFamily="Space Invaders"
-               IsHitTestVisible="False"
+               IsHitTestVisible ="False"
                />
 </Viewbox>

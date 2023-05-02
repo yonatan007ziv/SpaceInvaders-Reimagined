@@ -29,7 +29,7 @@ namespace GameWindow.Components.GameComponents
             col.AddIgnoreLayer(CollisionLayer.Player);
             col.AddIgnoreLayer(CollisionLayer.PlayerBullet);
 
-            clips.Enqueue(Sprite.BitmapFromPath(@"Resources\Images\Bullet\Bullet.png"));
+            clips.Enqueue(Image.Bullet);
 
             BulletLoop();
         }

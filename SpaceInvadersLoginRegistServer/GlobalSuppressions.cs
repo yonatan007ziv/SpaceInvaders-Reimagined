@@ -5,5 +5,5 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Performance", "CA1806:Do not ignore method results")]
-[assembly: SuppressMessage("Style", "IDE0044:Add readonly modifier")]
+[assembly: SuppressMessage("Style", "IDE0017:Simplify object initialization")]
+[assembly: SuppressMessage("Style", "IDE0090:Use 'new(...)'")]

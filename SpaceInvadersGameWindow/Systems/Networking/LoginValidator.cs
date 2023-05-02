@@ -9,9 +9,6 @@ namespace GameWindow.Systems.Networking
     /// </summary>
     class LoginValidator : NetworkClient
     {
-        private const string LOGIN_SERVER_IP = "46.121.140.69";
-        private const int LOGIN_SERVER_PORT = 7777;
-
         private string username;
         private CustomLabel resultLabel;
         private Action DiposeLoginRegisterMenu;
@@ -41,7 +38,7 @@ namespace GameWindow.Systems.Networking
                 return;
             }
 
-            if (Connect(LOGIN_SERVER_IP, LOGIN_SERVER_PORT))
+            if (Connect(IPConstants.LOGIN_SERVER_IP, IPConstants.LOGIN_SERVER_PORT))
             {
                 SendMessage($"Login:{username}/{password}");
                 BeginRead(loop: false);
@@ -73,6 +70,11 @@ namespace GameWindow.Systems.Networking
             else if (msg == "Failed")
                 resultLabel.Text = "Failed Login! please try again.";
             StopClient();
+        }
+
+        protected override void OnError()
+        {
+            resultLabel.Text = "Failed Login! please try again.";
         }
     }
 }

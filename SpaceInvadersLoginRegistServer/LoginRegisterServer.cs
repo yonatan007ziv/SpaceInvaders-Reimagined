@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace LoginRegistServer
+namespace LoginRegisterServer
 {
     /// <summary>
     /// Login-Register Server
@@ -17,7 +17,7 @@ namespace LoginRegistServer
             listener.Start(); // Start listening
 
             while (true)
-                new ClientLoginRegistValidator(listener.AcceptTcpClient());
+                new ClientLoginRegisterValidator(listener.AcceptTcpClient());
         }
     }
 }

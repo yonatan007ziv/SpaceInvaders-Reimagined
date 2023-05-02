@@ -203,7 +203,7 @@ namespace GameWindow.Components.GameComponents
                         DisposeLostMenu();
                         Dispose();
                         StartGame();
-                    }, "", "Play Again");
+                    }, Image.Empty, "Play Again");
 
                 mainMenuButton = new CustomButton(
                     new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X / 4, MainWindow.referenceSize.Y * 5 / 6)),
@@ -212,7 +212,7 @@ namespace GameWindow.Components.GameComponents
                         DisposeLostMenu();
                         Dispose();
                         new GameMainMenu();
-                    }, "", "Main Menu");
+                    }, Image.Empty, "Main Menu");
             });
         }
 

@@ -54,7 +54,7 @@ namespace GameWindow.Components.NetworkedComponents
 
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
-                sprite = new Sprite(transform, @"Resources\Images\Player\Player.png");
+                sprite = new Sprite(transform, Image.Player);
                 nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Black);
             });
 
@@ -81,11 +81,11 @@ namespace GameWindow.Components.NetworkedComponents
             col = new Collider(transform, this, myLayer);
             col.AddIgnoreLayer(myLayer);
 
-            string path = localPlayer!.team == team ? @"Resources\Images\Player\Player.png" : @"Resources\Images\Player\OpponentPlayer.png";
+            Image image = localPlayer!.team == team ? Image.Player : Image.OpponentPlayer;
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
 
-                sprite = new Sprite(transform, path);
+                sprite = new Sprite(transform, image);
                 nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Black);
             });
 
@@ -111,7 +111,7 @@ namespace GameWindow.Components.NetworkedComponents
             for (int i = 0; i < 12; i++)
             {
 
-                sprite.ChangeImage(@$"Resources\Images\Player\PlayerDeath{i % 2 + 1}.png");
+                sprite.ChangeImage(i % 2 == 0 ? Image.PlayerDeath1 : Image.PlayerDeath2);
                 await Task.Delay(1000 / 10);
             }
 
@@ -133,11 +133,11 @@ namespace GameWindow.Components.NetworkedComponents
 
             transform.Scale = new Vector2(16, 8);
 
-            string path = localPlayer!.team == team ? @"Resources\Images\Player\PlayerDeath" : @"Resources\Images\Player\OpponentPlayerDeath";
+            bool ally = localPlayer!.team == team;
 
             for (int i = 0; i < 12; i++)
             {
-                sprite.ChangeImage($"{path + (i % 2 + 1)}.png");
+                sprite.ChangeImage(i % 2 == 0 ? (ally ? Image.PlayerDeath1 : Image.OpponentPlayerDeath1) : (ally ? Image.PlayerDeath2 : Image.OpponentPlayerDeath2));
                 await Task.Delay(1000 / 10);
             }
 
@@ -153,7 +153,7 @@ namespace GameWindow.Components.NetworkedComponents
         private void Respawn(bool isOpponent)
         {
             transform.Scale = new Vector2(13, 8);
-            sprite.ChangeImage(@"Resources\Images\Player\" + (isOpponent ? "Opponent" : "") + "Player.png");
+            sprite.ChangeImage(isOpponent ? Image.OpponentPlayer : Image.Player);
         }
 
         /// <summary>
