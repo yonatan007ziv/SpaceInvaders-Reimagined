@@ -53,7 +53,9 @@ namespace GameWindow.Components.Miscellaneous
         /// <returns> The first detected touching <see cref="Collider"/> </returns>
         public Collider? TouchingCollider()
         {
-            Rectangle thisRect = new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y, (int)transform.ActualScale.X, (int)transform.ActualScale.Y);
+            Rectangle thisRect =
+                new Rectangle((int)transform.CenteredPosition.X, (int)transform.CenteredPosition.Y,
+                    (int)transform.ActualScale.X, (int)transform.ActualScale.Y);
             for (int i = 0; i < AllColliders.Count; i++)
             {
                 Collider c = AllColliders[i];
