@@ -8,12 +8,14 @@ namespace LoginRegisterServer
     /// </summary>
     internal class LoginRegisterServer
     {
+        private const int port = 7777;
+
         /// <summary>
         /// Entry point for the Login-Register Server
         /// </summary>
         public static void Main()
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, 7777);
+            TcpListener listener = new TcpListener(IPAddress.Any, port);
             listener.Start(); // Start listening
 
             while (true)

@@ -8,12 +8,14 @@ namespace GameplayServer
     /// </summary>
     internal class MultiplayerGameServer
     {
+        private const int port = 7778;
+
         /// <summary>
         /// Entry point for the Game Server
         /// </summary>
         public static void Main()
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, 7778);
+            TcpListener listener = new TcpListener(IPAddress.Any, port);
             listener.Start(); // Start listening
 
             while (true)
