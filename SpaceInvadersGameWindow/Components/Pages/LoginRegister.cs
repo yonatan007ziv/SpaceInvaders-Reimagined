@@ -41,9 +41,9 @@ namespace GameWindow.Components.Pages
                 emailInput = new CustomTextBox(new Transform(new Vector2(102, 12.5f), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 - 26)), "", DelegatesActions.EmptyAction);
                 twoFAInput = new CustomTextBox(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 25, MainWindow.referenceSize.Y / 2 - 7.5f)), "", DelegatesActions.EmptyAction);
 
-                flipLoginRegisterButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 26, MainWindow.referenceSize.Y / 2 - 7.5f)), FlipLoginRegist, Image.Green, "Register?"); ;
-                loginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), LoginRegisterClick, Image.Green, "Click To Login");
-                submit2FAButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), () => { }, Image.Green, "Submit 2FA code");
+                flipLoginRegisterButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 26, MainWindow.referenceSize.Y / 2 - 7.5f)), FlipLoginRegist, System.Windows.Media.Color.FromRgb(0, 255, 0), "Register?"); ;
+                loginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), LoginRegisterClick, System.Windows.Media.Color.FromRgb(0, 255, 0), "Click To Login");
+                submit2FAButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), () => { }, System.Windows.Media.Color.FromRgb(0, 255, 0), "Submit 2FA code");
             });
 
             // Suppressing the "Null When Leaving a Constructor" warning

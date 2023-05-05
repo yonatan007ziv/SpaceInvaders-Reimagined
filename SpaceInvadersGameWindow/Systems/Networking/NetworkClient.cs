@@ -164,8 +164,8 @@ namespace GameWindow.Systems.Networking
             }
             catch (Exception ex)
             {
-                if(!gracefulClose)
-                OnError();
+                if (!gracefulClose)
+                    OnError();
                 Console.WriteLine($"Closed conn, Caught Exception: {ex}");
                 return;
             }

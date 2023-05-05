@@ -38,7 +38,64 @@ namespace GameWindow.Components.GameComponents
 
         // Uniform Invader Settings
         private static int InvaderDir = 1;
-        private static bool SpriteSwitch = false;
+        private static bool SpriteSwitch = true;
+
+        private static void ResetInfo()
+        {
+            InvaderDir = 1;
+            SpriteSwitch = true;
+
+            InvaderCount = 0;
+            CycleCount = 0;
+
+            stopwatchUFO.Reset();
+        }
+
+        /// <summary>
+        /// Plots the invaders on the screen
+        /// </summary>
+        /// <returns> A <see cref="Task"/> representing the async state of plotting </returns>
+        public static async Task PlotInvaders()
+        {
+            ResetInfo();
+            UFOPaused = true;
+
+            int startX = (int)(MainWindow.referenceSize.X / 6);
+            int startY = (int)(MainWindow.referenceSize.Y / 10);
+            for (int i = 4; i >= 0; i--)
+                for (int j = 10; j >= 0; j--)
+                {
+                    InvaderType type;
+                    if (i < 1)
+                        type = InvaderType.Squid;
+                    else if (i < 3)
+                        type = InvaderType.Crab;
+                    else
+                        type = InvaderType.Octopus;
+                    new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
+                    await Task.Delay(25);
+                }
+            await Task.Delay(250);
+            UFOPaused = false;
+        }
+
+        /// <summary>
+        /// Disposes all invaders and resets the current state for the next game
+        /// </summary>
+        public static void DisposeAll()
+        {
+            if (!DisposedCts)
+            {
+                cts.Cancel();
+                cts.Dispose();
+            }
+
+            for (int i = 0; i < Invaders.Length; i++)
+                Invaders[i]?.Dispose();
+            CurrentUFO?.Dispose();
+
+            ResetInfo();
+        }
 
         /// <summary>
         /// Builds an <see cref="Invader"/> opponent
@@ -97,62 +154,6 @@ namespace GameWindow.Components.GameComponents
         /// <summary>
         /// Resets the current invaders' info stored in the class' global scope
         /// </summary>
-        private static void ResetInfo()
-        {
-            InvaderDir = 1;
-            SpriteSwitch = false;
-
-            InvaderCount = 0;
-            CycleCount = 0;
-
-            stopwatchUFO.Restart();
-        }
-
-        /// <summary>
-        /// Plots the invaders on the screen
-        /// </summary>
-        /// <returns> A <see cref="Task"/> representing the async state of plotting </returns>
-        public static async Task PlotInvaders()
-        {
-            ResetInfo();
-            UFOPaused = true;
-
-            int startX = (int)(MainWindow.referenceSize.X / 6);
-            int startY = (int)(MainWindow.referenceSize.Y / 10);
-            for (int i = 4; i >= 0; i--)
-                for (int j = 10; j >= 0; j--)
-                {
-                    InvaderType type;
-                    if (i < 1)
-                        type = InvaderType.Squid;
-                    else if (i < 3)
-                        type = InvaderType.Crab;
-                    else
-                        type = InvaderType.Octopus;
-                    new Invader(type, new Vector2(j * 16 + startX, i * 24 + startY));
-                    await Task.Delay(25);
-                }
-            await Task.Delay(250);
-            UFOPaused = false;
-        }
-
-        /// <summary>
-        /// Disposes all invaders and resets the current state for the next game
-        /// </summary>
-        public static void DisposeAll()
-        {
-            if (!DisposedCts)
-            {
-                cts.Cancel();
-                cts.Dispose();
-            }
-
-            for (int i = 0; i < Invaders.Length; i++)
-                Invaders[i]?.Dispose();
-            CurrentUFO?.Dispose();
-
-            ResetInfo();
-        }
 
         #region Pause Unpause
         private static bool DisposedCts;

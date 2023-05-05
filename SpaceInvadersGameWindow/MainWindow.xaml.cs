@@ -1,11 +1,13 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.Pages;
+using GameWindow.Components.UIElements;
 using GameWindow.Systems;
 using System;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GameWindow
 {
@@ -15,7 +17,7 @@ namespace GameWindow
     public partial class MainWindow : Window
     {
         /// <summary>
-        /// Target FPS for systems like <see cref="InputHandler"/>
+        /// Target FPS for frame-dependent systems like <see cref="InputHandler"/>
         /// Also for smooth-moving objects such as:
         /// <list type="bullet">
         ///     <item> <see cref="Player"/> </item>
@@ -46,6 +48,7 @@ namespace GameWindow
         public MainWindow()
         {
             InitializeComponent();
+            MouseDown += (s, e) => WindowMouseDown(e);
             instance = this;
 
             Width = referenceSize.X * 3;
@@ -76,6 +79,12 @@ namespace GameWindow
                 CenteredCanvas.Height = scale.Y;
             };
 
+            #region Close application button
+            Transform closeTransform = new Transform(new Vector2(25, 25), new Vector2(referenceSize.X - 25, 25));
+            Sprite closeSprite = new Sprite(closeTransform, Components.UIElements.Image.CloseApplication);
+            CustomButton closeButton = new CustomButton(closeTransform, () => Close(), System.Windows.Media.Color.FromArgb(0, 0, 0, 0), "");
+            #endregion
+
             // Start taking inputs
             new InputHandler(this);
 
@@ -91,6 +100,16 @@ namespace GameWindow
             double ratioX = Width / referenceSize.X;
             double ratioY = Height / referenceSize.Y;
             ratio = (float)Math.Min(ratioX, ratioY);
+        }
+
+        /// <summary>
+        /// Drags the window
+        /// </summary>
+        /// <param name="e"> Mouse button event arguments </param>
+        private void WindowMouseDown(MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                DragMove();
         }
     }
 }

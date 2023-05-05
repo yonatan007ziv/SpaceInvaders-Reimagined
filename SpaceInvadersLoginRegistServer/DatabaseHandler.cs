@@ -67,7 +67,7 @@ namespace LoginRegisterServer
         public static void InsertUser(string username, string password, string email)
         {
             SqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = $"INSERT INTO [Users] (Username, Password, Email, Connected) VALUES ('{username}', '{password}', '{email}', '0')";
+            cmd.CommandText = $"INSERT INTO [Users] (Username, Password, Email) VALUES ('{username}', '{password}', '{email}')";
             conn.Open();
             cmd.ExecuteScalar();
             conn.Close();

@@ -22,7 +22,7 @@ namespace GameWindow.Components.Pages
             Application.Current.Dispatcher.Invoke(() =>
             { // UI Objects need to be created in an STA thread
                 pauseLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(100, 50)), "Menu", System.Windows.Media.Colors.White);
-                mainMenuButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(100, 100)), MainMenu, Image.Empty, "Main Menu");
+                mainMenuButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(100, 100)), MainMenu, System.Windows.Media.Color.FromRgb(0, 0, 0), "Main Menu");
             });
 
             // Suppressing the "Null When Leaving a Constructor" warning

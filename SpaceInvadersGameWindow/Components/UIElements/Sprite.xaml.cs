@@ -15,6 +15,10 @@ namespace GameWindow.Components.UIElements
         Empty,
         MissingSprite,
 
+        CloseApplication,
+        Red,
+        Green,
+
         BulletExplosion,
         Bullet,
 
@@ -40,9 +44,6 @@ namespace GameWindow.Components.UIElements
         OpponentPlayer,
         OpponentPlayerDeath1,
         OpponentPlayerDeath2,
-
-        Green,
-        Red,
 
         Crab1,
         Crab2,
@@ -182,7 +183,7 @@ namespace GameWindow.Components.UIElements
 
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
 
-            SetValue(Panel.ZIndexProperty, 1);
+            SetValue(Panel.ZIndexProperty, 0);
         }
 
         /// <summary>

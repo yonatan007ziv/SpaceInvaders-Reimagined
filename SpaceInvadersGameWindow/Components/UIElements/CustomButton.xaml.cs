@@ -12,7 +12,6 @@ namespace GameWindow.Components.UIElements
     public partial class CustomButton : Button
     {
         public Transform transform;
-        private Sprite image;
         private CustomLabel text;
 
         public string Text
@@ -28,12 +27,12 @@ namespace GameWindow.Components.UIElements
         /// <param name="onClick"> What happens on button click </param>
         /// <param name="image"> Path to the image </param>
         /// <param name="text"> Text on button </param>
-        public CustomButton(Transform transform, Action onClick, Image image, string text) // Called within an STA thread
+        public CustomButton(Transform transform, Action onClick, System.Windows.Media.Color color, string text) // Called within an STA thread
         {
             InitializeComponent();
 
             this.transform = transform;
-            this.image = new Sprite(transform, image);
+            Background = new System.Windows.Media.SolidColorBrush(color);
             this.text = new CustomLabel(transform, text, System.Windows.Media.Colors.White);
 
             transform.PositionChanged += () => SetPosition();
@@ -41,11 +40,9 @@ namespace GameWindow.Components.UIElements
 
             Click += (s, e) => { SoundManager.PlaySound(Sound.MenuClick); onClick(); };
 
-            System.Windows.Media.RenderOptions.SetBitmapScalingMode(this.image, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
-
             MainWindow.instance!.CenteredCanvas.Children.Add(this);
 
-            SetValue(Panel.ZIndexProperty, 0);
+            SetValue(Panel.ZIndexProperty, 1);
         }
 
         /// <summary>
@@ -82,7 +79,7 @@ namespace GameWindow.Components.UIElements
             Dispatcher.Invoke(() =>
             {
                 Visibility = visible ? Visibility.Visible : Visibility.Hidden;
-                image.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
+                //image.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
                 text.Visibility = visible ? Visibility.Visible : Visibility.Hidden;
             });
         }
@@ -96,7 +93,6 @@ namespace GameWindow.Components.UIElements
             Dispatcher.Invoke(() =>
             {
                 MainWindow.instance!.CenteredCanvas.Children.Remove(text);
-                MainWindow.instance!.CenteredCanvas.Children.Remove(image);
                 MainWindow.instance!.CenteredCanvas.Children.Remove(this);
             });
         }

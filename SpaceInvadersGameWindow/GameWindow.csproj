@@ -18,8 +18,11 @@
   <ItemGroup>
     <None Remove="Resources\Images\Background.png" />
     <None Remove="Resources\Images\Bullet.png" />
+    <None Remove="Resources\Images\CloseApplication.png" />
     <None Remove="Resources\Images\Empty.png" />
+    <None Remove="Resources\Images\Green.png" />
     <None Remove="Resources\Images\MissingSprite.png" />
+    <None Remove="Resources\Images\Red.png" />
     <None Remove="Resources\Sounds\BulletExplosion.wav" />
     <None Remove="Resources\Sounds\BulletInitiated.wav" />
     <None Remove="Resources\Sounds\CycleBeat1.wav" />
@@ -46,11 +49,14 @@
     <Resource Include="Resources\Images\Charge3.png" />
     <Resource Include="Resources\Images\Charge4.png" />
     <Resource Include="Resources\Images\Bullet.png" />
+    <Resource Include="Resources\Images\CloseApplication.png" />
     <Resource Include="Resources\Images\Empty.png" />
+    <Resource Include="Resources\Images\Green.png" />
     <Resource Include="Resources\Images\Imperfect1.png" />
     <Resource Include="Resources\Images\Imperfect2.png" />
     <Resource Include="Resources\Images\Imperfect3.png" />
     <Resource Include="Resources\Images\Imperfect4.png" />
+    <Resource Include="Resources\Images\Red.png" />
     <Resource Include="Resources\Images\ZigZag1.png" />
     <Resource Include="Resources\Images\ZigZag2.png" />
     <Resource Include="Resources\Images\ZigZag3.png" />
@@ -128,8 +134,6 @@
     <Resource Include="Resources\Images\Squid2.png" />
     <Resource Include="Resources\Images\UFO.png" />
     <Resource Include="Resources\Images\MissingSprite.png" />
-    <Resource Include="Resources\Images\Red.png" />
-    <Resource Include="Resources\Images\Green.png" />
     <Resource Include="Resources\Images\OpponentPlayer.png" />
     <Resource Include="Resources\Images\OpponentPlayerDeath1.png" />
     <Resource Include="Resources\Images\OpponentPlayerDeath2.png" />
