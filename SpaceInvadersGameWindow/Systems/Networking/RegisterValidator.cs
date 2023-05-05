@@ -45,8 +45,6 @@ namespace GameWindow.Systems.Networking
                 SendMessage($"Register:{username}/{password}/{email}");
                 BeginRead(false);
             }
-            else
-                resultLabel.Text = "Failed! server unreachable.";
         }
 
         /// <summary>
@@ -92,7 +90,7 @@ namespace GameWindow.Systems.Networking
 
         protected override void OnError()
         {
-            resultLabel.Text = "Failed Login! please try again.";
+            resultLabel.Text = "Failed Register! please try again.";
         }
     }
 }

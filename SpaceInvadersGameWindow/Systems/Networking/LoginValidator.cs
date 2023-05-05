@@ -43,8 +43,6 @@ namespace GameWindow.Systems.Networking
                 SendMessage($"Login:{username}/{password}");
                 BeginRead(loop: false);
             }
-            else
-                resultLabel.Text = "Failed! server unreachable.";
         }
 
         /// <summary>

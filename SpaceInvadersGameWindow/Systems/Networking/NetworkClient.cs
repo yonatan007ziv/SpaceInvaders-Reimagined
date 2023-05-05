@@ -17,6 +17,7 @@ namespace GameWindow.Systems.Networking
         private TcpClient client;
         private Byte[] buffer;
         private IAsyncResult? currentRead;
+        private bool gracefulClose; // Whether the connection was closed gracefully
 
         // Encryption related fields
         private TaskCompletionSource<bool> EncryptionReady = new TaskCompletionSource<bool>();
@@ -95,6 +96,7 @@ namespace GameWindow.Systems.Networking
         /// <returns> <c>true</c> if the connection was established successfully; otherwise, <c>false</c> </returns>
         protected bool Connect(string ip, int port)
         {
+            gracefulClose = false;
             try
             {
                 client.Connect(ip, port);
@@ -111,6 +113,11 @@ namespace GameWindow.Systems.Networking
             {
                 Debug.WriteLine($"Connection Refused: {ip}:{port}");
             }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception when trying to connect to {ip}:{port}: {ex}");
+            }
+            OnError();
             return false;
         }
 
@@ -157,6 +164,7 @@ namespace GameWindow.Systems.Networking
             }
             catch (Exception ex)
             {
+                if(!gracefulClose)
                 OnError();
                 Console.WriteLine($"Closed conn, Caught Exception: {ex}");
                 return;
@@ -268,6 +276,7 @@ namespace GameWindow.Systems.Networking
         /// </summary>
         public void StopClient()
         {
+            gracefulClose = true;
             client.Close();
             client = new TcpClient();
         }

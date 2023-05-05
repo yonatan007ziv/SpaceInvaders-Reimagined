@@ -1,5 +1,4 @@
 ﻿using GameWindow.Components.GameComponents;
-using System.Data;
 using System.Numerics;
 
 namespace GameWindow.Components.NetworkedComponents

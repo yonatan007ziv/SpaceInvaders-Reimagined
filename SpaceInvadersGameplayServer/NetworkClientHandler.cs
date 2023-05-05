@@ -82,7 +82,7 @@ namespace GameplayServer
         /// </summary>
         public void BeginRead()
         {
-            try { currentRead = client.GetStream().BeginRead(buffer, 0, buffer.Length, (aR) => ReceiveMessage(aR,interpretMessage), null); }
+            try { currentRead = client.GetStream().BeginRead(buffer, 0, buffer.Length, (aR) => ReceiveMessage(aR, interpretMessage), null); }
             catch { onDisconnect(); }
         }
 

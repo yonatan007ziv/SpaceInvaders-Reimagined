@@ -1,7 +1,6 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
-using System.Diagnostics.Eventing.Reader;
 using System.Numerics;
 using System.Windows;
 

@@ -88,7 +88,7 @@ namespace GameWindow.Systems
         {
             keysDown.Remove(e.Key);
         }
-        
+
         /// <summary>
         /// Get input on axis
         /// </summary>

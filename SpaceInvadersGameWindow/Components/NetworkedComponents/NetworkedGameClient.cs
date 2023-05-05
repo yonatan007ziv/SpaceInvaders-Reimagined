@@ -76,11 +76,6 @@ namespace GameWindow.Components.NetworkedComponents
                 });
                 InputHandler.AddInputLoop(InputLoop);
             }
-            else
-            {
-                new GameMultiplayerMenu("Failed to connect to server");
-                Dispose();
-            }
         }
 
         /// <summary>
@@ -311,8 +306,8 @@ namespace GameWindow.Components.NetworkedComponents
         /// </summary>
         public void Dispose()
         {
-            Paused = false;
             StopClient();
+            Paused = false;
             InputHandler.RemoveInputLoop(InputLoop);
             Wall.DisposeAll();
             Bullet.DisposeAll();

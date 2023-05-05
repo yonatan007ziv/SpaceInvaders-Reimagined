@@ -29,6 +29,7 @@
     <None Remove="Resources\Sounds\PlayerDeath.wav" />
     <None Remove="Resources\Sounds\Shoot - Copy.wav" />
     <None Remove="Resources\Sounds\UFO.wav" />
+    <None Remove="Resources\SpaceInvadersFont.ttf" />
   </ItemGroup>
 
   <ItemGroup>
@@ -156,6 +157,7 @@
     <Resource Include="Resources\Sounds\UFO.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\SpaceInvadersFont.ttf" />
   </ItemGroup>
 
 </Project>
