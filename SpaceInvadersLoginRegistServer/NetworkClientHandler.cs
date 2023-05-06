@@ -112,10 +112,10 @@ namespace LoginRegisterServer
                 lock (client.GetStream())
                     bytesRead = client.GetStream().EndRead(aR);
             }
-            catch (Exception ex)
+            catch
             {
                 onDisconnect();
-                Console.WriteLine($"Closed conn, Caught Exception: {ex}");
+                Console.WriteLine($"Connection Closed Forcibly");
                 return;
             }
 

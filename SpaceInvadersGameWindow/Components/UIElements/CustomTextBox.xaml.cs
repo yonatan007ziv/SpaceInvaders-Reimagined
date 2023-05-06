@@ -1,7 +1,9 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GameWindow.Components.UIElements
 {
@@ -65,6 +67,20 @@ namespace GameWindow.Components.UIElements
         {
             // UI Objects need to be changed in an STA thread
             Dispatcher.Invoke(() => Visibility = visible ? Visibility.Visible : Visibility.Hidden);
+        }
+
+        /// <summary>
+        /// Only allow A-Z, a-z, 0-9, @, and a dot (.) in the text box
+        /// </summary>
+        /// <param name="sender"> The sender TextBox </param>
+        /// <param name="e"> The event parameters </param>
+        private void BoxPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Check if the input is a valid character
+            if (!Regex.IsMatch(e.Text, "[a-z0-9A-Z@.]"))
+            {
+                e.Handled = true; // Ignore the input
+            }
         }
 
         /// <summary>

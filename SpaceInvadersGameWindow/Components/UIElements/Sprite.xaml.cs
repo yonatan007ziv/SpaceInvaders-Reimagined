@@ -158,7 +158,7 @@ namespace GameWindow.Components.UIElements
         /// </summary>
         /// <param name="toLoad"> Image to load </param>
         private static void LoadImage(Image toLoad) =>
-            Images.Add(toLoad, new BitmapImage(new Uri($@"pack://application:,,,/Resources\Images\{toLoad}.png")));
+            Images.Add(toLoad, new BitmapImage(new Uri($@"pack://application:,,,/Resources/Images/{toLoad}.png")));
 
         public Transform transform;
 
