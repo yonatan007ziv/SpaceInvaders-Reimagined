@@ -235,7 +235,7 @@ namespace GameWindow.Components.UIElements
                 else
                     bitmap = Images[Image.MissingSprite];
 
-                bitmap?.Freeze();
+                bitmap.Freeze();
                 Source = bitmap;
             });
         }

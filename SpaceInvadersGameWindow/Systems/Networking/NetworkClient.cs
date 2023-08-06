@@ -132,7 +132,7 @@ namespace GameWindow.Systems.Networking
             try
             {
                 currentRead = client.GetStream().BeginRead(buffer, 0, buffer.Length,
-                (result) => ReceiveMessage(result, loop), null);
+                (aR) => ReceiveMessage(aR, loop), null);
             }
             catch { StopClient(); return; }
         }
