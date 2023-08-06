@@ -8,6 +8,9 @@ namespace LoginRegisterServer
     /// </summary>
     internal static class SMTPHandler
     {
+        private const string SMTPEmailAddress = "Email goes here";
+        private const string SMTPEmailPassword = "Password goes here";
+
         /// <summary>
         /// Sends an email from an hardcoded account
         /// </summary>
@@ -18,7 +21,7 @@ namespace LoginRegisterServer
         {
             MailMessage message = new MailMessage();
 
-            message.From = new MailAddress("yonatan007ziv@gmail.com");
+            message.From = new MailAddress(SMTPEmailAddress);
             message.To.Add(new MailAddress(email));
 
             message.Subject = title;
@@ -30,7 +33,7 @@ namespace LoginRegisterServer
             client.Port = 587;
 
             client.UseDefaultCredentials = false;
-            client.Credentials = new NetworkCredential("yonatan007ziv@gmail.com", "lbkxqwvjmroltppb");
+            client.Credentials = new NetworkCredential(SMTPEmailAddress, SMTPEmailPassword);
 
             client.EnableSsl = true;
 

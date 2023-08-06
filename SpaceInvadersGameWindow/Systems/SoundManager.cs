@@ -38,13 +38,8 @@ namespace GameWindow.Systems
         static SoundManager()
         {
             new MasteringVoice(_xaudio);
-            LoadSound(Sound.MenuClick, "pack://application:,,,/Resources/Sounds/MenuClick.wav");
-            LoadSound(Sound.PlayerDeath, "pack://application:,,,/Resources/Sounds/PlayerDeath.wav");
-            LoadSound(Sound.InvaderDeath, "pack://application:,,,/Resources/Sounds/InvaderDeath.wav");
-            LoadSound(Sound.BulletInitiated, "pack://application:,,,/Resources/Sounds/BulletInitiated.wav");
-            LoadSound(Sound.UFO, "pack://application:,,,/Resources/Sounds/UFO.wav");
-            LoadSound(Sound.CycleBeat1, "pack://application:,,,/Resources/Sounds/CycleBeat1.wav");
-            LoadSound(Sound.CycleBeat2, "pack://application:,,,/Resources/Sounds/CycleBeat2.wav");
+            for (int i = 0; i < Enum.GetNames(typeof(Sound)).Length; i++)
+                LoadSound((Sound)i, $"pack://application:,,,/Resources/Sounds/{(Sound)i}.wav");
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ namespace GameplayServer
     /// </summary>
     internal class MultiplayerGameServer
     {
-        private const int port = 7779;
+        private const int port = 7778;
 
         /// <summary>
         /// Entry point for the Game Server
