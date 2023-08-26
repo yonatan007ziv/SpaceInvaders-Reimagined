@@ -2,6 +2,7 @@
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.Pages;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using System;
 using System.Numerics;
@@ -81,8 +82,8 @@ namespace GameWindow
 
             #region Close application button
             Transform closeTransform = new Transform(new Vector2(25, 25), new Vector2(referenceSize.X - 25, 25));
-            Sprite closeSprite = new Sprite(closeTransform, Components.UIElements.Image.CloseApplication);
-            CustomButton closeButton = new CustomButton(closeTransform, () => Close(), System.Windows.Media.Color.FromArgb(0, 0, 0, 0), "");
+            Sprite closeSprite = UIElementFactory.CreateSprite(closeTransform, Components.UIElements.Image.CloseApplication);
+            CustomButton closeButton = UIElementFactory.CreateButton(closeTransform, () => Close(), System.Windows.Media.Color.FromArgb(0, 0, 0, 0), "");
             #endregion
 
             // Start taking inputs

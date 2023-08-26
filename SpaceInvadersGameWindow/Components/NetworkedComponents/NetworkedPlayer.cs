@@ -1,11 +1,11 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace GameWindow.Components.NetworkedComponents
 {
@@ -52,11 +52,8 @@ namespace GameWindow.Components.NetworkedComponents
 
             controller = new NetworkedPlayerController(this, SendMessage);
 
-            Application.Current.Dispatcher.Invoke(() =>
-            { // UI Objects need to be created in an STA thread
-                sprite = new Sprite(transform, Image.Player);
-                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Black);
-            });
+            sprite = UIElementFactory.CreateSprite(transform, Image.Player);
+            nameTag = UIElementFactory.CreateLabel(transform, username, System.Windows.Media.Colors.Black);
 
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();
@@ -82,12 +79,8 @@ namespace GameWindow.Components.NetworkedComponents
             col.AddIgnoreLayer(myLayer);
 
             Image image = localPlayer!.team == team ? Image.Player : Image.OpponentPlayer;
-            Application.Current.Dispatcher.Invoke(() =>
-            { // UI Objects need to be created in an STA thread
-
-                sprite = new Sprite(transform, image);
-                nameTag = new CustomLabel(transform, username, System.Windows.Media.Colors.Black);
-            });
+            sprite = UIElementFactory.CreateSprite(transform, image);
+            nameTag = UIElementFactory.CreateLabel(transform, username, System.Windows.Media.Colors.Black);
 
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();

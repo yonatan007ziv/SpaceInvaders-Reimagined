@@ -1,12 +1,12 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using System;
 using System.Diagnostics;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -39,6 +39,25 @@ namespace GameWindow.Components.GameComponents
         // Uniform Invader Settings
         private static int InvaderDir = 1;
         private static bool SpriteSwitch = true;
+
+        public static void PauseAll()
+        {
+            if (!DisposedCts)
+                cts.Cancel();
+            UFOPaused = true;
+        }
+
+        public static async void UnpauseAll()
+        {
+            cts = new CancellationTokenSource();
+            DisposedCts = false;
+
+            UFOPaused = false;
+            UFOMovementLoop();
+
+            try { await MovingInvadersLoop(cts.Token); }
+            catch (OperationCanceledException) { cts.Dispose(); DisposedCts = true; }
+        }
 
         private static void ResetInfo()
         {
@@ -138,9 +157,7 @@ namespace GameWindow.Components.GameComponents
 
             transform = new Transform(scale, pos);
             col = new Collider(transform, this, CollisionLayer.Invader);
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, image));
+            sprite = UIElementFactory.CreateSprite(transform, image);
 
             if (type == InvaderType.UFO)
                 CurrentUFO = this;
@@ -159,30 +176,6 @@ namespace GameWindow.Components.GameComponents
         private static bool DisposedCts;
         private static CancellationTokenSource cts = new CancellationTokenSource();
 
-        /// <summary>
-        /// Pauses or unpauses the UFO and invader movement loops
-        /// </summary>
-        /// <param name="pause"> If true, pauses the loops; otherwise, unpauses them </param>
-        public static async void PauseUnpauseInvaders(bool pause)
-        {
-            if (pause)
-            {
-                if (!DisposedCts)
-                    cts.Cancel();
-                UFOPaused = true;
-            }
-            else
-            {
-                cts = new CancellationTokenSource();
-                DisposedCts = false;
-
-                UFOPaused = false;
-                UFOMovementLoop();
-
-                try { await MovingInvadersLoop(cts.Token); }
-                catch (OperationCanceledException) { cts.Dispose(); DisposedCts = true; }
-            }
-        }
         #endregion
 
         #region Invaders Cycle
@@ -211,7 +204,7 @@ namespace GameWindow.Components.GameComponents
                     InputHandler.Disable(true);
                     await PlotInvaders();
                     InputHandler.Disable(false);
-                    PauseUnpauseInvaders(false);
+                    UnpauseAll();
                     return;
                 }
             }
@@ -434,10 +427,7 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         private async void UFOCreditsBlink()
         {
-            CustomLabel credits = null!;
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => credits = new CustomLabel(new Transform(new Vector2(32, 16), transform.Position), pointsReward.ToString(), System.Windows.Media.Colors.White));
+            CustomLabel credits = UIElementFactory.CreateLabel(new Transform(new Vector2(32, 16), transform.Position), pointsReward.ToString(), System.Windows.Media.Colors.White);
 
             for (int i = 0; i < 5; i++)
             {

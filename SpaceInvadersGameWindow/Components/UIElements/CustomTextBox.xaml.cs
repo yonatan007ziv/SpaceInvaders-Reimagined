@@ -21,7 +21,7 @@ namespace GameWindow.Components.UIElements
         /// <param name="transform"> The <see cref="Transform"/> to link </param>
         /// <param name="defaultText"> The default displayed text </param>
         /// <param name="textChanged"> An <see cref="Action"/> that will be called when the text changes </param>
-        public CustomTextBox(Transform transform, string defaultText, Action textChanged) // Called within an STA thread
+        public CustomTextBox(Guid key, Transform transform, string defaultText, Action textChanged) // Called within an STA thread
         {
             InitializeComponent();
 

@@ -2,10 +2,10 @@
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.Pages;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using GameWindow.Systems.Networking;
 using System.Numerics;
-using System.Windows;
 using System.Windows.Input;
 
 namespace GameWindow.Components.NetworkedComponents
@@ -51,29 +51,27 @@ namespace GameWindow.Components.NetworkedComponents
                 BeginRead(true);
 
                 Wall.MakeOnlineGameWalls();
-                Application.Current.Dispatcher.Invoke(() =>
-                { // UI Objects need to be created in an STA thread
-                    teamALabel = new CustomLabel(new Transform(new Vector2(50, 25), new Vector2(30, 14)), @"Team A", System.Windows.Media.Colors.White);
-                    teamBLabel = new CustomLabel(new Transform(new Vector2(50, 25), new Vector2(30, 14)), @"Team B", System.Windows.Media.Colors.White);
+                teamALabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 25), new Vector2(30, 14)), @"Team A", System.Windows.Media.Colors.White);
+                teamBLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 25), new Vector2(30, 14)), @"Team B", System.Windows.Media.Colors.White);
 
-                    bunkerButton1 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("0"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
-                    bunkerButton2 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("1"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
-                    bunkerButton3 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("2"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
-                    bunkerButton4 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("3"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
-                    bunkerButton5 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("4"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
-                    bunkerButton6 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("5"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
-                    bunkerButton7 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("6"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
-                    bunkerButton8 = new CustomButton(new Transform(new Vector2(24, 16), new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("7"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton1 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("0"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton2 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("1"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton3 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("2"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton4 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("3"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton5 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(0.4f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("4"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton6 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(0.8f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("5"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton7 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(1.2f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("6"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
+                bunkerButton8 = UIElementFactory.CreateButton(new Transform(new Vector2(24, 16), new Vector2(1.6f * (MainWindow.referenceSize.X / 2), 2 * MainWindow.referenceSize.Y / 3)), () => CreateBunker("7"), System.Windows.Media.Color.FromRgb(0, 255, 0), "CREATE BUNKER");
 
-                    bunkerButton1.Visible(false);
-                    bunkerButton2.Visible(false);
-                    bunkerButton3.Visible(false);
-                    bunkerButton4.Visible(false);
-                    bunkerButton5.Visible(false);
-                    bunkerButton6.Visible(false);
-                    bunkerButton7.Visible(false);
-                    bunkerButton8.Visible(false);
-                });
+                bunkerButton1.Visible(false);
+                bunkerButton2.Visible(false);
+                bunkerButton3.Visible(false);
+                bunkerButton4.Visible(false);
+                bunkerButton5.Visible(false);
+                bunkerButton6.Visible(false);
+                bunkerButton7.Visible(false);
+                bunkerButton8.Visible(false);
+
                 InputHandler.AddInputLoop(InputLoop);
             }
         }

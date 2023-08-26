@@ -1,7 +1,7 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using System.Numerics;
-using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -27,9 +27,7 @@ namespace GameWindow.Components.GameComponents
             this.partType = partType;
             transform = new Transform(new Vector2(6, 8), pos);
             col = new Collider(transform, this, CollisionLayer.Bunker);
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Empty));
+            sprite = UIElementFactory.CreateSprite(transform, Image.Empty);
 
             NextClip();
 

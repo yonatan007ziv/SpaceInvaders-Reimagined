@@ -11,32 +11,40 @@ namespace GameWindow.Components.Miscellaneous
     {
         public static readonly List<Transform> Transforms = new List<Transform>();
 
-        private Action? positionChanged;
-        private Action? scaleChanged;
+        private Action? _positionChanged;
+        private Action? _scaleChanged;
 
         /// <summary>
-        /// Position changed adder & alerter
+        /// PositionChanged adder & alerter
         /// </summary>
-        public Action? PositionChanged
+        public event Action PositionChanged
         {
-            get { return positionChanged; }
-            set
+            add
             {
-                positionChanged = value;
-                positionChanged?.Invoke();
+                _positionChanged += value;
+                _positionChanged?.Invoke();
+            }
+            remove
+            {
+                _positionChanged -= value;
+                _positionChanged?.Invoke();
             }
         }
 
         /// <summary>
-        /// Scale changed adder & alerter
+        /// ScaleChanged adder & alerter
         /// </summary>
-        public Action? ScaleChanged
+        public event Action ScaleChanged
         {
-            get { return scaleChanged; }
-            set
+            add
             {
-                scaleChanged = value;
-                scaleChanged!();
+                _scaleChanged += value;
+                _scaleChanged?.Invoke();
+            }
+            remove
+            {
+                _scaleChanged -= value;
+                _scaleChanged?.Invoke();
             }
         }
 
@@ -125,8 +133,8 @@ namespace GameWindow.Components.Miscellaneous
         /// </summary>
         public void OnSizeChanged()
         {
-            PositionChanged?.Invoke();
-            ScaleChanged?.Invoke();
+            _positionChanged?.Invoke();
+            _scaleChanged?.Invoke();
         }
 
         /// <summary>

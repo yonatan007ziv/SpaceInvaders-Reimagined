@@ -1,9 +1,9 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.Pages;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using System.Numerics;
-using System.Windows;
 using System.Windows.Input;
 
 namespace GameWindow.Components.GameComponents
@@ -44,17 +44,11 @@ namespace GameWindow.Components.GameComponents
         {
             instance = this;
 
-            #region temp overlay
-            //Transform ColorOverlayT = new Transform(new Vector2(MainWindow.referenceSize.X, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2));
-            //Sprite ColorOverlaySprite = new Sprite(ColorOverlayT, @"Resources\Images\Overlay.png");
-            #endregion
+            creditsLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+            livesLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+            player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.735f));
 
             StartGame();
-
-            // Suppressing the "Null When Leaving a Constructor" warning
-            creditsLabel!.ToString();
-            livesLabel!.ToString();
-            player!.ToString();
         }
 
         #region Game Preparation
@@ -64,16 +58,18 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         public async void StartGame()
         {
+            creditsLabel?.Dispose();
+            livesLabel?.Dispose();
+            player?.Dispose();
+
+            creditsLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+            livesLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
+            player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.735f));
+
             InputHandler.Disable(true);
-            Player.PauseUnpause(true);
+            Player.Pause();
             Wall.MakeLocalGameWalls();
             MakeBunkers();
-
-            Application.Current.Dispatcher.Invoke(() =>
-            { // UI Objects need to be created in an STA thread
-                creditsLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 1.25f, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
-                livesLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(25, MainWindow.referenceSize.Y / 1.15f)), "", System.Windows.Media.Colors.White);
-            });
 
             gaveExtraLife = false;
             Score = 0;
@@ -81,10 +77,9 @@ namespace GameWindow.Components.GameComponents
 
             InputHandler.AddInputLoop(InputLoop);
 
-            player = new Player(new Vector2(50, MainWindow.referenceSize.Y * 0.735f));
             await Invader.PlotInvaders();
-            Invader.PauseUnpauseInvaders(false);
-            Player.PauseUnpause(false);
+            Invader.UnpauseAll();
+            Player.Unpause();
             InputHandler.Disable(false);
         }
 
@@ -124,7 +119,7 @@ namespace GameWindow.Components.GameComponents
             {
                 if (!HeldRestart)
                 {
-                    Invader.PauseUnpauseInvaders(true);
+                    Invader.PauseAll();
                     Dispose();
                     pauseMenu?.Dispose();
                     StartGame();
@@ -145,16 +140,16 @@ namespace GameWindow.Components.GameComponents
             if (pause)
             {
                 SoundManager.StopAllSounds();
-                Bullet.PauseUnpauseBullets(true);
-                Invader.PauseUnpauseInvaders(true);
-                Player.PauseUnpause(true);
+                Bullet.PauseAll();
+                Invader.PauseAll();
+                Player.Pause();
                 pauseMenu = new LocalPauseMenu();
             }
             else
             {
-                Bullet.PauseUnpauseBullets(false);
-                Invader.PauseUnpauseInvaders(false);
-                Player.PauseUnpause(false);
+                Bullet.UnpauseAll();
+                Invader.UnpauseAll();
+                Player.Unpause();
                 pauseMenu?.Dispose();
             }
         }
@@ -169,16 +164,16 @@ namespace GameWindow.Components.GameComponents
             {
                 InputHandler.RemoveInputLoop(instance!.InputLoop);
                 SoundManager.StopAllSounds();
-                Bullet.PauseUnpauseBullets(true);
-                Invader.PauseUnpauseInvaders(true);
-                Player.PauseUnpause(true);
+                Bullet.PauseAll();
+                Invader.PauseAll();
+                Player.Pause();
             }
             else
             {
                 InputHandler.AddInputLoop(instance!.InputLoop);
-                Bullet.PauseUnpauseBullets(false);
-                Invader.PauseUnpauseInvaders(false);
-                Player.PauseUnpause(false);
+                Bullet.UnpauseAll();
+                Invader.UnpauseAll();
+                Player.Unpause();
             }
         }
         #endregion
@@ -191,29 +186,25 @@ namespace GameWindow.Components.GameComponents
         {
             Dispose();
 
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                lostLabel = new CustomLabel(new Transform(new Vector2(MainWindow.referenceSize.X, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)),
-                    $"You Lost\nCredits: {Score}", System.Windows.Media.Colors.White);
+            lostLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(MainWindow.referenceSize.X, MainWindow.referenceSize.Y), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2)),
+                $"You Lost\nCredits: {Score}", System.Windows.Media.Colors.White);
 
-                playAgainButton = new CustomButton(new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X * 3 / 4, MainWindow.referenceSize.Y * 5 / 6)),
-                    () =>
-                    {
-                        DisposeLostMenu();
-                        Dispose();
-                        StartGame();
-                    }, System.Windows.Media.Color.FromRgb(0, 255, 255), "Play Again");
+            playAgainButton = UIElementFactory.CreateButton(new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X * 3 / 4, MainWindow.referenceSize.Y * 5 / 6)),
+                () =>
+                {
+                    DisposeLostMenu();
+                    Dispose();
+                    StartGame();
+                }, System.Windows.Media.Color.FromRgb(0, 255, 255), "Play Again");
 
-                mainMenuButton = new CustomButton(
-                    new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X / 4, MainWindow.referenceSize.Y * 5 / 6)),
-                    () =>
-                    {
-                        DisposeLostMenu();
-                        Dispose();
-                        new GameMainMenu();
-                    }, System.Windows.Media.Color.FromRgb(0, 0, 0), "Main Menu");
-            });
+            mainMenuButton = UIElementFactory.CreateButton(
+                new Transform(new Vector2(MainWindow.referenceSize.X / 5, MainWindow.referenceSize.Y / 5), new Vector2(MainWindow.referenceSize.X / 4, MainWindow.referenceSize.Y * 5 / 6)),
+                () =>
+                {
+                    DisposeLostMenu();
+                    Dispose();
+                    new GameMainMenu();
+                }, System.Windows.Media.Color.FromRgb(0, 0, 0), "Main Menu");
         }
 
         /// <summary>

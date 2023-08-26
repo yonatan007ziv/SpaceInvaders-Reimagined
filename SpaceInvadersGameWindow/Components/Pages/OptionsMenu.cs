@@ -1,8 +1,8 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using System.Numerics;
-using System.Windows;
 
 namespace GameWindow.Components.Pages
 {
@@ -20,17 +20,9 @@ namespace GameWindow.Components.Pages
         /// </summary>
         public OptionsMenu()
         {
-            Application.Current.Dispatcher.Invoke((System.Delegate)(() =>
-            {
-                volumeLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(50, 50)), "Volume:", System.Windows.Media.Colors.White);
-                volumeInput = new CustomTextBox(new Transform(new Vector2(50, 50), new Vector2(150, 50)), "" + (int)(SoundManager.currentVol * 100), () => UpdateVolume(volumeInput!.Text));
-                backButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(50, 150)), Back, System.Windows.Media.Color.FromRgb(0, 255, 0), "Back");
-            }));
-
-            // Suppressing the "Null When Leaving a Constructor" warning
-            volumeLabel!.ToString();
-            volumeInput!.ToString();
-            backButton!.ToString();
+            volumeLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(100, 50), new Vector2(50, 50)), "Volume:", System.Windows.Media.Colors.White);
+            volumeInput = UIElementFactory.CreateTextBox(new Transform(new Vector2(50, 50), new Vector2(150, 50)), "" + (int)(SoundManager.currentVol * 100), () => UpdateVolume(volumeInput!.Text));
+            backButton = UIElementFactory.CreateButton(new Transform(new Vector2(50, 50), new Vector2(50, 150)), Back, System.Windows.Media.Color.FromRgb(0, 255, 0), "Back");
         }
 
         /// <summary>

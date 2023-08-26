@@ -1,5 +1,6 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems.Networking;
 using System.Numerics;
 using System.Windows;
@@ -29,44 +30,34 @@ namespace GameWindow.Components.Pages
         /// </summary>
         public LoginRegister()
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            { // UI Objects need to be created in an STA thread
-                usernameLabel = new CustomLabel(new Transform(new Vector2(50, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 - 25.5f, MainWindow.referenceSize.Y / 2 - 50)), "Username:", System.Windows.Media.Colors.White);
-                passwordLabel = new CustomLabel(new Transform(new Vector2(50, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 + 25.5f, MainWindow.referenceSize.Y / 2 - 50)), "Password:", System.Windows.Media.Colors.White);
-                emailLabel = new CustomLabel(new Transform(new Vector2(50, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 - 76, MainWindow.referenceSize.Y / 2 - 26)), "Email:", System.Windows.Media.Colors.White);
-                resultLabel = new CustomLabel(new Transform(new Vector2(100, 50), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 - 62.5f)), "", System.Windows.Media.Colors.White);
+            usernameLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 - 25.5f, MainWindow.referenceSize.Y / 2 - 50)), "Username:", System.Windows.Media.Colors.White);
+            passwordLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 + 25.5f, MainWindow.referenceSize.Y / 2 - 50)), "Password:", System.Windows.Media.Colors.White);
+            emailLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 - 76, MainWindow.referenceSize.Y / 2 - 26)), "Email:", System.Windows.Media.Colors.White);
+            resultLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(100, 50), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 - 62.5f)), "", System.Windows.Media.Colors.White);
 
-                usernameInput = new CustomTextBox(new Transform(new Vector2(51, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 - 25.5f, MainWindow.referenceSize.Y / 2 - 38.5f)), "", DelegatesActions.EmptyAction);
-                passwordInput = new CustomTextBox(new Transform(new Vector2(51, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 + 25.5f, MainWindow.referenceSize.Y / 2 - 38.5f)), "", DelegatesActions.EmptyAction);
-                emailInput = new CustomTextBox(new Transform(new Vector2(102, 12.5f), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 - 26)), "", DelegatesActions.EmptyAction);
-                twoFAInput = new CustomTextBox(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 25, MainWindow.referenceSize.Y / 2 - 7.5f)), "", DelegatesActions.EmptyAction);
+            usernameInput = UIElementFactory.CreateTextBox(new Transform(new Vector2(51, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 - 25.5f, MainWindow.referenceSize.Y / 2 - 38.5f)), "", DelegatesActions.EmptyAction);
+            passwordInput = UIElementFactory.CreateTextBox(new Transform(new Vector2(51, 12.5f), new Vector2(MainWindow.referenceSize.X / 2 + 25.5f, MainWindow.referenceSize.Y / 2 - 38.5f)), "", DelegatesActions.EmptyAction);
+            emailInput = UIElementFactory.CreateTextBox(new Transform(new Vector2(102, 12.5f), new Vector2(MainWindow.referenceSize.X / 2, MainWindow.referenceSize.Y / 2 - 26)), "", DelegatesActions.EmptyAction);
+            twoFAInput = UIElementFactory.CreateTextBox(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 25, MainWindow.referenceSize.Y / 2 - 7.5f)), "", DelegatesActions.EmptyAction);
 
-                flipLoginRegisterButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 26, MainWindow.referenceSize.Y / 2 - 7.5f)), FlipLoginRegist, System.Windows.Media.Color.FromRgb(0, 255, 0), "Register?"); ;
-                loginRegistButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), LoginRegisterClick, System.Windows.Media.Color.FromRgb(0, 255, 0), "Click To Login");
-                submit2FAButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), () => { }, System.Windows.Media.Color.FromRgb(0, 255, 0), "Submit 2FA code");
-            });
+            flipLoginRegisterButton = UIElementFactory.CreateButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 - 26, MainWindow.referenceSize.Y / 2 - 7.5f)), FlipLoginRegist, System.Windows.Media.Color.FromRgb(0, 255, 0), "Register?"); ;
+            loginRegistButton = UIElementFactory.CreateButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), LoginRegisterClick, System.Windows.Media.Color.FromRgb(0, 255, 0), "Click To Login");
+            submit2FAButton = UIElementFactory.CreateButton(new Transform(new Vector2(50, 50), new Vector2(MainWindow.referenceSize.X / 2 + 26, MainWindow.referenceSize.Y / 2 - 7.5f)), () => { }, System.Windows.Media.Color.FromRgb(0, 255, 0), "Submit 2FA code");
 
-            // Suppressing the "Null When Leaving a Constructor" warning
-            usernameInput!.AcceptsReturn = false;
+            usernameInput.AcceptsReturn = false;
             usernameInput.AcceptsTab = false;
 
-            passwordInput!.AcceptsReturn = false;
+            passwordInput.AcceptsReturn = false;
             passwordInput.AcceptsTab = false;
             passwordInput.Censor = true;
 
-            emailInput!.AcceptsReturn = false;
+            emailInput.AcceptsReturn = false;
             emailInput.AcceptsTab = false;
             emailInput.Visible(false);
 
-            emailLabel!.Visible(false);
-            twoFAInput!.Visible(false);
-            submit2FAButton!.Visible(false);
-
-            usernameLabel!.ToString();
-            passwordLabel!.ToString();
-            flipLoginRegisterButton!.ToString();
-            loginRegistButton!.ToString();
-            resultLabel!.ToString();
+            emailLabel.Visible(false);
+            twoFAInput.Visible(false);
+            submit2FAButton.Visible(false);
         }
 
         /// <summary>

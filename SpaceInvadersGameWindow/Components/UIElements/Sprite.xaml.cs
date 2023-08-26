@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Factories;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -163,11 +164,11 @@ namespace GameWindow.Components.UIElements
         public Transform transform;
 
         /// <summary>
-        /// Builds a sprite UI element with an image
+        /// WARNING: ** DO NOT CALL DIRECTLY! Use <see cref="UIElementFactory"/>. **
         /// </summary>
         /// <param name="transform"> The <see cref="Transform"/> to link </param>
         /// <param name="imagePath"> Path to the image </param>
-        public Sprite(Transform transform, Image image) // Called within an STA thread
+        public Sprite(Guid instantiationKey, Transform transform, Image image) // Called within an STA thread
         {
             InitializeComponent();
 

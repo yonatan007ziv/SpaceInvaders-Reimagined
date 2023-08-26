@@ -1,9 +1,9 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -31,8 +31,9 @@ namespace GameWindow.Components.GameComponents
 
         private int clipCounter = 0;
         private float originalBulletSpeed;
-        protected Queue<Image> clips = new Queue<Image>();
+        protected Queue<Image>? clips = new Queue<Image>();
         protected float bulletSpeed;
+        private bool paused;
         protected bool disposed;
         protected BulletType bulletType;
 
@@ -40,17 +41,34 @@ namespace GameWindow.Components.GameComponents
         /// Pauses or unpauses all bullets by setting their bulletSpeed to zero if pause is true, or to their originalBulletSpeed if pause is false
         /// </summary>
         /// <param name="pause"> If true, all bullets are paused, if false, all bullets are unpaused</param>
-        public static void PauseUnpauseBullets(bool pause)
+        public static void PauseAll()
         {
             for (int i = 0; i < AllBullets.Count; i++)
             {
                 if (AllBullets[i] == null) continue;
-
-                if (pause)
-                    AllBullets[i].bulletSpeed = 0;
-                else
-                    AllBullets[i].bulletSpeed = AllBullets[i].originalBulletSpeed;
+                AllBullets[i].Pause();
             }
+        }
+
+        public static void UnpauseAll()
+        {
+            for (int i = 0; i < AllBullets.Count; i++)
+            {
+                if (AllBullets[i] == null) continue;
+                AllBullets[i].Unpause();
+            }
+        }
+
+        public void Pause()
+        {
+            bulletSpeed = 0;
+            paused = true;
+        }
+
+        public void Unpause()
+        {
+            bulletSpeed = originalBulletSpeed;
+            paused = false;
         }
 
         /// <summary>
@@ -69,13 +87,7 @@ namespace GameWindow.Components.GameComponents
             bulletSpeed = originalBulletSpeed;
             transform = new Transform(new Vector2(3, 7), pos);
             col = new Collider(transform, this, colliderLayer);
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Bullet));
-
-            // Suppressing the "Null When Leaving a Constructor" warning
-            clips!.ToString();
-            sprite!.ToString();
+            sprite = UIElementFactory.CreateSprite(transform, Image.Bullet);
         }
 
         /// <summary>
@@ -97,14 +109,15 @@ namespace GameWindow.Components.GameComponents
         /// </summary>
         private void NextClip()
         {
+            if (paused) return;
             if (clipCounter % 4 != 3)
             {
                 clipCounter++;
                 return;
             }
 
-            Image image = clips.Dequeue();
-            clips.Enqueue(image);
+            Image image = clips?.Dequeue() ?? Image.MissingSprite;
+            clips?.Enqueue(image);
 
             sprite.ChangeImage(image);
 

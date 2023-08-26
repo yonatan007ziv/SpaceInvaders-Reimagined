@@ -1,8 +1,8 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.NetworkedComponents;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using System.Numerics;
-using System.Windows;
 
 namespace GameWindow.Components.Pages
 {
@@ -19,15 +19,8 @@ namespace GameWindow.Components.Pages
         /// </summary>
         public OnlinePauseMenu()
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            { // UI Objects need to be created in an STA thread
-                pauseLabel = new CustomLabel(new Transform(new Vector2(50, 50), new Vector2(100, 50)), "Menu", System.Windows.Media.Colors.White);
-                mainMenuButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(100, 100)), MainMenu, System.Windows.Media.Color.FromRgb(0, 0, 0), "Main Menu");
-            });
-
-            // Suppressing the "Null When Leaving a Constructor" warning
-            pauseLabel!.ToString();
-            mainMenuButton!.ToString();
+            pauseLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(50, 50), new Vector2(100, 50)), "Menu", System.Windows.Media.Colors.White);
+            mainMenuButton = UIElementFactory.CreateButton(new Transform(new Vector2(50, 50), new Vector2(100, 100)), MainMenu, System.Windows.Media.Color.FromRgb(0, 0, 0), "Main Menu");
         }
 
         /// <summary>

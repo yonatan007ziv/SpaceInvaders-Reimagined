@@ -1,7 +1,7 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using System.Numerics;
-using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -59,9 +59,7 @@ namespace GameWindow.Components.GameComponents
         {
             transform = new Transform(scale, pos);
             col = new Collider(transform, this, CollisionLayer.Wall);
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, image));
+            sprite = UIElementFactory.CreateSprite(transform, image);
 
             // Suppressing the "Null When Leaving a Constructor" warning
             sprite!.ToString();

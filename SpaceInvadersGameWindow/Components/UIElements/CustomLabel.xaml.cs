@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,7 +24,7 @@ namespace GameWindow.Components.UIElements
         /// <param name="transform"> The <see cref="Transform"/> to link </param>
         /// <param name="text"> Text to display </param>
         /// <param name="TextColor"> Color of the text </param>
-        public CustomLabel(Transform transform, string text, System.Windows.Media.Color TextColor) // Called within an STA thread
+        public CustomLabel(Guid key, Transform transform, string text, System.Windows.Media.Color TextColor) // Called within an STA thread
         {
             InitializeComponent();
             Text = text;

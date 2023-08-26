@@ -1,9 +1,9 @@
 ﻿using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using System.Numerics;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace GameWindow.Components.GameComponents
 {
@@ -22,12 +22,6 @@ namespace GameWindow.Components.GameComponents
         private bool invincible = false;
 
         /// <summary>
-        /// Pauses or Unpauses the <see cref="PlayerController"/>
-        /// </summary>
-        /// <param name="pause"> Whether to pause or unpause </param>
-        public static void PauseUnpause(bool pause) => PlayerController.disabled = pause;
-
-        /// <summary>
         /// Builds a local player
         /// </summary>
         /// <param name="pos"> position of the player </param>
@@ -35,9 +29,7 @@ namespace GameWindow.Components.GameComponents
         {
             transform = new Transform(new Vector2(13, 8), pos);
             col = new Collider(transform, this, CollisionLayer.Player);
-
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Player));
+            sprite = UIElementFactory.CreateSprite(transform, Image.Player);
 
             controller = new PlayerController(this);
 
@@ -118,6 +110,16 @@ namespace GameWindow.Components.GameComponents
                 await Task.Delay(1000 / 10);
             }
             sprite.Visible(true);
+        }
+
+        public static void Pause()
+        {
+            PlayerController.disabled = true;
+        }
+
+        public static void Unpause()
+        {
+            PlayerController.disabled = false;
         }
 
         /// <summary>

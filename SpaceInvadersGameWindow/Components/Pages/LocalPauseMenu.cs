@@ -1,8 +1,8 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using System.Numerics;
-using System.Windows;
 
 namespace GameWindow.Components.Pages
 {
@@ -21,17 +21,10 @@ namespace GameWindow.Components.Pages
         {
             LocalGame.Paused = true;
 
-            Application.Current.Dispatcher.Invoke(() =>
-            { // UI Objects need to be created in an STA thread
-                pauseLabel = new CustomLabel(new Transform(new Vector2(100, 100), new Vector2(125, 60)), "Game Paused", System.Windows.Media.Colors.Blue);
-                newGameButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(100, 100)), NewGame, System.Windows.Media.Color.FromRgb(0, 255, 0), "New Game");
-                mainMenuButton = new CustomButton(new Transform(new Vector2(50, 50), new Vector2(150, 100)), MainMenu, System.Windows.Media.Color.FromRgb(0, 255, 0), "Main Menu");
-            });
+            pauseLabel = UIElementFactory.CreateLabel(new Transform(new Vector2(100, 100), new Vector2(125, 60)), "Game Paused", System.Windows.Media.Colors.Blue);
 
-            // Suppressing the "Null When Leaving a Constructor" warning
-            pauseLabel!.ToString();
-            newGameButton!.ToString();
-            mainMenuButton!.ToString();
+            newGameButton = UIElementFactory.CreateButton(new Transform(new Vector2(50, 50), new Vector2(100, 100)), NewGame, System.Windows.Media.Color.FromRgb(0, 255, 0), "New Game");
+            mainMenuButton = UIElementFactory.CreateButton(new Transform(new Vector2(50, 50), new Vector2(150, 100)), MainMenu, System.Windows.Media.Color.FromRgb(0, 255, 0), "Main Menu");
         }
 
         /// <summary>

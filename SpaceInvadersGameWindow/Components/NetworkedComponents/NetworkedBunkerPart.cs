@@ -1,8 +1,8 @@
 ﻿using GameWindow.Components.GameComponents;
 using GameWindow.Components.Miscellaneous;
 using GameWindow.Components.UIElements;
+using GameWindow.Factories;
 using System.Numerics;
-using System.Windows;
 
 namespace GameWindow.Components.NetworkedComponents
 {
@@ -47,9 +47,8 @@ namespace GameWindow.Components.NetworkedComponents
 
             transform = new Transform(new Vector2(6, 8), transform.Position);
             col = new Collider(transform, this, layer);
+            sprite = UIElementFactory.CreateSprite(transform, Image.Empty);
 
-            // UI Objects need to be created in an STA thread
-            Application.Current.Dispatcher.Invoke(() => sprite = new Sprite(transform, Image.Empty));
             imagePathIndex = 0;
         }
 

@@ -1,4 +1,5 @@
 ﻿using GameWindow.Components.Miscellaneous;
+using GameWindow.Factories;
 using GameWindow.Systems;
 using System;
 using System.Windows;
@@ -27,13 +28,13 @@ namespace GameWindow.Components.UIElements
         /// <param name="onClick"> What happens on button click </param>
         /// <param name="image"> Path to the image </param>
         /// <param name="text"> Text on button </param>
-        public CustomButton(Transform transform, Action onClick, System.Windows.Media.Color color, string text) // Called within an STA thread
+        public CustomButton(Guid key, Transform transform, Action onClick, System.Windows.Media.Color color, string text) // Called within an STA thread
         {
             InitializeComponent();
 
             this.transform = transform;
             Background = new System.Windows.Media.SolidColorBrush(color);
-            this.text = new CustomLabel(transform, text, System.Windows.Media.Colors.White);
+            this.text = UIElementFactory.CreateLabel(transform, text, System.Windows.Media.Colors.White);
 
             transform.PositionChanged += () => SetPosition();
             transform.ScaleChanged += () => SetScale();
